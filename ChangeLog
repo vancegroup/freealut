@@ -1,0 +1,13 @@
+
+freealut Change Log.
+===================
+
+ALUT v0.x.x (???)
+~~~~~~~~~~~~~~~~~
+  * First release - included inside OpenAL's distro.
+
+freealut v1.0.0 (Aug 24th 2005)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  * Complete re-think.  New specification, new implementation. Same goals.
+
+

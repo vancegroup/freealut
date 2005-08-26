@@ -1,0 +1,13 @@
+
+The files in this directory make up the ALUT library.
+
+They compile to make 'libalut.so' for Linux/BSD/UNIX/MacOS or to 'ALUT.DLL' for
+Windows machines.
+
+There is also a header file 'alut.h' which goes into /usr/include/AL/alut.h for Linux/BSD/UNIX/MacOS - and...someplace else entirely for Windows machines.
+
+The file 'helloworld.wav' is the original voice recording of Steve Baker saying
+this immortal phrase.  It is converted into a large hexadecimal data block
+inside alutWaveform.c - but this file is retained in version control just
+in case anyone ever feels like re-doing it.
+

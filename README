@@ -1,0 +1,88 @@
+
+The freealut library.
+=====================
+             by Steve Baker.
+
+freealut is a free implementation of OpenAL's ALUT standard.
+
+
+INSTALLATION:
+
+Under most OS's, you can simply run:
+
+   ./configure ; make install
+
+...but under Windows (unless you are using the Cygwin
+environment), you'll need to read 'README.win32'
+
+
+SUPPORT:
+
+Please don't email me (Steve Baker) directly - I
+get *WAY* too much mail as it is!  Instead, please
+sign up to the OpenAL user's mailing list.  Instructions
+can be found here:
+
+  http://www.openal.org
+
+
+LICENSING:
+
+These libraries are offered as OpenSource freeware
+under the provisions of the GNU Library Public
+License (LGPL). Those terms and conditions are
+detailed in the file 'LICENSE' in this directory.
+
+
+REQUIREMENTS:
+
+In addition to the libraries that I provide, you
+will also need OpenAL (OpenAL 1.0 or later)
+and a sound card that supports OpenAL.
+
+
+DIRECTORY STRUCTURE:
+
+ALUT expects to be installed in one standard place:
+
+  /usr/lib
+
+...with header files at:
+
+  /usr/include/AL
+
+
+PORTABILITY and DEPENDANCIES:
+
+This library is designed to be easily portable (and
+more importantly so that programs using it can be
+UTTERLY portable).
+
+
+COMPILING/LINKING WITH ALUT
+
+In your source code, add:
+
+     #include <AL/alut.h>
+
+Add this to your link line:
+
+  -lalut -lopenal -lpthread -lm
+
+
+DIRECTORIES
+
+Within this distribution, you will find the following directories:
+
+src        -- The source code for the ALUT library itself.
+doc        -- The ALUT documentation.
+test_suite -- A small suite of test programs to check that ALUT is
+              installed and working correctly.
+examples   -- For application authors, here is a small collection of
+              example programs that you can use to get you started.
+
+------------------------------------------------------------------------
+             Steve Baker.
+             <sjbaker1@airmail.net>
+             http://www.sjbaker.org
+
