@@ -276,7 +276,7 @@ void alutLoadWAVMemory ( const char *buffer,
 
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 
-  *data = _alutPrivateLoadMemoryFromFileImage ( buffer,
+  *data = _alutPrivateLoadMemoryFromFileImage ( (const unsigned char *)buffer,
                                      0x7FFFFFFF,  /* Eeek! */
                                      format,
                                      size,

@@ -90,7 +90,7 @@ void alutExit ()
 
   if ( context != NULL )
   {
-    alcMakeCurrent ( 0 ) ;
+    alcMakeContextCurrent ( NULL ) ;
     alcDestroyContext ( context ) ;
   }
 

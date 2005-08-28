@@ -11,7 +11,7 @@ ALuint alutCreateBufferWaveform ( ALenum waveshape,
                                   float  phase,
                                   float  duration )
 {
-  ALint          albuffer ;
+  ALuint         albuffer ;
   short         *buffer   ;
   ALsizei        length   ;
   int            numLoops ;
@@ -66,7 +66,7 @@ ALuint alutCreateBufferWaveform ( ALenum waveshape,
 }
 
 
-static short _alutHelloWorldSample [] =
+static unsigned short _alutHelloWorldSample [] =
 {
   0x0010,0xffff,0xfff1,0xffd0,0xffe0,0xfff0,0xfff0,0xffff,
   0xffff,0xfff2,0xffe0,0xffd0,0xffe0,0xffd1,0xffd0,0xffd0,
@@ -4161,12 +4161,12 @@ static short _alutHelloWorldSample [] =
 
 ALuint alutCreateBufferHelloWorld ()
 {
-  ALint          albuffer ;
+  ALuint albuffer ;
 
   _alutSanityCheck () ;
 
   alGenBuffers ( 1, &albuffer ) ;
-  alBufferData ( albuffer, AL_FORMAT_MONO16, _alutHelloWorldSample,
+  alBufferData ( albuffer, AL_FORMAT_MONO16, (short *) _alutHelloWorldSample,
                  sizeof(_alutHelloWorldSample), (int)_ALUT_SAMPLE_FREQUENCY ) ;
   return albuffer ;
 }

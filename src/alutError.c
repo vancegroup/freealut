@@ -24,8 +24,8 @@ void _alutSetError ( ALint err )
 
 ALint alutGetError ()
 {
-  _alutSanityCheck () ;
   ALint ret = lastError ;
+  _alutSanityCheck () ;
   lastError = ALUT_ERROR_NO_ERROR ;
   return ret ;
 }
