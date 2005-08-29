@@ -13,5 +13,6 @@ test_memoryloader_SOURCES = test_memoryloader.c
 test_retrostuff_SOURCES   = test_retrostuff.c
 test_errorstuff_SOURCES   = test_errorstuff.c
 
-LDADD = -lalut
+INCLUDES = -I/usr/local/include/
+LDADD = -L/usr/local/lib -lalut -lopenal -lpthread
 

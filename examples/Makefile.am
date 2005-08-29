@@ -2,5 +2,6 @@ bin_PROGRAMS = hello_world
 
 hello_world_SOURCES       = hello_world.c
 
-LDADD = -lalut
+INCLUDE = -I/usr/local/include
+LDADD = -L/usr/local/lib -lalut -lopenal -lpthread
 

@@ -5,6 +5,7 @@ AM_INIT_AUTOMAKE
 AC_PREREQ([2.56])
 AC_CONFIG_SRCDIR([AUTHORS])
 AC_CONFIG_HEADERS([config.h])
+AC_PREFIX_DEFAULT(/usr)
 
 # Compatibility hack for older autoconf versions
 m4_ifdef([AS_HELP_STRING], [], [AC_DEFUN([AS_HELP_STRING], [AC_HELP_STRING($][@)])])
@@ -17,16 +18,24 @@ AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
 AC_SUBST([LIBTOOL_DEPS])
 
+
+if echo $includedir | egrep "AL$" > /dev/null; then
+    echo "includedir is" $includedir "libdir is" $libdir
+else
+    includedir="${includedir}/AL"
+    echo "includedir changed to" $includedir "libdir is" $libdir
+fi
+
 # Checks for libraries.
 AC_PATH_XTRA
 
 if test x"$no_x" = xyes; then
-  GL_LIBS="-lopenal32 -lpthreads"
+  GL_LIBS="-lopenal32 -lpthread"
   LIBXXF86VM=
   VERSION_INFO=
   EXPORT_FLAGS="-DFREEALUT_EXPORTS"
 else
-  AL_LIBS="-lopenal -lpthreads"
+  AL_LIBS="-lopenal -lpthread"
   EXPORT_FLAGS=
 fi
 AC_SUBST([AL_LIBS])
@@ -71,3 +80,4 @@ AC_CONFIG_FILES([Makefile
                  test_suite/Makefile
                  examples/Makefile])
 AC_OUTPUT
+
