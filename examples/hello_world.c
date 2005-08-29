@@ -6,6 +6,8 @@
 /*
   This is the 'Hello World' program from the ALUT
   reference manual.
+
+  Link using '-lalut -lopenal -lpthread'.
 */
 
 int main ( int argc, char **argv )

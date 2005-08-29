@@ -19,6 +19,13 @@ Once ALUT is installed, you may change directory to 'test_suite'
 or 'examples' and run 'make' to build test programs and example
 programs.
 
+INSTALLATION FROM CVS ARCHIVE:
+
+Under most OS's, you can simply run (as 'root'):
+
+   sh autogen.sh
+   ./configure ; make install
+
 SUPPORT:
 
 Please don't email me (Steve Baker) directly - I
