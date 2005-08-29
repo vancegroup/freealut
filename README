@@ -8,13 +8,16 @@ freealut is a free implementation of OpenAL's ALUT standard.
 
 INSTALLATION:
 
-Under most OS's, you can simply run:
+Under most OS's, you can simply run (as 'root'):
 
    ./configure ; make install
 
 ...but under Windows (unless you are using the Cygwin
 environment), you'll need to read 'README.win32'
 
+Once ALUT is installed, you may change directory to 'test_suite'
+or 'examples' and run 'make' to build test programs and example
+programs.
 
 SUPPORT:
 

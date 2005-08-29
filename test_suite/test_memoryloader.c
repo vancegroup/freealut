@@ -12,7 +12,7 @@ int main ( int argc, char **argv )
 {
   ALuint memBuffer, memSource ;
   FILE *fd ;
-  char buffer [ 100000 ] ;
+  unsigned char buffer [ 100000 ] ;
   int  length ;
 
   alutInit ( & argc, argv ) ;

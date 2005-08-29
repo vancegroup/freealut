@@ -19,7 +19,7 @@ int main ( int argc, char **argv )
   ALuint     buffer ;
   ALuint     handle ;
   FILE      *fd     ;
-  unsigned char filebuffer [ 100000 ] ;
+  char       filebuffer [ 100000 ] ;
 
   alutInit ( & argc, argv ) ;
 
