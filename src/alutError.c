@@ -5,7 +5,7 @@
 /* Enable the following line to have all ALUT errors reported as they happen. */
 /* #define ALUT_DEBUG_ENABLED 1 */
 
-ALint lastError = ALUT_ERROR_NO_ERROR ;
+static ALint lastError = ALUT_ERROR_NO_ERROR ;
 
 void _alutSetError ( ALint err )
 {
