@@ -8,7 +8,7 @@ libalut_la_SOURCES = alutError.c     \
                      alutVersion.c   \
                      alutWaveform.c
 
-INCLUDES = -I/usr/local/include
+INCLUDES = -I/usr/local/include -I../../include
 
 LDADD = libalut.la
 
