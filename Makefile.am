@@ -1,5 +1,5 @@
 
-SUBDIRS = src
+SUBDIRS = src include
 
 # EXTRA_DIST = README \
 #              test_suite \

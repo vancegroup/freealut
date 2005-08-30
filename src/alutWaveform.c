@@ -1,7 +1,6 @@
-
-#include "alut.h"
 #include <stdlib.h>
 #include <math.h>
+#include <AL/alut.h>
 
 #define _ALUT_SAMPLE_FREQUENCY  44100.0f
 

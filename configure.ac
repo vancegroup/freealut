@@ -77,6 +77,8 @@ fi
 # Generate output.
 AC_CONFIG_FILES([Makefile
                  src/Makefile
+                 include/Makefile
+                 include/AL/Makefile
                  test_suite/Makefile
                  examples/Makefile])
 AC_OUTPUT

@@ -1,17 +1,10 @@
-
-#include "alut.h"
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
-
-#ifndef NULL
-#define NULL 0L
-#endif
-
+#include <AL/alut.h>
 
 struct SampleAttribs
 {

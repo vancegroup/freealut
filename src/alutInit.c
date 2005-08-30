@@ -1,11 +1,7 @@
-
-#include "alut.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-
-#ifndef NULL
-#define NULL 0L
-#endif
+#include <AL/alut.h>
 
 static ALboolean   alut_is_initialised = AL_FALSE ;
 static ALCdevice  *device  = NULL ;
