@@ -1,7 +1,10 @@
 
 #include <stdlib.h>
-#include <unistd.h>
 #include <AL/alut.h>
+
+#ifndef _WIN32
+#include <unistd.h> // ***** GH needed now?
+#endif
 
 /*
   This is the 'Hello World' program from the ALUT
@@ -12,13 +15,15 @@
 
 int main ( int argc, char **argv )
 {
-  ALuint helloBuffer, helloSource ;
+  ALuint helloBuffer, helloSource, state ;
   alutInit ( & argc, argv ) ;
   helloBuffer = alutCreateBufferHelloWorld () ;
   alGenSources ( 1, &helloSource ) ;
   alSourcei ( helloSource, AL_BUFFER, helloBuffer ) ;
   alSourcePlay ( helloSource ) ;
-  sleep ( 2 ) ;
+  do {
+	alGetSourcei( helloSource, AL_SOURCE_STATE, &state );
+  } while (state == AL_PLAYING);
   alutExit () ;
   exit ( -1 ) ;
 }

@@ -4,6 +4,21 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 
+#ifdef _WIN32
+#ifndef _XBOX
+#define ALUTAPI __declspec(dllexport)
+#define ALUTAPIENTRY __cdecl
+#endif
+#endif
+
+#ifndef ALUTAPI
+#define ALUTAPI extern
+#endif
+
+#ifndef ALUTAPIENTRY
+#define ALUTAPIENTRY
+#endif
+
 #define ALUT_API_MAJOR_VERSION 1
 #define ALUT_API_MINOR_VERSION 0
 
@@ -31,41 +46,42 @@
 extern "C" {
 #endif
 
-extern ALboolean   alutInit                        ( ALint      *argcp,
-                                                     char      **argv ) ;
-extern ALboolean   alutInitWithoutContext          ( ALint      *argcp,
-                                                     char      **argv ) ;
-extern void        alutExit                        () ;
+ALUTAPI ALboolean     ALUTAPIENTRY   alutInit                        ( ALint      *argcp,
+                                                                              char      **argv ) ;
+ALUTAPI ALboolean     ALUTAPIENTRY   alutInitWithoutContext          ( ALint      *argcp,
+                                                                              char      **argv ) ;
+ALUTAPI void          ALUTAPIENTRY   alutExit                        () ;
 
-extern ALint       alutGetError                    () ;
-extern const char *alutGetErrorString              ( ALint       error ) ;
+ALUTAPI ALint         ALUTAPIENTRY   alutGetError                    () ;
+ALUTAPI const char *  ALUTAPIENTRY   alutGetErrorString              ( ALint       error ) ;
 
-extern ALuint      alutCreateBufferFromFile        ( const char *filename ) ;
-extern ALuint      alutCreateBufferFromFileImage   ( const unsigned char *data,
-                                                     ALsizei     length ) ;
-extern void       *alutLoadMemoryFromFile          ( const char *filename,
-                                                     ALenum     *format,
-                                                     ALsizei    *size,
-                                                     float      *freq ) ;
-extern void       *alutLoadMemoryFromFileImage     ( const unsigned char *data,
-                                                     ALsizei     length,
-                                                     ALenum     *format,
-                                                     ALsizei    *size,
-                                                     float      *freq ) ;
-extern const char *alutEnumerateSupportedFileTypes () ;
-extern ALuint      alutCreateBufferHelloWorld      () ;
-extern ALuint      alutCreateBufferWaveform        ( ALenum      waveshape,
-                                                     float       frequency,
-                                                     float       phase,
-                                                     float       duration ) ;
-extern ALint       alutGetMajorVersion             () ;
-extern ALint       alutGetMinorVersion             () ;
+ALUTAPI ALuint        ALUTAPIENTRY   alutCreateBufferFromFile        ( const char *filename ) ;
+ALUTAPI ALuint        ALUTAPIENTRY   alutCreateBufferFromFileImage   ( const unsigned char *data,
+                                                                              ALsizei     length ) ;
+ALUTAPI void       *  ALUTAPIENTRY   alutLoadMemoryFromFile          ( const char *filename,
+                                                                              ALenum     *format,
+                                                                              ALsizei    *size,
+                                                                              float      *freq ) ;
+ALUTAPI void       *  ALUTAPIENTRY   alutLoadMemoryFromFileImage     ( const unsigned char *data,
+                                                                              ALsizei     length,
+                                                                              ALenum     *format,
+                                                                              ALsizei    *size,
+                                                                              float      *freq ) ;
+ALUTAPI const char *  ALUTAPIENTRY   alutEnumerateSupportedFileTypes () ;
+ALUTAPI ALuint        ALUTAPIENTRY   alutCreateBufferHelloWorld      () ;
+ALUTAPI ALuint        ALUTAPIENTRY   alutCreateBufferWaveform        ( ALenum      waveshape,
+                                                                              float       frequency,
+                                                                              float       phase,
+                                                                              float       duration ) ;
+ALUTAPI ALint         ALUTAPIENTRY   alutGetMajorVersion             () ;
+ALUTAPI ALint         ALUTAPIENTRY   alutGetMinorVersion             () ;
 
 /* Private ALUT functions - not for general use */
 
-extern void  _alutSetError ( ALint errorcode ) ;
-extern void  _alutSanityCheck () ;
+ALUTAPI void  ALUTAPIENTRY _alutSetError ( ALint errorcode ) ;
+ALUTAPI void  ALUTAPIENTRY _alutSanityCheck () ;
 
+#ifndef _WIN32
 /* Nasty Compatibility stuff */
 
 /* WARNING: THESE FUNCTIONS ARE STRONGLY DEPRECATED */
@@ -88,6 +104,7 @@ extern void alutUnloadWAV ( ALenum format,
                             ALvoid *data,
                             ALsizei size,
                             ALsizei freq ) ;
+#endif // ifndef _WIN32
 
 #ifdef __cplusplus
 } ;

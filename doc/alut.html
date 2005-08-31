@@ -51,7 +51,9 @@ Traditionally, here is 'Hello World' in ALUT - without error checking.
       alGenSources ( 1, &amp;helloSource ) ;
       alSourcei ( helloSource, AL_BUFFER, helloBuffer ) ;
       alSourcePlay ( helloSource ) ;
-      sleep ( 3 ) ;
+      do {
+	alGetSourcei( helloSource, AL_SOURCE_STATE, &state );
+      } while (state == AL_PLAYING);
       alutExit () ;
       exit ( -1 ) ;
     }

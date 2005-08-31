@@ -124,7 +124,7 @@ ALuint alutCreateBufferFromFile ( const char *filename )
 }
 
 
-ALuint alutCreateBufferFromFileImage ( const unsigned char *data, int length )
+ALuint alutCreateBufferFromFileImage ( const unsigned char *data, ALsizei length )
 {
   ALuint albuffer ;
   struct SampleAttribs attr ;
@@ -304,7 +304,11 @@ static void swap_int ( int *i )
 
 static ALboolean _alutStrEqual ( const char *a, const char *b )
 {
+#ifdef _WIN32 // ***** GH -- are these the same?
+  return strcmp(a, b) == 0 ;
+#else
   return strcasecmp ( a, b ) == 0 ;
+#endif
 }
 
 

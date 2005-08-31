@@ -4,6 +4,10 @@
 
 #define _ALUT_SAMPLE_FREQUENCY  44100.0f
 
+#ifndef M_PI
+#define M_PI 3.1415926535
+#endif
+
 
 ALuint alutCreateBufferWaveform ( ALenum waveshape,
                                   float  frequency,
@@ -45,7 +49,11 @@ ALuint alutCreateBufferWaveform ( ALenum waveshape,
         buffer [ i ] = (short) ( (pos - 0.5f) * 65535.0f  ) ;
         break ;
       case ALUT_WAVEFORM_WHITENOISE :
+#ifdef _WIN32
+		buffer [ i ] = (short) ( 1 ) ; // ***** GH FIXME:  need a Windodws random...
+#else
         buffer [ i ] = (short) ( random() % 65536 - 32768 ) ;
+#endif
         break ;
       case ALUT_WAVEFORM_IMPULSE :
         buffer [ i ] = (short) ( (last_pos > pos) ? 32767 : 0 ) ;
