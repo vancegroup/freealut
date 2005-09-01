@@ -1,10 +1,4 @@
-
 SUBDIRS = src include
 
-# EXTRA_DIST = README \
-#              test_suite \
-#              examples \
-#              README.win32 README.mac \
-#              autogen.sh missing \
-#              alut.dsp alut.dsw
+EXTRA_DIST = autogen.sh examples test_suite win_build
 

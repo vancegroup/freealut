@@ -1,7 +1,8 @@
 bin_PROGRAMS = hello_world
 
-hello_world_SOURCES       = hello_world.c
+hello_world_SOURCES = hello_world.c
 
-INCLUDE = -I/usr/local/include
-LDADD = -L/usr/local/lib -lalut -lopenal -lpthread
+INCLUDES = -I$(top_srcdir)/include
 
+# ToDo: -lpthread should be detected via autoconf magic
+LDADD = ../src/lib@LIBRARY@.la -lopenal -lpthread

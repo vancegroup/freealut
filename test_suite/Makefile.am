@@ -13,7 +13,8 @@ test_memoryloader_SOURCES = test_memoryloader.c
 test_retrostuff_SOURCES   = test_retrostuff.c
 test_errorstuff_SOURCES   = test_errorstuff.c
 
-INCLUDES = -I/usr/local/include/
-LDADD = -L/usr/local/lib -lalut -lopenal -lpthread
+INCLUDES = -I$(top_srcdir)/include
 
+# ToDo: -lpthread should be detected via autoconf magic
+LDADD = ../src/lib@LIBRARY@.la -lopenal -lpthread
 
