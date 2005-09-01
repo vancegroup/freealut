@@ -11,6 +11,7 @@
     <h1>THE OPENAL UTILITY TOOLKIT (ALUT).</h1>
     <h2>Reference Manual Version 1.0.0.</h2>
     <h2>First Release by Steve Baker - August 24th 2005.</h2>
+    <h2>Second Release by Sven Panne - September 1st 2005.</h2>
 
     <h1>Introduction</h1>
 
@@ -20,7 +21,7 @@
     <h2>Licensing</h2>
 
     <p>Some previous versions of ALUT were released under the BSD license -
-    others under LGPL. This version will be released exclusively under LGPL</p>
+    others under LGPL. This version will be released exclusively under LGPL.</p>
 
     <h2>Some History</h2>
 
@@ -58,21 +59,22 @@
     checking.</p>
 
 <pre class="programlisting">
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
 #include &lt;AL/alut.h&gt;
 
-int main ( int argc, char **argv )
+int
+main (int argc, char **argv)
 {
-  ALuint helloBuffer, helloSource ;
-  alutInit ( &amp; argc, argv ) ;
-  helloBuffer = alutCreateBufferHelloWorld () ;
-  alGenSources ( 1, &amp;helloSource ) ;
-  alSourcei ( helloSource, AL_BUFFER, helloBuffer ) ;
-  alSourcePlay ( helloSource ) ;
-  do {
-    alGetSourcei( helloSource, AL_SOURCE_STATE, &amp;state );
-  } while (state == AL_PLAYING);
-  alutExit () ;
-  exit ( -1 ) ;
+  ALuint helloBuffer, helloSource;
+  alutInit (&amp;argc, argv);
+  helloBuffer = alutCreateBufferHelloWorld ();
+  alGenSources (1, &amp;helloSource);
+  alSourcei (helloSource, AL_BUFFER, helloBuffer);
+  alSourcePlay (helloSource);
+  sleep (3);
+  alutExit ();
+  return EXIT_SUCCESS;
 }
 </pre>
 
@@ -106,20 +108,16 @@ alut.dll     -- Windows.
 
     <h1>The ALUT API.</h1>
 
-    <h2>Error Handling</h2>
+    <h2>Initialization / Exit</h2>
 
     <h3>alutInit</h3>
 
-    <p>The first call to ALUT must always be either:</p>
+    <p>The first call to ALUT must always be one of the following:</p>
 
 <pre class="programlisting">
-ALboolean alutInit( ALint* argcp, char** argv ) ;
-</pre>
+ALboolean alutInit (ALint *argcp, char **argv);
 
-    <p>...or...</p>
-
-<pre class="programlisting">
-ALboolean alutInitWithoutContext ( ALint* argcp, char** argv ) ;
+ALboolean alutInitWithoutContext (ALint *argcp, char **argv);
 </pre>
 
     <p>Both calls initialise the ALUT internals - alutInit() also creates a
@@ -141,9 +139,10 @@ ALboolean alutInitWithoutContext ( ALint* argcp, char** argv ) ;
     <p>e.g.</p>
 
 <pre class="programlisting">
-int main ( int argc, char **argv )
+int
+main (int argc, char **argv)
 {
-  alutInit ( &amp; argc, argv ) ;
+  alutInit (&amp;argc, argv);
 </pre>
 
     <p>Precisely which (if any) command-line options are accepted - and what
@@ -163,7 +162,7 @@ int main ( int argc, char **argv )
     in order to destroy the audio context it created with alutInit:</p>
 
 <pre class="programlisting">
-void alutExit () ;
+void alutExit ();
 </pre>
 
     <p>This closes any OpenAL device/context that ALUT may have created in
@@ -198,7 +197,7 @@ void alutExit () ;
     that may be retrieved with:</p>
 
 <pre class="programlisting">
-ALint alutGetError () ;
+ALint alutGetError ();
 </pre>
 
     <p>A number of tokens named ALUT_ERROR_xxxxx are defined in alut.h, the list
@@ -229,7 +228,7 @@ ALint alutGetError () ;
     <p>There is a second routine:</p>
 
 <pre class="programlisting">
-const char *alutGetErrorString ( ALint error ) ;
+const char *alutGetErrorString (ALint error);
 </pre>
 
     <p>...which converts an error code into a human-readable description. The
@@ -241,24 +240,21 @@ const char *alutGetErrorString ( ALint error ) ;
     <p>A typical ALUT program will look like this:</p>
 
 <pre class="programlisting">
-int main ( int argc, char **argv )
+int
+main (int argc, char **argv)
 {
-  if ( ! alutInit ( &amp; argc, argv ) )
-  {
-    ALint error = alutGetError () ;
+  if (!alutInit (&amp;argc, argv))
+    {
+      ALint error = alutGetError ();
+      fprintf (stderr, "%s: %s (%d)\n",
+	       argv[0], alutGetErrorString (error), error);
+      exit (EXIT_FAILURE);
+    }
 
-    fprintf ( stderr, "%s: %s (%d)\n",
-              argv[0],
-              alutGetErrorString ( error ),
-              error ) ;
+  /* ...play audio for a while... */
 
-    exit ( -1 ) ;
-  }
-
-  ...play audio for a while... ;
-
-  alutExit () ;
-  exit ( -1 ) ;
+  alutExit ();
+  exit (EXIT_SUCCESS);
 }
 </pre>
 
@@ -273,8 +269,9 @@ int main ( int argc, char **argv )
     there is a single entrypoint for loading files of all formats:</p>
 
 <pre class="programlisting">
-ALuint alutCreateBufferFromFile      ( const char *filename ) ;
-ALuint alutCreateBufferFromFileImage ( const unsigned char *data, ALsizei length ) ;
+ALuint alutCreateBufferFromFile (const char *filename);
+
+ALuint alutCreateBufferFromFileImage (const unsigned char *data, ALsizei length);
 </pre>
 
     <p>alutCreateBufferFromFile opens the specified filename, reads enough of
@@ -292,14 +289,16 @@ ALuint alutCreateBufferFromFileImage ( const unsigned char *data, ALsizei length
     <p>For applications that require a more hands-on approach,</p>
 
 <pre class="programlisting">
-void *alutLoadMemoryFromFile ( const char *filename,
-                          ALenum  *format,
-                          ALsizei *size,
-                          float   *freq ) ;
-void *alutLoadMemoryFromFileImage ( const unsigned char *data, ALsizei length,
-                          ALenum  *format,
-                          ALsizei *size,
-                          float   *freq ) ;
+void *alutLoadMemoryFromFile (const char *filename,
+                              ALenum *format,
+                              ALsizei *size,
+                              float *freq);
+
+void *alutLoadMemoryFromFileImage (const unsigned char *data,
+                                   ALsizei length,
+                                   ALenum *format,
+                                   ALsizei *size,
+                                   float *freq);
 </pre>
 
     <p>These routines load data from disk or memory as with the
@@ -321,7 +320,7 @@ void *alutLoadMemoryFromFileImage ( const unsigned char *data, ALsizei length,
     (suitable for passing to a directory browser popup) using:</p>
 
 <pre class="programlisting">
-const char *alutEnumerateSupportedFileTypes () ;
+const char *alutEnumerateSupportedFileTypes ();
 </pre>
 
     <p>This will return something like "*.wav, *.ogg, *.au".</p>
@@ -350,21 +349,21 @@ const char *alutEnumerateSupportedFileTypes () ;
     </ol>
 
 <pre class="programlisting">
-void alutLoadWAVFile ( const char *filename,
-                          ALenum *format,
-                          void **data,
-                          ALsizei *size,
-                          ALsizei *freq,
-                          ALboolean *loop ) ;
+void alutLoadWAVFile (const char *filename,
+                      ALenum *format,
+                      void **data,
+                      ALsizei *size,
+                      ALsizei *freq,
+                      ALboolean *loop);
 
-void alutLoadWAVMemory ( const char *buffer,
-                          ALenum *format,
-                          void **data,
-                          ALsizei *size,
-                          ALsizei *freq,
-                          ALboolean *loop ) ;
+void alutLoadWAVMemory (const char *buffer,
+                        ALenum *format,
+                        void **data,
+                        ALsizei *size,
+                        ALsizei *freq,
+                        ALboolean *loop);
 
-void alutUnloadWAV ( ALenum format ALvoid *data, ALsizei size, ALsizei freq ) ;
+void alutUnloadWAV (ALenum format ALvoid *data, ALsizei size, ALsizei freq);
 </pre>
 
 
@@ -382,11 +381,12 @@ void alutUnloadWAV ( ALenum format ALvoid *data, ALsizei size, ALsizei freq ) ;
     <p>The following functions return an alBuffer handle:</p>
 
 <pre class="programlisting">
-ALuint alutCreateBufferHelloWorld () ;
-ALuint alutCreateBufferWaveform   ( ALenum waveshape,
-                                    float  frequency,
-                                    float  phase,
-                                    float  duration ) ;
+ALuint alutCreateBufferHelloWorld ();
+
+ALuint alutCreateBufferWaveform   (ALenum waveshape,
+                                   float frequency,
+                                   float phase,
+                                   float duration);
 </pre>
 
     <p>alutCreateBufferHelloWorld returns the handle of an alBuffer containing
@@ -417,6 +417,7 @@ ALuint alutCreateBufferWaveform   ( ALenum waveshape,
 
 <pre class="programlisting">
 #define ALUT_API_MAJOR_VERSION 1
+
 #define ALUT_API_MINOR_VERSION 0
 </pre>
 
@@ -426,8 +427,9 @@ ALuint alutCreateBufferWaveform   ( ALenum waveshape,
     <p>The ALUT library contains:</p>
 
 <pre class="programlisting">
-ALint alutGetMajorVersion () ;
-ALint alutGetMinorVersion () ;
+ALint alutGetMajorVersion ();
+
+ALint alutGetMinorVersion ();
 </pre>
 
     <p>If the ALUT API gets added to or changed in future releases, we will
@@ -438,11 +440,11 @@ ALint alutGetMinorVersion () ;
 
 <pre class="programlisting">
 #ifdef ALUT_API_MAJOR_VERSION
-if ( alutGetMajorVersion () != ALUT_API_MAJOR_VERSION ||
-     alutGetMinorVersion () != ALUT_API_MINOR_VERSION )
-  ...oh-oh!  The ALUT header and the ALUT library are different revisions...
+if (alutGetMajorVersion () != ALUT_API_MAJOR_VERSION ||
+    alutGetMinorVersion () != ALUT_API_MINOR_VERSION)
+  /* Oh-oh!  The ALUT header and the ALUT library are different revisions... */
 #else
-  ...oh-oh!  We're linking against an ALUT 0.x.x header file...
+  /* Oh-oh!  We're linking against an ALUT 0.x.x header file... */
 #endif
 </pre>
 

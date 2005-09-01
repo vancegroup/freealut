@@ -1,5 +1,9 @@
 2005-09-01  Sven Panne  <sven.panne@aedion.de>
 
+	* doc/alut.html: Added myself. Fixed a few typos and synched
+	examples with actual sources. Use code formatting conforming to
+	the GNU coding standards.
+
 	* AUTHORS: Added myself.
 
 	* doc/alut.html: Converted spec to XHTML + CSS, no changes to the
