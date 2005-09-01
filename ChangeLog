@@ -1,5 +1,32 @@
 2005-09-01  Sven Panne  <sven.panne@aedion.de>
 
+	* doc/alut.html, include/AL/alut.h, src/alutError.c,
+	src/alutInit.c, src/alutLoader.c, test_suite/test_memoryloader.c,
+	test_suite/test_retrostuff.c: A bunch of API cleanups:
+
+	Changed the first parameter of alutInit and alutInitWithoutContext
+	to int*, not ALint*. argc is an int, after all.
+
+	Changed return type of alutGetError to ALenum, this is more
+	consistent with alGetError.
+
+	Changed the argument of alutGetErrorString to ALenum for the same
+	reason.
+
+	Changed the first parameter of alutLoadMemoryFromFileImage and
+	alutCreateBufferFromFileImage to "const ALvoid*", this is more
+	convenient and more consistent with alBufferData.
+
+	Changed the first parameter of alutLoadWAVFile and
+	alutLoadWAVMemory back to ALbyte*, like it was before.
+
+	Changed the frequency parameter of alutLoadMemoryFromFile and
+	alutLoadMemoryFromFileImage to an ALuint*, this is more consistent
+	with the way AL handles frequencies.
+
+	Changed the return type of alutLoadMemoryFromFile and
+	alutLoadMemoryFromFileImage to an ALvoid* for more consistency.
+
 	* doc/alut.html: Added myself. Fixed a few typos and synched
 	examples with actual sources. Use code formatting conforming to
 	the GNU coding standards.

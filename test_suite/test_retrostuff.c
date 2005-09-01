@@ -19,7 +19,7 @@ int main ( int argc, char **argv )
   ALuint     buffer ;
   ALuint     handle ;
   FILE      *fd     ;
-  char       filebuffer [ 100000 ] ;
+  ALbyte    filebuffer [ 100000 ] ;
 
   alutInit ( & argc, argv ) ;
 
@@ -31,7 +31,7 @@ int main ( int argc, char **argv )
     write ALUT programs!!
   */
 
-  alutLoadWAVFile ( "file1.wav", &format, &data, &size, &freq, &loop ) ;
+  alutLoadWAVFile ( (ALbyte*)"file1.wav", &format, &data, &size, &freq, &loop ) ;
   alGenBuffers ( 1, & buffer ) ;
   alBufferData ( buffer, format, data, size, freq ) ;
   free ( data ) ;

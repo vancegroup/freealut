@@ -51,17 +51,17 @@ extern "C" {
 #define ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE    0x20B
 #define ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE   0x20C
 
-ALUTAPI ALboolean ALUTAPIENTRY alutInit (ALint *argcp, char **argv);
-ALUTAPI ALboolean ALUTAPIENTRY alutInitWithoutContext (ALint *argcp, char **argv);
+ALUTAPI ALboolean ALUTAPIENTRY alutInit (int *argcp, char **argv);
+ALUTAPI ALboolean ALUTAPIENTRY alutInitWithoutContext (int *argcp, char **argv);
 ALUTAPI void ALUTAPIENTRY alutExit ();
 
-ALUTAPI ALint ALUTAPIENTRY alutGetError ();
-ALUTAPI const char * ALUTAPIENTRY alutGetErrorString (ALint error);
+ALUTAPI ALenum ALUTAPIENTRY alutGetError ();
+ALUTAPI const char * ALUTAPIENTRY alutGetErrorString (ALenum error);
 
 ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferFromFile (const char *filename);
-ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferFromFileImage (const unsigned char *data, ALsizei length);
-ALUTAPI void * ALUTAPIENTRY alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size, float *freq);
-ALUTAPI void * ALUTAPIENTRY alutLoadMemoryFromFileImage (const unsigned char *data, ALsizei length, ALenum *format, ALsizei *size, float *freq);
+ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length);
+ALUTAPI void * ALUTAPIENTRY alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size, ALuint *freq);
+ALUTAPI void * ALUTAPIENTRY alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length, ALenum *format, ALsizei *size, ALuint *freq);
 ALUTAPI const char * ALUTAPIENTRY alutEnumerateSupportedFileTypes ();
 
 ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferHelloWorld ();
@@ -78,8 +78,8 @@ ALUTAPI void ALUTAPIENTRY _alutSanityCheck ();
 #if !defined(_WIN32)
 /* Nasty Compatibility stuff, WARNING: THESE FUNCTIONS ARE STRONGLY DEPRECATED */
 
-ALUTAPI void ALUTAPIENTRY alutLoadWAVFile (const char *filename, ALenum *format, void **data, ALsizei *size, ALsizei *freq, ALboolean *loop);
-ALUTAPI void ALUTAPIENTRY alutLoadWAVMemory (const char *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *freq, ALboolean *loop);
+ALUTAPI void ALUTAPIENTRY alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size, ALsizei *freq, ALboolean *loop);
+ALUTAPI void ALUTAPIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *freq, ALboolean *loop);
 ALUTAPI void ALUTAPIENTRY alutUnloadWAV (ALenum format, ALvoid *data, ALsizei size, ALsizei freq);
 
 #endif /* not _WIN32 */

@@ -12,7 +12,7 @@ struct SampleAttribs
   unsigned char *buffer  ;
   int            bps     ;
   int            stereo  ;
-  int            rate    ;
+  int            rate    ; /* ToDo: This should probably be an ALuint */
   char          *comment ;
 } ;
 
@@ -29,7 +29,7 @@ struct DataGetter
 
   /* For memory: length, data pointer and position in data */
 
-  const void *data  ;
+  const ALvoid *data  ;
   size_t   next     ;
 } ;
 
@@ -124,7 +124,7 @@ ALuint alutCreateBufferFromFile ( const char *filename )
 }
 
 
-ALuint alutCreateBufferFromFileImage ( const unsigned char *data, ALsizei length )
+ALuint alutCreateBufferFromFileImage ( const ALvoid *data, ALsizei length )
 {
   ALuint albuffer ;
   struct SampleAttribs attr ;
@@ -155,7 +155,7 @@ ALuint alutCreateBufferFromFileImage ( const unsigned char *data, ALsizei length
 static void *_alutPrivateLoadMemoryFromFile ( const char *filename,
                                ALenum  *format,
                                ALsizei *size,
-                               float   *freq )
+                               ALuint *freq )
 {
   struct SampleAttribs attr        ;
   struct DataGetter    dg          ;
@@ -168,7 +168,7 @@ static void *_alutPrivateLoadMemoryFromFile ( const char *filename,
   if ( stat ( filename, & stat_buf ) != 0 )
   {
     _alutSetError ( ALUT_ERROR_FILE_NOT_FOUND ) ;
-    return 0 ;
+    return NULL ;
   }
 
   fd = fopen ( filename, "rb" ) ;
@@ -176,7 +176,7 @@ static void *_alutPrivateLoadMemoryFromFile ( const char *filename,
   if ( fd == NULL )
   {
     _alutSetError ( ALUT_ERROR_FILE_NOT_READABLE ) ;
-    return 0 ;
+    return NULL ;
   }
 
   dg . fd     = fd               ;
@@ -190,17 +190,17 @@ static void *_alutPrivateLoadMemoryFromFile ( const char *filename,
   if ( size   != NULL ) *size   = attr.length ;
   if ( format != NULL ) *format = (attr.bps == 8) ? AL_FORMAT_MONO8 :
                                                     AL_FORMAT_MONO16 ;
-  if ( freq   != NULL ) *freq   = (float) attr.rate ;
+  if ( freq   != NULL ) *freq   = (ALuint) attr.rate ;
 
   return attr.buffer ;
 }
 
 
-static void *_alutPrivateLoadMemoryFromFileImage ( const unsigned char *data,
+static void *_alutPrivateLoadMemoryFromFileImage ( const ALvoid *data,
                                         ALsizei  length,
                                         ALenum  *format,
                                         ALsizei *size,
-                                        float   *freq )
+                                        ALuint *freq )
 {
   struct SampleAttribs attr ;
   struct DataGetter    dg   ;
@@ -219,7 +219,7 @@ static void *_alutPrivateLoadMemoryFromFileImage ( const unsigned char *data,
   if ( size   != NULL ) *size   = attr.length ;
   if ( format != NULL ) *format = (attr.bps == 8) ? AL_FORMAT_MONO8 :
                                                     AL_FORMAT_MONO16 ;
-  if ( freq   != NULL ) *freq   = (float) attr.rate ;
+  if ( freq   != NULL ) *freq   = (ALuint) attr.rate ;
 
   return attr.buffer ;
 }
@@ -237,44 +237,44 @@ const char *alutEnumerateSupportedFileTypes ()
   Yukky backwards compatibility crap.
 */
 
-void alutLoadWAVFile ( const char *filename,
+void alutLoadWAVFile ( ALbyte *filename,
                           ALenum *format,
                           void **data,
                           ALsizei *size,
                           ALsizei *freq,
                           ALboolean *loop )
 {
-  float frequency ;
+  ALuint frequency ;
 
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 
   *data = _alutPrivateLoadMemoryFromFile ( filename,
                                    format,
                                    size,
-                                   & frequency ) ;
+                                   &frequency ) ;
 
-  if ( freq ) *freq = (ALuint) frequency ;
+  if ( freq ) *freq = (ALsizei) frequency ;
   if ( loop ) *loop = AL_FALSE ;
 }
 
 
-void alutLoadWAVMemory ( const char *buffer,
+void alutLoadWAVMemory ( ALbyte *buffer,
                           ALenum *format,
                           void **data,
                           ALsizei *size,
                           ALsizei *freq,
                           ALboolean *loop )
 {
-  float frequency ;
+  ALuint frequency ;
 
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 
-  *data = _alutPrivateLoadMemoryFromFileImage ( (const unsigned char *)buffer,
+  *data = _alutPrivateLoadMemoryFromFileImage ( (const ALvoid *)buffer,
                                      0x7FFFFFFF,  /* Eeek! */
                                      format,
                                      size,
-                                     & frequency ) ;
-  if ( freq ) *freq = (ALuint) frequency ;
+                                     &frequency ) ;
+  if ( freq ) *freq = (ALsizei) frequency ;
   if ( loop ) *loop = AL_FALSE ;
 }
 
@@ -550,21 +550,21 @@ static ALboolean _alutLoadRawFile ( struct DataGetter *dg, struct SampleAttribs 
 }
 
 
-void *alutLoadMemoryFromFile ( const char *filename,
-                               ALenum  *format,
-                               ALsizei *size,
-                               float   *freq )
+ALvoid *alutLoadMemoryFromFile ( const char *filename,
+                                 ALenum  *format,
+                                 ALsizei *size,
+                                 ALuint *freq )
 {
   _alutSanityCheck () ;
   return _alutPrivateLoadMemoryFromFile ( filename, format, size, freq ) ;
 }
 
 
-void *alutLoadMemoryFromFileImage ( const unsigned char *data,
-                                    ALsizei  length,
-                                    ALenum  *format,
-                                    ALsizei *size,
-                                    float   *freq )
+ALvoid *alutLoadMemoryFromFileImage ( const ALvoid *data,
+                                      ALsizei  length,
+                                      ALenum  *format,
+                                      ALsizei *size,
+                                      ALuint *freq )
 {
   _alutSanityCheck () ;
   return _alutPrivateLoadMemoryFromFileImage ( data, length,

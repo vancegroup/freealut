@@ -26,7 +26,7 @@ void _alutSanityCheck ()
 }
 
 
-ALboolean alutInit ( ALint *argcp, char **argv )
+ALboolean alutInit ( int *argcp, char **argv )
 {
   if ( alut_is_initialised || device != NULL || context != NULL )
   {
@@ -61,7 +61,7 @@ ALboolean alutInit ( ALint *argcp, char **argv )
 }
 
 
-ALboolean alutInitWithoutContext ( ALint *argcp, char **argv )
+ALboolean alutInitWithoutContext ( int *argcp, char **argv )
 {
   if ( alut_is_initialised || device != NULL || context != NULL )
   {

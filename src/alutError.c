@@ -5,9 +5,9 @@
 /* Enable the following line to have all ALUT errors reported as they happen. */
 /* #define ALUT_DEBUG_ENABLED 1 */
 
-static ALint lastError = ALUT_ERROR_NO_ERROR ;
+static ALenum lastError = ALUT_ERROR_NO_ERROR ;
 
-void _alutSetError ( ALint err )
+void _alutSetError ( ALenum err )
 {
 #ifdef ALUT_DEBUG_ENABLED
   fprintf ( stderr, "DEBUG: ALUT ERROR - %s\n",
@@ -19,7 +19,7 @@ void _alutSetError ( ALint err )
 }
 
 
-ALint alutGetError ()
+ALenum alutGetError ()
 {
   ALint ret = lastError ;
   _alutSanityCheck () ;
@@ -28,7 +28,7 @@ ALint alutGetError ()
 }
 
 
-const char *alutGetErrorString ( ALint error )
+const char *alutGetErrorString ( ALenum error )
 {
   _alutSanityCheck () ;
   switch ( error )

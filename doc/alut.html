@@ -115,9 +115,9 @@ alut.dll     -- Windows.
     <p>The first call to ALUT must always be one of the following:</p>
 
 <pre class="programlisting">
-ALboolean alutInit (ALint *argcp, char **argv);
+ALboolean alutInit (int *argcp, char **argv);
 
-ALboolean alutInitWithoutContext (ALint *argcp, char **argv);
+ALboolean alutInitWithoutContext (int *argcp, char **argv);
 </pre>
 
     <p>Both calls initialise the ALUT internals - alutInit() also creates a
@@ -197,7 +197,7 @@ void alutExit ();
     that may be retrieved with:</p>
 
 <pre class="programlisting">
-ALint alutGetError ();
+ALenum alutGetError ();
 </pre>
 
     <p>A number of tokens named ALUT_ERROR_xxxxx are defined in alut.h, the list
@@ -228,7 +228,7 @@ ALint alutGetError ();
     <p>There is a second routine:</p>
 
 <pre class="programlisting">
-const char *alutGetErrorString (ALint error);
+const char *alutGetErrorString (ALenum error);
 </pre>
 
     <p>...which converts an error code into a human-readable description. The
@@ -245,9 +245,8 @@ main (int argc, char **argv)
 {
   if (!alutInit (&amp;argc, argv))
     {
-      ALint error = alutGetError ();
-      fprintf (stderr, "%s: %s (%d)\n",
-	       argv[0], alutGetErrorString (error), error);
+      ALenum error = alutGetError ();
+      fprintf (stderr, "%s: %s\n", argv[0], alutGetErrorString (error));
       exit (EXIT_FAILURE);
     }
 
@@ -271,7 +270,7 @@ main (int argc, char **argv)
 <pre class="programlisting">
 ALuint alutCreateBufferFromFile (const char *filename);
 
-ALuint alutCreateBufferFromFileImage (const unsigned char *data, ALsizei length);
+ALuint alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length);
 </pre>
 
     <p>alutCreateBufferFromFile opens the specified filename, reads enough of
@@ -289,16 +288,16 @@ ALuint alutCreateBufferFromFileImage (const unsigned char *data, ALsizei length)
     <p>For applications that require a more hands-on approach,</p>
 
 <pre class="programlisting">
-void *alutLoadMemoryFromFile (const char *filename,
-                              ALenum *format,
-                              ALsizei *size,
-                              float *freq);
+ALvoid *alutLoadMemoryFromFile (const char *filename,
+                                ALenum *format,
+                                ALsizei *size,
+                                ALuint *freq);
 
-void *alutLoadMemoryFromFileImage (const unsigned char *data,
-                                   ALsizei length,
-                                   ALenum *format,
-                                   ALsizei *size,
-                                   float *freq);
+ALvoid *alutLoadMemoryFromFileImage (const ALvoid *data,
+                                     ALsizei length,
+                                     ALenum *format,
+                                     ALsizei *size,
+                                     ALuint *freq);
 </pre>
 
     <p>These routines load data from disk or memory as with the
@@ -309,10 +308,10 @@ void *alutLoadMemoryFromFileImage (const unsigned char *data,
     <p>Additionally, if any of the format, size, freq or loop parameters are
     non-NULL, they will be populated with the format of the file (one of the
     standard AL_ tokens will be returned - suitable for passing into
-    alBufferData), the size or the block in bytes and the frequency at which the
-    sample was recorded. The returned result will be the address of the data in
-    memory or NULL in the event of an error. alutGetError will (as usual)
-    provide more details.</p>
+    alBufferData), the size or the block in bytes and the frequency in Hertz at
+    which the sample was recorded. The returned result will be the address of
+    the data in memory or NULL in the event of an error. alutGetError will (as
+    usual) provide more details.</p>
 
     <h3>alutEnumerateSupportedFileTypes</h3>
 
@@ -349,14 +348,14 @@ const char *alutEnumerateSupportedFileTypes ();
     </ol>
 
 <pre class="programlisting">
-void alutLoadWAVFile (const char *filename,
+void alutLoadWAVFile (ALbyte *filename,
                       ALenum *format,
                       void **data,
                       ALsizei *size,
                       ALsizei *freq,
                       ALboolean *loop);
 
-void alutLoadWAVMemory (const char *buffer,
+void alutLoadWAVMemory (ALbyte *buffer,
                         ALenum *format,
                         void **data,
                         ALsizei *size,
