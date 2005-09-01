@@ -1,5 +1,7 @@
 2005-09-01  Sven Panne  <sven.panne@aedion.de>
 
+	* AUTHORS: Added myself.
+
 	* doc/alut.html: Converted spec to XHTML + CSS, no changes to the
 	content itself. This is a first step towards using DocBook, which
 	is far more flexible regarding the possible output formats
