@@ -1,5 +1,14 @@
 2005-09-01  Sven Panne  <sven.panne@aedion.de>
 
+	* doc/alut.html: Converted spec to XHTML + CSS, no changes to the
+	content itself. This is a first step towards using DocBook, which
+	is far more flexible regarding the possible output formats
+	(XHTML, PDF, PS, ...).
+
+	* doc/alut.css: Added.
+
+	* doc/noise.gif: Removed.
+
 	* include/AL/alut.h: Synched platform-specific parts with the
 	AL/ALC headers. Reformatted according to GNU standards.
 
