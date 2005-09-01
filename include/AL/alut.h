@@ -60,8 +60,8 @@ ALUTAPI const char * ALUTAPIENTRY alutGetErrorString (ALenum error);
 
 ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferFromFile (const char *filename);
 ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length);
-ALUTAPI void * ALUTAPIENTRY alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size, ALuint *freq);
-ALUTAPI void * ALUTAPIENTRY alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length, ALenum *format, ALsizei *size, ALuint *freq);
+ALUTAPI ALvoid * ALUTAPIENTRY alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size, ALuint *freq);
+ALUTAPI ALvoid * ALUTAPIENTRY alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length, ALenum *format, ALsizei *size, ALuint *freq);
 ALUTAPI const char * ALUTAPIENTRY alutEnumerateSupportedFileTypes ();
 
 ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferHelloWorld ();
