@@ -50,7 +50,7 @@ ALuint alutCreateBufferWaveform ( ALenum waveshape,
         break ;
       case ALUT_WAVEFORM_WHITENOISE :
 #ifdef _WIN32
-		buffer [ i ] = (short) ( 1 ) ; // ***** GH FIXME:  need a Windodws random...
+        buffer [ i ] = (short) ( rand() % 65536 - 32768 ) ;
 #else
         buffer [ i ] = (short) ( random() % 65536 - 32768 ) ;
 #endif

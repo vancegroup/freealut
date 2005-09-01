@@ -13,6 +13,7 @@ test_memoryloader_SOURCES = test_memoryloader.c
 test_retrostuff_SOURCES   = test_retrostuff.c
 test_errorstuff_SOURCES   = test_errorstuff.c
 
-INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/../include
-LDADD = ../src/lib@LIBRARY@.la ../../linux/src/libopenal.so -lpthread
+INCLUDES = -I/usr/local/include/
+LDADD = -L/usr/local/lib -lalut -lopenal -lpthread
+
 

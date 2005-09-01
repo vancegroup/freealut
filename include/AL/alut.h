@@ -104,7 +104,7 @@ extern void alutUnloadWAV ( ALenum format,
                             ALvoid *data,
                             ALsizei size,
                             ALsizei freq ) ;
-#endif // ifndef _WIN32
+#endif /* ifndef _WIN32 */
 
 #ifdef __cplusplus
 } ;
