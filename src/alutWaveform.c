@@ -10,7 +10,7 @@
 
 ALuint
 alutCreateBufferWaveform (ALenum waveshape,
-			  float frequency, float phase, float duration)
+                          float frequency, float phase, float duration)
 {
   ALuint albuffer;
   short *buffer;
@@ -36,36 +36,36 @@ alutCreateBufferWaveform (ALenum waveshape,
       pos = p - floor (p);
 
       switch (waveshape)
-	{
-	case ALUT_WAVEFORM_SINE:
-	  buffer[i] = (short) (sin (pos * M_PI) * 32767.0f);
-	  break;
-	case ALUT_WAVEFORM_SQUARE:
-	  buffer[i] = (pos > 0.5) ? -32768 : 32767;
-	  break;
-	case ALUT_WAVEFORM_SAWTOOTH:
-	  buffer[i] = (short) ((pos - 0.5f) * 65535.0f);
-	  break;
-	case ALUT_WAVEFORM_WHITENOISE:
+        {
+        case ALUT_WAVEFORM_SINE:
+          buffer[i] = (short) (sin (pos * M_PI) * 32767.0f);
+          break;
+        case ALUT_WAVEFORM_SQUARE:
+          buffer[i] = (pos > 0.5) ? -32768 : 32767;
+          break;
+        case ALUT_WAVEFORM_SAWTOOTH:
+          buffer[i] = (short) ((pos - 0.5f) * 65535.0f);
+          break;
+        case ALUT_WAVEFORM_WHITENOISE:
 #ifdef _WIN32
-	  buffer[i] = (short) (rand () % 65536 - 32768);
+          buffer[i] = (short) (rand () % 65536 - 32768);
 #else
-	  buffer[i] = (short) (random () % 65536 - 32768);
+          buffer[i] = (short) (random () % 65536 - 32768);
 #endif
-	  break;
-	case ALUT_WAVEFORM_IMPULSE:
-	  buffer[i] = (short) ((last_pos > pos) ? 32767 : 0);
-	  break;
-	default:
-	  _alutSetError (ALUT_ERROR_INVALID_ENUM);
-	  return 0;
-	}
+          break;
+        case ALUT_WAVEFORM_IMPULSE:
+          buffer[i] = (short) ((last_pos > pos) ? 32767 : 0);
+          break;
+        default:
+          _alutSetError (ALUT_ERROR_INVALID_ENUM);
+          return 0;
+        }
 
       last_pos = pos;
     }
 
   alBufferData (albuffer, AL_FORMAT_MONO16, buffer,
-		length * sizeof (short), (int) _ALUT_SAMPLE_FREQUENCY);
+                length * sizeof (short), (int) _ALUT_SAMPLE_FREQUENCY);
   free (buffer);
   return albuffer;
 }
@@ -4171,6 +4171,6 @@ alutCreateBufferHelloWorld ()
 
   alGenBuffers (1, &albuffer);
   alBufferData (albuffer, AL_FORMAT_MONO16, (short *) _alutHelloWorldSample,
-		sizeof (_alutHelloWorldSample), (int) _ALUT_SAMPLE_FREQUENCY);
+                sizeof (_alutHelloWorldSample), (int) _ALUT_SAMPLE_FREQUENCY);
   return albuffer;
 }

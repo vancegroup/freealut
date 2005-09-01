@@ -19,7 +19,7 @@ main (int argc, char **argv)
   if (file1Buffer == 0)
     {
       fprintf (stderr, "Error loading wav file: '%s'\n",
-	       alutGetErrorString (alutGetError ()));
+               alutGetErrorString (alutGetError ()));
       exit (EXIT_FAILURE);
     }
 

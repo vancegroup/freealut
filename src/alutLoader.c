@@ -12,15 +12,15 @@ struct SampleAttribs
   unsigned char *buffer;
   int bps;
   int stereo;
-  int rate;			/* ToDo: This should probably be an ALuint */
+  int rate;                     /* ToDo: This should probably be an ALuint */
   char *comment;
 };
 
 struct DataGetter
 {
-  size_t length;		/* Total length of file */
-  FILE *fd;			/* For files: just the file descriptor */
-  const ALvoid *data;		/* For memory: length, data pointer and position in data */
+  size_t length;                /* Total length of file */
+  FILE *fd;                     /* For files: just the file descriptor */
+  const ALvoid *data;           /* For memory: length, data pointer and position in data */
   size_t next;
 };
 
@@ -41,10 +41,10 @@ dgread (void *ptr, size_t size, size_t nmemb, struct DataGetter *source)
       /* Attempt to read past end of block? */
 
       if (source->next + len >= source->length)
-	{
-	  nmemb = (source->length - source->next) / size;
-	  len = size * nmemb;
-	}
+        {
+          nmemb = (source->length - source->next) / size;
+          len = size * nmemb;
+        }
 
       memcpy (ptr, &(((char *) (source->data))[source->next]), len);
       source->next += len;
@@ -57,13 +57,13 @@ dgread (void *ptr, size_t size, size_t nmemb, struct DataGetter *source)
 }
 
 static ALboolean _alutLoadWavFile (struct DataGetter *fd,
-				   struct SampleAttribs *attr);
+                                   struct SampleAttribs *attr);
 static ALboolean _alutLoadAUFile (struct DataGetter *fd,
-				  struct SampleAttribs *attr);
+                                  struct SampleAttribs *attr);
 static ALboolean _alutLoadRawFile (struct DataGetter *fd,
-				   struct SampleAttribs *attr);
+                                   struct SampleAttribs *attr);
 static ALboolean _alutLoadFile (const char *fname, struct DataGetter *fd,
-				struct SampleAttribs *attr);
+                                struct SampleAttribs *attr);
 
 ALuint
 alutCreateBufferFromFile (const char *filename)
@@ -105,7 +105,7 @@ alutCreateBufferFromFile (const char *filename)
 
   alGenBuffers (1, &albuffer);
   alBufferData (albuffer, attr.bps == 8 ? AL_FORMAT_MONO8 :
-		AL_FORMAT_MONO16, attr.buffer, attr.length, attr.rate);
+                AL_FORMAT_MONO16, attr.buffer, attr.length, attr.rate);
   free (attr.buffer);
   fclose (fd);
   return albuffer;
@@ -135,14 +135,14 @@ alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length)
 
   alGenBuffers (1, &albuffer);
   alBufferData (albuffer, attr.bps == 8 ? AL_FORMAT_MONO8 :
-		AL_FORMAT_MONO16, attr.buffer, attr.length, attr.rate);
+                AL_FORMAT_MONO16, attr.buffer, attr.length, attr.rate);
   free (attr.buffer);
   return albuffer;
 }
 
 static void *
 _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
-				ALsizei *size, ALuint *freq)
+                                ALsizei *size, ALuint *freq)
 {
   struct SampleAttribs attr;
   struct DataGetter dg;
@@ -194,8 +194,8 @@ _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
 
 static void *
 _alutPrivateLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
-				     ALenum *format, ALsizei *size,
-				     ALuint *freq)
+                                     ALenum *format, ALsizei *size,
+                                     ALuint *freq)
 {
   struct SampleAttribs attr;
   struct DataGetter dg;
@@ -243,7 +243,7 @@ alutEnumerateSupportedFileTypes ()
 
 void
 alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size,
-		 ALsizei *freq, ALboolean *loop)
+                 ALsizei *freq, ALboolean *loop)
 {
   ALuint frequency;
 
@@ -263,14 +263,14 @@ alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size,
 
 void
 alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size,
-		   ALsizei *freq, ALboolean *loop)
+                   ALsizei *freq, ALboolean *loop)
 {
   ALuint frequency;
 
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 
-  *data = _alutPrivateLoadMemoryFromFileImage ((const ALvoid *) buffer, 0x7FFFFFFF,	/* Eeek! */
-					       format, size, &frequency);
+  *data = _alutPrivateLoadMemoryFromFileImage ((const ALvoid *) buffer, 0x7FFFFFFF,     /* Eeek! */
+                                               format, size, &frequency);
   if (freq)
     {
       *freq = (ALsizei) frequency;
@@ -315,7 +315,7 @@ _alutStrEqual (const char *a, const char *b)
 
 static ALboolean
 _alutLoadFile (const char *fname, struct DataGetter *dg,
-	       struct SampleAttribs *attr)
+               struct SampleAttribs *attr)
 {
   char magic[4];
 
@@ -393,87 +393,87 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
       len = dgread (magic, 4, 1, dg);
 
       if (len <= 0)
-	{
-	  _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
-	  return AL_FALSE;
-	}
+        {
+          _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+          return AL_FALSE;
+        }
 
       if (magic[0] == 'f' && magic[1] == 'm' &&
-	  magic[2] == 't' && magic[3] == ' ')
-	{
-	  found_header = AL_TRUE;
+          magic[2] == 't' && magic[3] == ' ')
+        {
+          found_header = AL_TRUE;
 
-	  if (dgread (&leng1, sizeof (int), 1, dg) == 0)
-	    {
-	      _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
-	      return AL_FALSE;
-	    }
+          if (dgread (&leng1, sizeof (int), 1, dg) == 0)
+            {
+              _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+              return AL_FALSE;
+            }
 
-	  if (leng1 > 65536)
-	    {
-	      needs_swabbing = AL_TRUE;
-	      swap_int (&leng1);
-	    }
+          if (leng1 > 65536)
+            {
+              needs_swabbing = AL_TRUE;
+              swap_int (&leng1);
+            }
 
-	  if (leng1 != sizeof (header))
-	    {
-	      _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
-	    }
+          if (leng1 != sizeof (header))
+            {
+              _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+            }
 
-	  dgread (&header, sizeof (header), 1, dg);
+          dgread (&header, sizeof (header), 1, dg);
 
-	  for (junk = sizeof (header); junk < leng1; junk++)
-	    {
-	      char throw_away;
-	      dgread (&throw_away, 1, 1, dg);
-	    }
+          for (junk = sizeof (header); junk < leng1; junk++)
+            {
+              char throw_away;
+              dgread (&throw_away, 1, 1, dg);
+            }
 
-	  if (needs_swabbing)
-	    {
-	      swap_Ushort (&header[0]);
-	      swap_Ushort (&header[1]);
-	      swap_int ((int *) &header[2]);
-	      swap_int ((int *) &header[4]);
-	      swap_Ushort (&header[6]);
-	      swap_Ushort (&header[7]);
-	    }
+          if (needs_swabbing)
+            {
+              swap_Ushort (&header[0]);
+              swap_Ushort (&header[1]);
+              swap_int ((int *) &header[2]);
+              swap_int ((int *) &header[4]);
+              swap_Ushort (&header[6]);
+              swap_Ushort (&header[7]);
+            }
 
-	  if (header[0] != 0x0001)
-	    {
-	      _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
-	      return AL_FALSE;
-	    }
+          if (header[0] != 0x0001)
+            {
+              _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
+              return AL_FALSE;
+            }
 
-	  attr->stereo = (header[1] > 1);
-	  attr->rate = (*((int *) (&header[2])));
-	  attr->bps = (header[7]);
-	}
+          attr->stereo = (header[1] > 1);
+          attr->rate = (*((int *) (&header[2])));
+          attr->bps = (header[7]);
+        }
       else
-	if (magic[0] == 'd' && magic[1] == 'a' &&
-	    magic[2] == 't' && magic[3] == 'a')
-	{
-	  if (!found_header)
-	    {
-	      _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
-	      return AL_FALSE;
-	    }
+        if (magic[0] == 'd' && magic[1] == 'a' &&
+            magic[2] == 't' && magic[3] == 'a')
+        {
+          if (!found_header)
+            {
+              _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+              return AL_FALSE;
+            }
 
-	  if (dgread (&attr->length, sizeof (int), 1, dg) == 0)
-	    {
-	      _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
-	      return AL_FALSE;
-	    }
+          if (dgread (&attr->length, sizeof (int), 1, dg) == 0)
+            {
+              _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+              return AL_FALSE;
+            }
 
-	  if (needs_swabbing)
-	    {
-	      swap_int (&attr->length);
-	    }
+          if (needs_swabbing)
+            {
+              swap_int (&attr->length);
+            }
 
-	  attr->buffer = (unsigned char *) malloc (attr->length);
+          attr->buffer = (unsigned char *) malloc (attr->length);
 
-	  dgread (attr->buffer, 1, attr->length, dg);
-	  return AL_TRUE;
-	}
+          dgread (attr->buffer, 1, attr->length, dg);
+          return AL_TRUE;
+        }
     }
 }
 
@@ -526,7 +526,7 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
   if (hdr_length > 24)
     {
       if (attr->comment)
-	free (attr->comment);
+        free (attr->comment);
       attr->comment = NULL;
       attr->comment = (char *) malloc (hdr_length - 24 + 1);
 
@@ -539,10 +539,10 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
       attr->length = dgread (attr->buffer, 1, dat_length, dg);
 
       if (attr->length != dat_length)
-	{
-	  _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
-	  return AL_FALSE;
-	}
+        {
+          _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+          return AL_FALSE;
+        }
     }
 
   return AL_TRUE;
@@ -567,14 +567,14 @@ _alutLoadRawFile (struct DataGetter *dg, struct SampleAttribs *attr)
 
   attr->bps = 8;
   attr->stereo = 0;
-  attr->rate = 8000;		/* Guess */
+  attr->rate = 8000;            /* Guess */
 
   return AL_TRUE;
 }
 
 ALvoid *
 alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size,
-			ALuint *freq)
+                        ALuint *freq)
 {
   _alutSanityCheck ();
   return _alutPrivateLoadMemoryFromFile (filename, format, size, freq);
@@ -582,9 +582,9 @@ alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size,
 
 ALvoid *
 alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
-			     ALenum *format, ALsizei *size, ALuint *freq)
+                             ALenum *format, ALsizei *size, ALuint *freq)
 {
   _alutSanityCheck ();
   return _alutPrivateLoadMemoryFromFileImage (data, length,
-					      format, size, freq);
+                                              format, size, freq);
 }

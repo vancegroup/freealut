@@ -36,7 +36,7 @@ main (int argc, char **argv)
    */
 
   alutLoadWAVFile ((ALbyte *) "file1.wav", &format, &data, &size, &freq,
-		   &loop);
+                   &loop);
   alGenBuffers (1, &buffer);
   alBufferData (buffer, format, data, size, freq);
   free (data);

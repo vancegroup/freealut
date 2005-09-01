@@ -13,7 +13,7 @@ _alutSanityCheck ()
   if (!alut_is_initialised)
     {
       fprintf (stderr,
-	       "FATAL: ALUT functions were called without alutInit\n");
+               "FATAL: ALUT functions were called without alutInit\n");
       fprintf (stderr, "alutInitWithoutContext having been called.\n");
       assert (0);
     }
@@ -37,7 +37,7 @@ alutInit (int *argcp, char **argv)
 
   alut_is_initialised = AL_TRUE;
 
-  device = alcOpenDevice (NULL);	/* Use the default device */
+  device = alcOpenDevice (NULL);        /* Use the default device */
 
   if (device == NULL)
     {

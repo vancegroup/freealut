@@ -24,27 +24,27 @@ main (int argc, char **argv)
   alutInit (&argc, argv);
 
   beep1Buffer = alutCreateBufferWaveform (ALUT_WAVEFORM_SINE,
-					  440.0f, 0.0f, 1.0f);
+                                          440.0f, 0.0f, 1.0f);
   alGenSources (1, &beep1Source);
   alSourcei (beep1Source, AL_BUFFER, beep1Buffer);
 
   beep2Buffer = alutCreateBufferWaveform (ALUT_WAVEFORM_SQUARE,
-					  440.0f, 0.0f, 1.0f);
+                                          440.0f, 0.0f, 1.0f);
   alGenSources (1, &beep2Source);
   alSourcei (beep2Source, AL_BUFFER, beep2Buffer);
 
   beep3Buffer = alutCreateBufferWaveform (ALUT_WAVEFORM_SAWTOOTH,
-					  440.0f, 0.0f, 1.0f);
+                                          440.0f, 0.0f, 1.0f);
   alGenSources (1, &beep3Source);
   alSourcei (beep3Source, AL_BUFFER, beep3Buffer);
 
   beep4Buffer = alutCreateBufferWaveform (ALUT_WAVEFORM_WHITENOISE,
-					  440.0f, 0.0f, 1.0f);
+                                          440.0f, 0.0f, 1.0f);
   alGenSources (1, &beep4Source);
   alSourcei (beep4Source, AL_BUFFER, beep4Buffer);
 
   beep5Buffer = alutCreateBufferWaveform (ALUT_WAVEFORM_IMPULSE,
-					  440.0f, 0.0f, 1.0f);
+                                          440.0f, 0.0f, 1.0f);
   alGenSources (1, &beep5Source);
   alSourcei (beep5Source, AL_BUFFER, beep5Buffer);
 

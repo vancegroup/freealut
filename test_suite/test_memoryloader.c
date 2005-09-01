@@ -31,7 +31,7 @@ main (int argc, char **argv)
   if (memBuffer == 0)
     {
       fprintf (stderr, "Error loading wav file: '%s'\n",
-	       alutGetErrorString (alutGetError ()));
+               alutGetErrorString (alutGetError ()));
       exit (EXIT_FAILURE);
     }
 

@@ -1,5 +1,11 @@
 2005-09-01  Sven Panne  <sven.panne@aedion.de>
 
+	* .indent.pro, src/alutInit.c, src/alutLoader.c,
+	src/alutWaveform.c, test_suite/test_errorstuff.c,
+	test_suite/test_fileloader.c, test_suite/test_memoryloader.c,
+	test_suite/test_retrostuff.c, test_suite/test_version.c,
+	test_suite/test_waveforms.c: Don't use TABs.
+
 	* test_suite/test_fileloader.c, test_suite/test_memoryloader.c,
 	test_suite/test_retrostuff.c, test_suite/test_version.c,
 	test_suite/test_waveforms.c: Hopefully make the examples compile

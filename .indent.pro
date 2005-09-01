@@ -1,6 +1,9 @@
 /* use GNU coding style */
 --gnu-style
 
+/* TABs are evil! */
+--no-tabs
+
 /* for more consistency */
 --swallow-optional-blank-lines
 

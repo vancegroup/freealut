@@ -17,14 +17,14 @@ main (int argc, char **argv)
       alutGetMinorVersion () != ALUT_API_MINOR_VERSION)
     {
       fprintf (stderr,
-	       "WARNING: The ALUT library is version %d.%d.x but the alut.h says it's %d.%d.x!!\n",
-	       alutGetMajorVersion (), alutGetMinorVersion (),
-	       ALUT_API_MAJOR_VERSION, ALUT_API_MINOR_VERSION);
+               "WARNING: The ALUT library is version %d.%d.x but the alut.h says it's %d.%d.x!!\n",
+               alutGetMajorVersion (), alutGetMinorVersion (),
+               ALUT_API_MAJOR_VERSION, ALUT_API_MINOR_VERSION);
     }
   else
     {
       fprintf (stderr, "The ALUT library is at version %d.%d.x.\n",
-	       alutGetMajorVersion (), alutGetMinorVersion ());
+               alutGetMajorVersion (), alutGetMinorVersion ());
     }
 #else
   fprintf (stderr, "WARNING: Your copy of AL/alut.h is pre-1.0.0\n");
