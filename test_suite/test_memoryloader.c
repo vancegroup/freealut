@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -8,32 +7,35 @@
   This program loads and plays a variety of files.
 */
 
-int main ( int argc, char **argv )
+int
+main (int argc, char **argv)
 {
-  ALuint memBuffer, memSource ;
-  FILE *fd ;
-  char buffer [ 100000 ] ;
-  int  length ;
+  ALuint memBuffer, memSource;
+  FILE *fd;
+  char buffer[100000];
+  int length;
 
-  alutInit ( & argc, argv ) ;
+  alutInit (&argc, argv);
 
-  fd = fopen ( "file1.wav", "rb" ) ;
-  length = fread ( buffer, 1, 10000, fd ) ;
-  fclose ( fd ) ;
-  
-  memBuffer = alutCreateBufferFromFileImage ( buffer, length ) ;
+  fd = fopen ("file1.wav", "rb");
+  length = fread (buffer, 1, 10000, fd);
+  fclose (fd);
 
-  if ( memBuffer == 0 )
-    fprintf(stderr, "Error loading wav file: '%s'\n",
-                    alutGetErrorString ( alutGetError () ) ) ;
+  memBuffer = alutCreateBufferFromFileImage (buffer, length);
 
-  alGenSources ( 1, &memSource ) ;
-  alSourcei ( memSource, AL_BUFFER, memBuffer ) ;
+  if (memBuffer == 0)
+    {
+      fprintf (stderr, "Error loading wav file: '%s'\n",
+	       alutGetErrorString (alutGetError ()));
+      exit (EXIT_FAILURE);
+    }
 
-  alSourcePlay ( memSource ) ; sleep ( 2 ) ;
+  alGenSources (1, &memSource);
+  alSourcei (memSource, AL_BUFFER, memBuffer);
 
-  alutExit () ;
-  exit ( -1 ) ;
+  alSourcePlay (memSource);
+  sleep (2);
+
+  alutExit ();
+  return EXIT_SUCCESS;
 }
-
-

@@ -3,99 +3,100 @@
 #include <assert.h>
 #include <AL/alut.h>
 
-static ALboolean   alut_is_initialised = AL_FALSE ;
-static ALCdevice  *device  = NULL ;
-static ALCcontext *context = NULL ;
+static ALboolean alut_is_initialised = AL_FALSE;
+static ALCdevice *device = NULL;
+static ALCcontext *context = NULL;
 
-
-void _alutSanityCheck ()
+void
+_alutSanityCheck ()
 {
-  if ( ! alut_is_initialised )
-  {
-    fprintf ( stderr, "FATAL: ALUT functions were called without alutInit\n" ) ;
-    fprintf ( stderr, "alutInitWithoutContext having been called.\n" ) ;
-    assert ( 0 ) ;
-  }
+  if (!alut_is_initialised)
+    {
+      fprintf (stderr,
+	       "FATAL: ALUT functions were called without alutInit\n");
+      fprintf (stderr, "alutInitWithoutContext having been called.\n");
+      assert (0);
+    }
 
-  if ( ! alcGetCurrentContext () )
-  {
-    fprintf ( stderr, "FATAL: ALUT functions were called without a valid\n" ) ;
-    fprintf ( stderr, "OpenAL rendering context having been created.\n" ) ;
-    assert ( 0 ) ;
-  }
+  if (!alcGetCurrentContext ())
+    {
+      fprintf (stderr, "FATAL: ALUT functions were called without a valid\n");
+      fprintf (stderr, "OpenAL rendering context having been created.\n");
+      assert (0);
+    }
 }
 
-
-ALboolean alutInit ( int *argcp, char **argv )
+ALboolean
+alutInit (int *argcp, char **argv)
 {
-  if ( alut_is_initialised || device != NULL || context != NULL )
-  {
-    _alutSetError ( ALUT_ERROR_INVALID_OPERATION ) ;
-    return AL_FALSE ;
-  }
+  if (alut_is_initialised || device != NULL || context != NULL)
+    {
+      _alutSetError (ALUT_ERROR_INVALID_OPERATION);
+      return AL_FALSE;
+    }
 
-  alut_is_initialised = AL_TRUE  ;
+  alut_is_initialised = AL_TRUE;
 
-  device = alcOpenDevice ( NULL ) ; /* Use the default device */
+  device = alcOpenDevice (NULL);	/* Use the default device */
 
-  if ( device == NULL )
-  {
-    _alutSetError ( ALUT_ERROR_NO_DEVICE_AVAILABLE ) ;
-    context = NULL ;
-    return AL_FALSE ;
-  }
+  if (device == NULL)
+    {
+      _alutSetError (ALUT_ERROR_NO_DEVICE_AVAILABLE);
+      context = NULL;
+      return AL_FALSE;
+    }
 
-  context = alcCreateContext ( device, NULL ) ;
+  context = alcCreateContext (device, NULL);
 
-  if ( context == NULL )
-  {
-    alcCloseDevice ( device ) ;
+  if (context == NULL)
+    {
+      alcCloseDevice (device);
 
-    _alutSetError ( ALUT_ERROR_NO_CONTEXT_AVAILABLE ) ;
-    device = NULL ;
-    return AL_FALSE ;
-  }
+      _alutSetError (ALUT_ERROR_NO_CONTEXT_AVAILABLE);
+      device = NULL;
+      return AL_FALSE;
+    }
 
-  alcMakeContextCurrent ( context ) ;
-  return AL_TRUE ;
+  alcMakeContextCurrent (context);
+  return AL_TRUE;
 }
 
-
-ALboolean alutInitWithoutContext ( int *argcp, char **argv )
+ALboolean
+alutInitWithoutContext (int *argcp, char **argv)
 {
-  if ( alut_is_initialised || device != NULL || context != NULL )
-  {
-    _alutSetError ( ALUT_ERROR_INVALID_OPERATION ) ;
-    return AL_FALSE ;
-  }
+  if (alut_is_initialised || device != NULL || context != NULL)
+    {
+      _alutSetError (ALUT_ERROR_INVALID_OPERATION);
+      return AL_FALSE;
+    }
 
-  alut_is_initialised = AL_TRUE  ;
-  device  = NULL ;
-  context = NULL ;
-  return AL_TRUE ;
+  alut_is_initialised = AL_TRUE;
+  device = NULL;
+  context = NULL;
+  return AL_TRUE;
 }
 
-
-void alutExit ()
+void
+alutExit ()
 {
-  if ( ! alut_is_initialised )
-  {
-    _alutSetError ( ALUT_ERROR_INVALID_OPERATION ) ;
-    return ;
-  }
+  if (!alut_is_initialised)
+    {
+      _alutSetError (ALUT_ERROR_INVALID_OPERATION);
+      return;
+    }
 
-  if ( context != NULL )
-  {
-    alcMakeContextCurrent ( NULL ) ;
-    alcDestroyContext ( context ) ;
-  }
+  if (context != NULL)
+    {
+      alcMakeContextCurrent (NULL);
+      alcDestroyContext (context);
+    }
 
-  if ( device != NULL )
-      alcCloseDevice ( device ) ;
+  if (device != NULL)
+    {
+      alcCloseDevice (device);
+    }
 
-  alut_is_initialised = AL_FALSE ;
-  device  = NULL ;
-  context = NULL ;
+  alut_is_initialised = AL_FALSE;
+  device = NULL;
+  context = NULL;
 }
-
-

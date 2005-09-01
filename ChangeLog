@@ -1,5 +1,13 @@
 2005-09-01  Sven Panne  <sven.panne@aedion.de>
 
+	* src/alutError.c, src/alutInit.c, src/alutLoader.c,
+	src/alutVersion.c, src/alutWaveform.c,
+	test_suite/test_errorstuff.c, test_suite/test_fileloader.c,
+	test_suite/test_memoryloader.c, test_suite/test_retrostuff.c,
+	test_suite/test_version.c, test_suite/test_waveforms.c:
+	Reformatted conforming to GNU standards. Please keep it that
+	way...
+
 	* Makefile.am: Added a target "permissions" to fix the broken
 	permissions after a checkout. Added a target "indent" to
 	automagically indent all C sources and headers according to GNU
