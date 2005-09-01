@@ -1,5 +1,11 @@
 2005-09-01  Sven Panne  <sven.panne@aedion.de>
 
+	* test_suite/test_fileloader.c, test_suite/test_memoryloader.c,
+	test_suite/test_retrostuff.c, test_suite/test_version.c,
+	test_suite/test_waveforms.c: Hopefully make the examples compile
+	on WinDoze. Play sounds only a finite number of times, which is
+	better for automating things.
+
 	* src/alutError.c, src/alutInit.c, src/alutLoader.c,
 	src/alutVersion.c, src/alutWaveform.c,
 	test_suite/test_errorstuff.c, test_suite/test_fileloader.c,

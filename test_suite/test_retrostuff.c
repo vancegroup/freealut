@@ -1,7 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <AL/alut.h>
+
+#if defined(_WIN32)
+#define sleep(x) Sleep(1000*(x))
+#else
+#include <unistd.h>
+#endif
 
 /*
   This program loads and plays a file the ALUT 0.x.x way.
@@ -41,7 +46,17 @@ main (int argc, char **argv)
   sleep (2);
 
   fd = fopen ("file1.wav", "rb");
+  if (fd == NULL)
+    {
+      fprintf (stderr, "Error opening .wav file\n");
+      exit (EXIT_FAILURE);
+    }
   fread (filebuffer, 1, 10000, fd);
+  if (ferror (fd))
+    {
+      fprintf (stderr, "Error reading .wav file\n");
+      exit (EXIT_FAILURE);
+    }
   fclose (fd);
 
   alutLoadWAVMemory (filebuffer, &format, &data, &size, &freq, &loop);

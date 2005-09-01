@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <AL/alut.h>
+
+#if defined(_WIN32)
+#define sleep(x) Sleep(1000*(x))
+#else
+#include <unistd.h>
+#endif
 
 /*
   This program loads and plays a variety of files.

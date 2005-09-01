@@ -1,6 +1,11 @@
 #include <stdlib.h>
-#include <unistd.h>
 #include <AL/alut.h>
+
+#if defined(_WIN32)
+#define sleep(x) Sleep(1000*(x))
+#else
+#include <unistd.h>
+#endif
 
 /*
   This program plays a 440Hz tone using a variety of waveforms.
@@ -14,6 +19,7 @@ main (int argc, char **argv)
   ALuint beep3Buffer, beep3Source;
   ALuint beep4Buffer, beep4Source;
   ALuint beep5Buffer, beep5Source;
+  int i;
 
   alutInit (&argc, argv);
 
@@ -42,7 +48,7 @@ main (int argc, char **argv)
   alGenSources (1, &beep5Source);
   alSourcei (beep5Source, AL_BUFFER, beep5Buffer);
 
-  while (1)
+  for (i = 0; i < 3; i++)
     {
       alSourcePlay (beep1Source);
       sleep (1);
