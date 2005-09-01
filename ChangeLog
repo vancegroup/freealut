@@ -1,5 +1,8 @@
 2005-09-01  Sven Panne  <sven.panne@aedion.de>
 
+	* include/AL/alut.h: Synched platform-specific parts with the
+	AL/ALC headers. Reformatted according to GNU standards.
+
 	* Makefile.am, examples/Makefile.am, src/Makefile.am,
 	test_suite/Makefile.am: Do not hardwire any obscure paths into the
 	build process, the normal way of using headers/libraries in
