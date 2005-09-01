@@ -1,5 +1,12 @@
 2005-09-01  Sven Panne  <sven.panne@aedion.de>
 
+	* Makefile.am: Added a target "permissions" to fix the broken
+	permissions after a checkout. Added a target "indent" to
+	automagically indent all C sources and headers according to GNU
+	standards.
+
+	* .indent.pro: Added.
+
 	* doc/alut.html, include/AL/alut.h, src/alutError.c,
 	src/alutInit.c, src/alutLoader.c, test_suite/test_memoryloader.c,
 	test_suite/test_retrostuff.c: A bunch of API cleanups:
