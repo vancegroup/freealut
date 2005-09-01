@@ -1,13 +1,125 @@
+2005-09-01  Sven Panne  <sven.panne@aedion.de>
 
-freealut Change Log.
-===================
+	* Makefile.am, examples/Makefile.am, src/Makefile.am,
+	test_suite/Makefile.am: Do not hardwire any obscure paths into the
+	build process, the normal way of using headers/libraries in
+	non-standard places is to set CPPFLAGS/LDFLAGS when configuring
+	and building.
 
-ALUT v0.x.x (???)
-~~~~~~~~~~~~~~~~~
-  * First release - included inside OpenAL's distro.
+	* autogen.sh: Small cleanup: Be a good *nix citizen and be quiet
+	when everything works. Furthermore, terminate immediately when a
+	tool fails.
 
-freealut v1.0.0 (Aug 24th 2005)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  * Complete re-think.  New specification, new implementation. Same goals.
+2005-09-01  Steve Baker  <sjbaker1@airmail.net>
 
+	* examples/Makefile.am, examples/hello_world.c, include/AL/alut.h,
+	src/alutLoader.c, src/alutWaveform.c, test_suite/Makefile.am:
 
+	1) Replaced '//' C++ style comments with /*...*/ style for
+	portability.
+
+	2) According to the OpenAL headers, the third argument of
+	alGetSourcei should be ALint - not ALuint. So 'hello_world.c'
+	wouldn't compile. Fixed.
+
+	3) It's a bad idea to sit in a tight loop doing nothing but
+	alGetSourcei. On some OS's, this could lock out any other AL
+	threads - with disasterous consequences.
+
+	Rather than get into all that complexity in a 'Hello World'
+	example, I elected to simply sleep for plenty of time.
+
+	However, I did fixup the 'sleep(seconds)' versus
+	'Sleep(microseconds)' issue (good way to be non-portable Mr
+	Gates).
+
+	4) Makefile.am had been changed around so that ALUT demo's and
+	test_suite would link to the OpenAL library in the current build
+	tree. This is bad for many reasons discussed via email - so I
+	reverted that change.
+
+	5) Evidently 'strcasecmp' doesn't exist under Windows/MSVC and
+	strcasecmp had been replaced with 'strcmp' for Windows. I think
+	'stricmp' is the Windows version of strcmp that's case
+	insensitive.
+
+	6) I fixed up the lack of a 'random()' function in Windows used
+	'rand()' instead. Not the ideal fix but definitely 'good enough'.
+
+2005-08-31  Garin Hiebert  <garinh@cheesetoast.net>
+
+	* win_build/alut.dsp, win_build/hello_world.dsp: Fixed Release
+	Build Issues.
+
+	* doc/alut.html, examples/hello_world.c, include/AL/alut.h,
+	src/alutLoader.c, src/alutWaveform.c: First Stab At Moving To
+	Windows.
+
+	* win_build/alut.dsp, win_build/alut.dsw,
+	win_build/hello_world.dsp: Added.
+
+2005-08-30  Sven Panne  <sven.panne@aedion.de>
+
+	* src/alutError.c: Namespace hygiene: Make lastError static
+
+	* examples/.cvsignore, examples/Makefile.am,
+	test_suite/.cvsignore, test_suite/Makefile.am: More tweaks to the
+	build environment, still a bit hacky...
+
+	* Makefile.am, configure.ac, src/Makefile.am, src/alutError.c,
+	src/alutInit.c, src/alutLoader.c, src/alutVersion.c,
+	src/alutWaveform.c: Move alut.h to include/AL, so we can always
+	use the same kind of #includes and always use the headers from the
+	SI, not any installed ones. Things are not perfect yet, but
+	better...
+
+	* src/alut.h: Removed.
+
+	* .cvsignore, examples/.cvsignore, include/.cvsignore,
+	include/Makefile.am, include/AL/.cvsignore,
+	include/AL/Makefile.am, include/AL/alut.h, src/.cvsignore,
+	test_suite/.cvsignore: Added.
+
+2005-08-30  Steve Baker  <sjbaker1@airmail.net>
+
+	* src/Makefile.am: Jason Daly said: The current build system makes
+	the assumption that OpenAL is installed. This just adds
+	-I../../include to pick up the AL headers in the top-level
+	directory. ALUT wouldn't build on my system without this (we use
+	OpenAL from an NFS-mounted directory).
+
+2005-08-29  Steve Baker  <sjbaker1@airmail.net>
+
+	* README, examples/hello_world.c: Added some more build
+	instructions.
+
+	* configure.ac, examples/Makefile.am, src/Makefile.am,
+	test_suite/Makefile.am: Fixed up makefiles so they find OpenAL in
+	either /usr/local/lib or /usr/lib also fixed ALUT to install in
+	/usr/include/AL and /usr/lib/.
+
+	* Makefile.am, README, test_suite/test_memoryloader.c,
+	test_suite/test_retrostuff.c: More minor cleanup.
+
+	* src/alutError.c, src/alutInit.c, src/alutLoader.c,
+	src/alutWaveform.c: Cleaned up some warning messages when
+	-pedantic is enabled.
+
+	* src/alut.h: Added.
+
+	* autogen.sh, configure.ac, install-sh, mkinstalldirs: Added
+	autoconf stuff.
+
+2005-08-27  Steve Baker  <sjbaker1@airmail.net>
+
+	* AUTHORS, COPYING, ChangeLog, INSTALL, Makefile.am, NEWS, README,
+	doc/alut.html, doc/noise.gif, examples/Makefile.am,
+	examples/hello_world.c, src/Makefile.am, src/README,
+	src/alutError.c, src/alutInit.c, src/alutLoader.c,
+	src/alutVersion.c, src/alutWaveform.c, src/helloworld.wav,
+	test_suite/Makefile.am, test_suite/README, test_suite/file1.wav,
+	test_suite/file2.au, test_suite/file3.raw,
+	test_suite/test_errorstuff.c, test_suite/test_fileloader.c,
+	test_suite/test_memoryloader.c, test_suite/test_retrostuff.c,
+	test_suite/test_version.c, test_suite/test_waveforms.c: Added ALUT
+	1.0.0 Alpha.
