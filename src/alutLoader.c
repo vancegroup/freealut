@@ -1,10 +1,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#if defined(_WIN32)
+#define stat(p,b) _stat((p),(b))
+#else
+#include <unistd.h>
+#endif
 #include <AL/alut.h>
+
+#include "alutError.h"
+#include "alutInit.h"
 
 struct SampleAttribs
 {
@@ -230,7 +237,7 @@ _alutPrivateLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
 }
 
 const char *
-alutEnumerateSupportedFileTypes ()
+alutEnumerateSupportedFileTypes (void)
 {
   _alutSanityCheck ();
 

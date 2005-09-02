@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <AL/alut.h>
 
+#include "alutError.h"
+#include "alutInit.h"
+
 /* Enable the following line to have all ALUT errors reported as they happen. */
 /* #define ALUT_DEBUG_ENABLED 1 */
 
@@ -21,7 +24,7 @@ _alutSetError (ALenum err)
 }
 
 ALenum
-alutGetError ()
+alutGetError (void)
 {
   ALint ret = lastError;
   _alutSanityCheck ();

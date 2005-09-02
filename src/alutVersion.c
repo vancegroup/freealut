@@ -1,13 +1,13 @@
 #include <AL/alut.h>
 
 ALint
-alutGetMajorVersion ()
+alutGetMajorVersion (void)
 {
   return ALUT_API_MAJOR_VERSION;
 }
 
 ALint
-alutGetMinorVersion ()
+alutGetMinorVersion (void)
 {
   return ALUT_API_MINOR_VERSION;
 }

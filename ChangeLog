@@ -1,5 +1,11 @@
 2005-09-01  Sven Panne  <sven.panne@aedion.de>
 
+	* doc/alut.html, include/AL/alut.h, src/alutError.c,
+	src/alutError.h, src/alutInit.c, src/alutInit.h, src/alutLoader.c,
+	src/alutVersion.c, src/alutWaveform.c: Moved internal function
+	prototypes out of the public header. Fixed function prototypes,
+	i.e.  foo() (C++) vs. foo(void) (C).
+
 	* .indent.pro, src/alutInit.c, src/alutLoader.c,
 	src/alutWaveform.c, test_suite/test_errorstuff.c,
 	test_suite/test_fileloader.c, test_suite/test_memoryloader.c,

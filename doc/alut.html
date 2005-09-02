@@ -11,7 +11,7 @@
     <h1>THE OPENAL UTILITY TOOLKIT (ALUT).</h1>
     <h2>Reference Manual Version 1.0.0.</h2>
     <h2>First Release by Steve Baker - August 24th 2005.</h2>
-    <h2>Second Release by Sven Panne - September 1st 2005.</h2>
+    <h2>Second Release by Sven Panne - September 2nd 2005.</h2>
 
     <h1>Introduction</h1>
 
@@ -162,7 +162,7 @@ main (int argc, char **argv)
     in order to destroy the audio context it created with alutInit:</p>
 
 <pre class="programlisting">
-void alutExit ();
+void alutExit (void);
 </pre>
 
     <p>This closes any OpenAL device/context that ALUT may have created in
@@ -197,7 +197,7 @@ void alutExit ();
     that may be retrieved with:</p>
 
 <pre class="programlisting">
-ALenum alutGetError ();
+ALenum alutGetError (void);
 </pre>
 
     <p>A number of tokens named ALUT_ERROR_xxxxx are defined in alut.h, the list
@@ -319,7 +319,7 @@ ALvoid *alutLoadMemoryFromFileImage (const ALvoid *data,
     (suitable for passing to a directory browser popup) using:</p>
 
 <pre class="programlisting">
-const char *alutEnumerateSupportedFileTypes ();
+const char *alutEnumerateSupportedFileTypes (void);
 </pre>
 
     <p>This will return something like "*.wav, *.ogg, *.au".</p>
@@ -380,7 +380,7 @@ void alutUnloadWAV (ALenum format ALvoid *data, ALsizei size, ALsizei freq);
     <p>The following functions return an alBuffer handle:</p>
 
 <pre class="programlisting">
-ALuint alutCreateBufferHelloWorld ();
+ALuint alutCreateBufferHelloWorld (void);
 
 ALuint alutCreateBufferWaveform   (ALenum waveshape,
                                    float frequency,
@@ -426,9 +426,9 @@ ALuint alutCreateBufferWaveform   (ALenum waveshape,
     <p>The ALUT library contains:</p>
 
 <pre class="programlisting">
-ALint alutGetMajorVersion ();
+ALint alutGetMajorVersion (void);
 
-ALint alutGetMinorVersion ();
+ALint alutGetMinorVersion (void);
 </pre>
 
     <p>If the ALUT API gets added to or changed in future releases, we will

@@ -53,27 +53,22 @@ extern "C" {
 
 ALUTAPI ALboolean ALUTAPIENTRY alutInit (int *argcp, char **argv);
 ALUTAPI ALboolean ALUTAPIENTRY alutInitWithoutContext (int *argcp, char **argv);
-ALUTAPI void ALUTAPIENTRY alutExit ();
+ALUTAPI void ALUTAPIENTRY alutExit (void);
 
-ALUTAPI ALenum ALUTAPIENTRY alutGetError ();
+ALUTAPI ALenum ALUTAPIENTRY alutGetError (void);
 ALUTAPI const char * ALUTAPIENTRY alutGetErrorString (ALenum error);
 
 ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferFromFile (const char *filename);
 ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length);
 ALUTAPI ALvoid * ALUTAPIENTRY alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size, ALuint *freq);
 ALUTAPI ALvoid * ALUTAPIENTRY alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length, ALenum *format, ALsizei *size, ALuint *freq);
-ALUTAPI const char * ALUTAPIENTRY alutEnumerateSupportedFileTypes ();
+ALUTAPI const char * ALUTAPIENTRY alutEnumerateSupportedFileTypes (void);
 
-ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferHelloWorld ();
+ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferHelloWorld (void);
 ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferWaveform (ALenum waveshape, float frequency, float phase, float duration);
 
-ALUTAPI ALint ALUTAPIENTRY alutGetMajorVersion ();
-ALUTAPI ALint ALUTAPIENTRY alutGetMinorVersion ();
-
-/* Private ALUT functions - not for general use */
-
-ALUTAPI void ALUTAPIENTRY _alutSetError (ALint errorcode);
-ALUTAPI void ALUTAPIENTRY _alutSanityCheck ();
+ALUTAPI ALint ALUTAPIENTRY alutGetMajorVersion (void);
+ALUTAPI ALint ALUTAPIENTRY alutGetMinorVersion (void);
 
 #if !defined(_WIN32)
 /* Nasty Compatibility stuff, WARNING: THESE FUNCTIONS ARE STRONGLY DEPRECATED */

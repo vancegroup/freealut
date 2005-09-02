@@ -2,6 +2,9 @@
 #include <math.h>
 #include <AL/alut.h>
 
+#include "alutError.h"
+#include "alutInit.h"
+
 #define _ALUT_SAMPLE_FREQUENCY  44100.0f
 
 #ifndef M_PI
@@ -4163,7 +4166,7 @@ static unsigned short _alutHelloWorldSample[] = {
 };
 
 ALuint
-alutCreateBufferHelloWorld ()
+alutCreateBufferHelloWorld (void)
 {
   ALuint albuffer;
 

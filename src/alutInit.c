@@ -3,12 +3,15 @@
 #include <assert.h>
 #include <AL/alut.h>
 
+#include "alutError.h"
+#include "alutInit.h"
+
 static ALboolean alut_is_initialised = AL_FALSE;
 static ALCdevice *device = NULL;
 static ALCcontext *context = NULL;
 
 void
-_alutSanityCheck ()
+_alutSanityCheck (void)
 {
   if (!alut_is_initialised)
     {
@@ -77,7 +80,7 @@ alutInitWithoutContext (int *argcp, char **argv)
 }
 
 void
-alutExit ()
+alutExit (void)
 {
   if (!alut_is_initialised)
     {
