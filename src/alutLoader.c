@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #if defined(_WIN32)
@@ -484,14 +485,33 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
     }
 }
 
+typedef ALvoid *codec (ALvoid *data, unsigned int *length);
+
+static codec uLaw, pcm8, pcm16, aLaw;
+
+/* see: http://en.wikipedia.org/wiki/Au_file_format, G.72x are missing */
+
+enum AUEncoding
+{
+  AU_ULAW_8 = 1,                /* 8-bit ISDN u-law */
+  AU_PCM_8 = 2,                 /* 8-bit linear PCM (signed) */
+  AU_PCM_16 = 3,                /* 16-bit linear PCM (signed, big-endian) */
+  AU_PCM_24 = 4,                /* 24-bit linear PCM */
+  AU_PCM_32 = 5,                /* 32-bit linear PCM */
+  AU_FLOAT_32 = 6,              /* 32-bit IEEE floating point */
+  AU_FLOAT_64 = 7,              /* 64-bit IEEE floating point */
+  AU_ALAW_8 = 27                /* 8-bit ISDN a-law */
+};
+
 static ALboolean
 _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
 {
   int hdr_length;
   int dat_length;
-  int nbytes;
+  int encoding;
   int irate;
   int nchans;
+  codec *_codec;
 
   if (attr->buffer)
     {
@@ -502,7 +522,7 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
 
   if (dgread (&hdr_length, sizeof (int), 1, dg) == 0 ||
       dgread (&dat_length, sizeof (int), 1, dg) == 0 ||
-      dgread (&nbytes, sizeof (int), 1, dg) == 0 ||
+      dgread (&encoding, sizeof (int), 1, dg) == 0 ||
       dgread (&irate, sizeof (int), 1, dg) == 0 ||
       dgread (&nchans, sizeof (int), 1, dg) == 0)
     {
@@ -514,16 +534,49 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
     {
       swap_int (&hdr_length);
       swap_int (&dat_length);
-      swap_int (&nbytes);
+      swap_int (&encoding);
       swap_int (&irate);
       swap_int (&nchans);
     }
 
-  attr->bps = nbytes * 8;
+  switch (encoding)
+    {
+    case AU_ULAW_8:
+      attr->bps = 16;
+      _codec = uLaw;
+      break;
+
+    case AU_PCM_8:
+      attr->bps = 8;
+      _codec = pcm8;
+      break;
+
+    case AU_PCM_16:
+      attr->bps = 16;
+      _codec = pcm16;
+      break;
+
+    case AU_ALAW_8:
+      attr->bps = 16;
+      _codec = aLaw;
+      break;
+
+    default:
+      _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
+      return AL_FALSE;
+    }
+
   attr->stereo = (nchans > 1);
   attr->rate = irate;
 
-  if (nbytes > 2 || nbytes <= 0 || hdr_length > 512 || hdr_length < 24 ||
+#if 0
+  fprintf (stderr,
+           "hdr_length %d, dat_length %d, encoding %d, bps %d, stereo %d, rate %d\n",
+           hdr_length, dat_length, encoding, attr->bps, attr->stereo,
+           attr->rate);
+#endif
+
+  if (hdr_length > 512 || hdr_length < 24 ||
       irate > 65526 || irate <= 1000 || nchans < 1 || nchans > 2)
     {
       _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
@@ -538,21 +591,135 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
       attr->comment = (char *) malloc (hdr_length - 24 + 1);
 
       dgread (attr->comment, 1, hdr_length - 24, dg);
+      (attr->comment)[hdr_length - 24] = '\0';
     }
 
   if (dat_length > 0)
     {
-      attr->buffer = (unsigned char *) malloc (dat_length);
-      attr->length = dgread (attr->buffer, 1, dat_length, dg);
+      char *buf = (char *) malloc (dat_length);
+      unsigned int len = dgread (buf, 1, dat_length, dg);
 
-      if (attr->length != dat_length)
+      if (len != dat_length)
         {
           _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
           return AL_FALSE;
         }
+
+      attr->buffer = _codec (buf, &len);
+      attr->length = len;
     }
 
   return AL_TRUE;
+}
+
+ALvoid *
+pcm8 (ALvoid *data, unsigned int *length)
+{
+  int8_t *d = (int8_t *) data;
+  unsigned int l = *length;
+  unsigned int i;
+  for (i = 0; i < l; i++)
+    {
+      d[i] = d[i] + 128;
+    }
+  return data;
+}
+
+ALvoid *
+pcm16 (ALvoid *data, unsigned int *length)
+{
+  int16_t *d = (int16_t *) data;
+  unsigned int l = *length / 2;
+  unsigned int i;
+  for (i = 0; i < l; i++)
+    {
+      swap_Ushort ((unsigned short *) &d[i]);
+    }
+  return data;
+}
+
+/*
+ * From: http://www.multimedia.cx/simpleaudio.html#tth_sEc6.1
+ */
+static int16_t
+mulaw2linear (uint8_t mulawbyte)
+{
+  const static int16_t exp_lut[8] =
+    { 0, 132, 396, 924, 1980, 4092, 8316, 16764 };
+  int16_t sign, exponent, mantissa, sample;
+
+  mulawbyte = ~mulawbyte;
+  sign = (mulawbyte & 0x80);
+  exponent = (mulawbyte >> 4) & 0x07;
+  mantissa = mulawbyte & 0x0F;
+  sample = exp_lut[exponent] + (mantissa << (exponent + 3));
+  if (sign != 0)
+    sample = -sample;
+  return (sample);
+}
+
+ALvoid *
+uLaw (ALvoid *data, unsigned int *length)
+{
+  uint8_t *d = (uint8_t *) data;
+  unsigned int l = *length;
+  unsigned int i;
+  int16_t *buf = (int16_t *) malloc (l * 2);
+
+  for (i = 0; i < l; i++)
+    buf[i] = mulaw2linear (d[i]);
+
+  free (data);
+  *length *= 2;
+
+  return buf;
+}
+
+/*
+ * From: http://www.multimedia.cx/simpleaudio.html#tth_sEc6.1
+ */
+#define SIGN_BIT (0x80)         /* Sign bit for a A-law byte. */
+#define QUANT_MASK (0xf)        /* Quantization field mask. */
+#define SEG_SHIFT (4)           /* Left shift for segment number. */
+#define SEG_MASK (0x70)         /* Segment field mask. */
+static int16_t
+alaw2linear (uint8_t a_val)
+{
+  int16_t t, seg;
+  a_val = 0x55;
+  t = (a_val & QUANT_MASK) << 4;
+  seg = ((int16_t) a_val & SEG_MASK) >> SEG_SHIFT;
+  switch (seg)
+    {
+    case 0:
+      t += 8;
+      break;
+    case 1:
+      t += 0x108;
+      break;
+    default:
+      t += 0x108;
+      t <<= seg - 1;
+    }
+  return ((a_val & SIGN_BIT) ? t : -t);
+}
+
+ALvoid *
+aLaw (ALvoid *data, unsigned int *length)
+{
+  uint8_t *d = (uint8_t *) data;
+  unsigned int l = *length;
+  unsigned int i;
+  int16_t *buf = (int16_t *) malloc (l * 2);
+
+  for (i = 0; i < l; i++)
+    buf[i] = alaw2linear (d[i]);
+
+  free (data);
+  data = NULL;
+  *length *= 2;
+
+  return buf;
 }
 
 static ALboolean

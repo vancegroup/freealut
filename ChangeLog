@@ -1,3 +1,8 @@
+2005-09-03  Sven Panne  <sven.panne@aedion.de>
+
+	* src/alutLoader.c: Merged patches for AU format from Erik Hofman
+	<erik@ehofman.com>, including some changes to the original patch.
+
 2005-09-01  Sven Panne  <sven.panne@aedion.de>
 
 	* doc/alut.html, include/AL/alut.h, src/alutError.c,
