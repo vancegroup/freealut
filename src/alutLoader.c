@@ -257,7 +257,7 @@ alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size,
 
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 
-  *data = _alutPrivateLoadMemoryFromFile (filename, format, size, &frequency);
+  *data = _alutPrivateLoadMemoryFromFile ((const char *)filename, format, size, &frequency);
 
   if (freq)
     {
