@@ -6,4 +6,4 @@ lib@LIBRARY@_la_SOURCES = alutError.c   \
                           alutVersion.c \
                           alutWaveform.c
 
-INCLUDES = -I$(top_srcdir)/include
+AM_CPPFLAGS = -I$(top_srcdir)/include
