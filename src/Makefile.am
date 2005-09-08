@@ -1,6 +1,8 @@
 lib_LTLIBRARIES = lib@LIBRARY@.la
 
-lib@LIBRARY@_la_SOURCES = alutError.c   \
+lib@LIBRARY@_la_SOURCES = alutError.h   \
+                          alutError.c    \
+                          alutInit.h    \
                           alutInit.c    \
                           alutLoader.c  \
                           alutVersion.c \

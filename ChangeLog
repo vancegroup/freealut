@@ -1,5 +1,7 @@
 2005-09-08  Sven Panne  <sven.panne@aedion.de>
 
+	* src/Makefile.am: Distribute internal headers, too.
+
 	* Makefile.am: Include the Windows stuff in the distribution.
 
 	* autogen.sh: Simply us autoreconf, as recommended in the
