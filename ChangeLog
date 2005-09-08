@@ -1,5 +1,15 @@
 2005-09-08  Sven Panne  <sven.panne@aedion.de>
 
+	* .cvsignore, configure.ac, Makefile.am: Put all administrative
+	files into admin subdirectory.
+	
+	* .indent.pro, INSTALL, install-sh, mkinstalldirs,
+	win_build/alut.dsp, win_build/alut.dsw, win_build/hello_world.dsp:
+	Removed.
+
+	* admin/alut.dsp, admin/alut.dsw, admin/.cvsignore,
+	admin/hello_world.dsp, admin/.indent.pro: Added.
+
 	* README: Synched with reality.
 
 2005-09-07  Sven Panne  <sven.panne@aedion.de>

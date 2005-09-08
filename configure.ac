@@ -1,6 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_INIT([freealut library], [1.0.0], [openal-devel@opensource.creative.com], [freealut])
+AC_CONFIG_AUX_DIR([admin])
 AM_INIT_AUTOMAKE
 AC_PREREQ([2.56])
 AC_CONFIG_SRCDIR([AUTHORS])
