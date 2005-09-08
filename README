@@ -1,98 +1,92 @@
-
-The freealut library.
+The freealut library
 =====================
-             by Steve Baker.
 
 freealut is a free implementation of OpenAL's ALUT standard.
 
-
-INSTALLATION:
-
-Under most OS's, you can simply run (as 'root'):
-
-   ./configure ; make install
-
-...but under Windows (unless you are using the Cygwin
-environment), you'll need to read 'README.win32'
-
-Once ALUT is installed, you may change directory to 'test_suite'
-or 'examples' and run 'make' to build test programs and example
-programs.
-
-INSTALLATION FROM CVS ARCHIVE:
-
-Under most OS's, you can simply run (as 'root'):
-
-   sh autogen.sh
-   ./configure ; make install
-
-SUPPORT:
-
-Please don't email me (Steve Baker) directly - I
-get *WAY* too much mail as it is!  Instead, please
-sign up to the OpenAL user's mailing list.  Instructions
-can be found here:
-
-  http://www.openal.org
+Initial version by: Steve Baker, <sjbaker1@airmail.net>, http://www.sjbaker.org
+More hacking by Sven Panne, <sven.panne@aedion.de>
 
 
-LICENSING:
+INSTALLATION on *nix-alikes
+===========================
 
-These libraries are offered as OpenSource freeware
-under the provisions of the GNU Library Public
-License (LGPL). Those terms and conditions are
-detailed in the file 'LICENSE' in this directory.
+To build and run ALUT, you need an OpenAL somewhere (and a sound card, of course
+:-). If OpenAL is not installed in a standard place (let's say ${OPENAL_PREFIX})
+you'll have to tell the build system about it:
+
+   CPPFLAGS="-I${OPENAL_PREFIX}/include"
+   LDFLAGS="-L${OPENAL_PREFIX}/lib"
+   export CPPFLAGS LDFLAGS
+
+If you install ALUT from the CVS repository, you'll have to call
+
+   ./autogen.sh
+
+first, this will generate some necessary files for building ALUT.
+
+If these initial preparations are done, you can simply run:
+
+   ./configure
+   make
+   make install
+
+The last step is optional and must be done as 'root', you can build and use the
+test programs in 'test_suite' and the example programs in 'examples' without
+installing ALUT. To build these, just go to the respective subdirectories and
+run 'make'.
+
+ToDo: Explain building with VisualStudio and friends.
 
 
-REQUIREMENTS:
+SUPPORT
+=======
 
-In addition to the libraries that I provide, you
-will also need OpenAL (OpenAL 1.0 or later)
-and a sound card that supports OpenAL.
+Please don't email me the authors directly, sign up to the OpenAL user's mailing
+list. Instructions can be found here:
 
-
-DIRECTORY STRUCTURE:
-
-ALUT expects to be installed in one standard place:
-
-  /usr/lib
-
-...with header files at:
-
-  /usr/include/AL
+   http://www.openal.org
 
 
-PORTABILITY and DEPENDANCIES:
+LICENSING
+=========
 
-This library is designed to be easily portable (and
-more importantly so that programs using it can be
-UTTERLY portable).
+These libraries are offered as OpenSource freeware under the provisions of the
+GNU Library Public License (LGPL). Those terms and conditions are detailed in
+the file 'LICENSE' in this directory.
+
+
+PORTABILITY and DEPENDANCIES
+============================
+
+This library is designed to be easily portable (and more importantly so that
+programs using it can be UTTERLY portable).
 
 
 COMPILING/LINKING WITH ALUT
+===========================
 
-In your source code, add:
+In your source code, add
 
-     #include <AL/alut.h>
+   #include <AL/alut.h>
 
-Add this to your link line:
+and use
 
-  -lalut -lopenal -lpthread -lm
+   openal-config --cflags
+   openal-config --libs
+
+to find out the compiler and linker flags needed.
 
 
 DIRECTORIES
+===========
 
 Within this distribution, you will find the following directories:
 
-src        -- The source code for the ALUT library itself.
-doc        -- The ALUT documentation.
-test_suite -- A small suite of test programs to check that ALUT is
-              installed and working correctly.
-examples   -- For application authors, here is a small collection of
-              example programs that you can use to get you started.
-
-------------------------------------------------------------------------
-             Steve Baker.
-             <sjbaker1@airmail.net>
-             http://www.sjbaker.org
-
+admin      -- Administrative files needed for building ALUT
+doc        -- The ALUT documentation
+examples   -- For application authors, here is a small collection of example
+              programs that you can use to get you started
+include    -- The ALUT header
+src        -- The source code for the ALUT library itself
+test_suite -- A small suite of test programs to check that ALUT is installed and
+              working correctly
