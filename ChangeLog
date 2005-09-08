@@ -1,5 +1,8 @@
 2005-09-08  Sven Panne  <sven.panne@aedion.de>
 
+	* autogen.sh: Simply us autoreconf, as recommended in the
+	automake/autoconf documentation.
+
 	* README: Fixed typo.
 
 	* .cvsignore, configure.ac, Makefile.am: Put all administrative
