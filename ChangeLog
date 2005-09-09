@@ -1,3 +1,27 @@
+2005-09-09  Sven Panne  <sven.panne@aedion.de>
+
+	* src/Makefile.am: Added libm dependencies.
+
+	* configure.ac, include/AL/alut.h, admin/alut.dsp: Consistently
+	use _ALUTLIB when building the ALUT DLL.
+
+	* configure.ac, include/Makefile.am: Install header directly from
+	include subdirectory, it is more logical this way.
+
+	* include/AL/Makefile.am: Removed.
+
+	* configure.ac, src/Makefile.am, examples/Makefile.am,
+	test_suite/Makefile.am: Hardwire the library name, that kind of
+	flexibility is not needed as it would break the ABI.
+
+	* Makefile.am: Added rule to update libtool.
+
+	* configure.ac: Don't change the default prefix (principle of
+	least surprise). The alut library should be able to be used by
+	dlopen, it doesn't use dlopen (yet). Removed obscure includedir
+	adjustment, it is not needed. Removed dead code. Improved logic to
+	choose OpenAL library (still not completely right).
+
 2005-09-08  Sven Panne  <sven.panne@aedion.de>
 
 	* src/Makefile.am: Distribute internal headers, too.

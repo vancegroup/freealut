@@ -1,11 +1,14 @@
-lib_LTLIBRARIES = lib@LIBRARY@.la
+lib_LTLIBRARIES = libalut.la
 
-lib@LIBRARY@_la_SOURCES = alutError.h   \
-                          alutError.c    \
-                          alutInit.h    \
-                          alutInit.c    \
-                          alutLoader.c  \
-                          alutVersion.c \
-                          alutWaveform.c
+libalut_la_SOURCES =	\
+	alutError.c	\
+	alutError.h	\
+	alutInit.c	\
+	alutInit.h	\
+	alutLoader.c	\
+	alutVersion.c	\
+	alutWaveform.c
+
+libalut_la_LIBADD  = $(LIBM)
 
 AM_CPPFLAGS = -I$(top_srcdir)/include

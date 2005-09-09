@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 #if defined(_WIN32) && !defined(_XBOX)
- #if defined (_OPENAL32LIB)
+ #if defined (_ALUTLIB)
   #define ALUTAPI __declspec(dllexport)
  #else
   #define ALUTAPI __declspec(dllimport)

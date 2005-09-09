@@ -2,6 +2,9 @@ SUBDIRS = src include
 
 EXTRA_DIST = admin/alut.dsp admin/alut.dsw admin/hello_world.dsp autogen.sh examples test_suite
 
+libtool: $(LIBTOOL_DEPS)
+	$(SHELL) ./config.status --recheck
+
 permissions:
 	find . -type f \! -perm +222 \! -name "*.sh" -exec chmod +w {} \;
 
