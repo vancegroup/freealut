@@ -2,12 +2,6 @@
 #include <stdio.h>
 #include <AL/alut.h>
 
-#if defined(_WIN32)
-#define sleep(x) Sleep(1000*(x))
-#else
-#include <unistd.h>
-#endif
-
 /*
   This program loads and plays a file the ALUT 0.x.x way.
 */
@@ -18,7 +12,9 @@ main (int argc, char **argv)
   ALenum format;
   ALsizei size;
   ALsizei freq;
+#if !defined(__APPLE__)
   ALboolean loop;
+#endif
   ALvoid *data;
   ALuint buffer;
   ALuint handle;
@@ -35,15 +31,18 @@ main (int argc, char **argv)
      write ALUT programs!!
    */
 
-  alutLoadWAVFile ((ALbyte *) "file1.wav", &format, &data, &size, &freq,
-                   &loop);
+  alutLoadWAVFile ((ALbyte *) "file1.wav", &format, &data, &size, &freq
+#if !defined(__APPLE__)
+                   , &loop
+#endif
+    );
   alGenBuffers (1, &buffer);
   alBufferData (buffer, format, data, size, freq);
   free (data);
   alGenSources (1, &handle);
   alSourcei (handle, AL_BUFFER, buffer);
   alSourcePlay (handle);
-  sleep (2);
+  alutMicroSleep (2000000);
 
   fd = fopen ("file1.wav", "rb");
   if (fd == NULL)
@@ -59,14 +58,18 @@ main (int argc, char **argv)
     }
   fclose (fd);
 
-  alutLoadWAVMemory (filebuffer, &format, &data, &size, &freq, &loop);
+  alutLoadWAVMemory (filebuffer, &format, &data, &size, &freq
+#if !defined(__APPLE__)
+                     , &loop
+#endif
+    );
   alGenBuffers (1, &buffer);
   alBufferData (buffer, format, data, size, freq);
   free (data);
   alGenSources (1, &handle);
   alSourcei (handle, AL_BUFFER, buffer);
   alSourcePlay (handle);
-  sleep (2);
+  alutMicroSleep (2000000);
 
   alutExit ();
   return EXIT_SUCCESS;

@@ -10,18 +10,18 @@ extern "C" {
 
 #if defined(_WIN32) && !defined(_XBOX)
  #if defined (_ALUTLIB)
-  #define ALUTAPI __declspec(dllexport)
+  #define ALUT_API __declspec(dllexport)
  #else
-  #define ALUTAPI __declspec(dllimport)
+  #define ALUT_API __declspec(dllimport)
  #endif
 #else
- #define ALUTAPI extern
+ #define ALUT_API extern
 #endif
 
 #if defined(_WIN32)
- #define ALUTAPIENTRY __cdecl
+ #define ALUT_APIENTRY __cdecl
 #else
- #define ALUTAPIENTRY
+ #define ALUT_APIENTRY
 #endif
 
 #if defined(__MWERKS_)
@@ -30,12 +30,6 @@ extern "C" {
 
 #define ALUT_API_MAJOR_VERSION                 1
 #define ALUT_API_MINOR_VERSION                 0
-
-#define ALUT_WAVEFORM_SINE                     0x100
-#define ALUT_WAVEFORM_SQUARE                   0x101
-#define ALUT_WAVEFORM_SAWTOOTH                 0x102
-#define ALUT_WAVEFORM_WHITENOISE               0x103
-#define ALUT_WAVEFORM_IMPULSE                  0x104
 
 #define ALUT_ERROR_NO_ERROR                    0
 #define ALUT_ERROR_OUT_OF_MEMORY               0x201
@@ -51,33 +45,42 @@ extern "C" {
 #define ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE    0x20B
 #define ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE   0x20C
 
-ALUTAPI ALboolean ALUTAPIENTRY alutInit (int *argcp, char **argv);
-ALUTAPI ALboolean ALUTAPIENTRY alutInitWithoutContext (int *argcp, char **argv);
-ALUTAPI void ALUTAPIENTRY alutExit (void);
+#define ALUT_WAVEFORM_SINE                     0x100
+#define ALUT_WAVEFORM_SQUARE                   0x101
+#define ALUT_WAVEFORM_SAWTOOTH                 0x102
+#define ALUT_WAVEFORM_WHITENOISE               0x103
+#define ALUT_WAVEFORM_IMPULSE                  0x104
 
-ALUTAPI ALenum ALUTAPIENTRY alutGetError (void);
-ALUTAPI const char * ALUTAPIENTRY alutGetErrorString (ALenum error);
+ALUT_API ALboolean ALUT_APIENTRY alutInit (int *argcp, char **argv);
+ALUT_API ALboolean ALUT_APIENTRY alutInitWithoutContext (int *argcp, char **argv);
+ALUT_API void ALUT_APIENTRY alutExit (void);
 
-ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferFromFile (const char *filename);
-ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length);
-ALUTAPI ALvoid * ALUTAPIENTRY alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size, ALuint *freq);
-ALUTAPI ALvoid * ALUTAPIENTRY alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length, ALenum *format, ALsizei *size, ALuint *freq);
-ALUTAPI const char * ALUTAPIENTRY alutEnumerateSupportedFileTypes (void);
+ALUT_API ALenum ALUT_APIENTRY alutGetError (void);
+ALUT_API const char * ALUT_APIENTRY alutGetErrorString (ALenum error);
 
-ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferHelloWorld (void);
-ALUTAPI ALuint ALUTAPIENTRY alutCreateBufferWaveform (ALenum waveshape, float frequency, float phase, float duration);
+ALUT_API ALuint ALUT_APIENTRY alutCreateBufferFromFile (const char *filename);
+ALUT_API ALuint ALUT_APIENTRY alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length);
+ALUT_API ALvoid * ALUT_APIENTRY alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size, ALfloat *freq);
+ALUT_API ALvoid * ALUT_APIENTRY alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length, ALenum *format, ALsizei *size, ALfloat *freq);
+ALUT_API const char * ALUT_APIENTRY alutEnumerateSupportedFileTypes (void);
 
-ALUTAPI ALint ALUTAPIENTRY alutGetMajorVersion (void);
-ALUTAPI ALint ALUTAPIENTRY alutGetMinorVersion (void);
+ALUT_API ALuint ALUT_APIENTRY alutCreateBufferHelloWorld (void);
+ALUT_API ALuint ALUT_APIENTRY alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase, ALfloat duration);
 
-#if !defined(_WIN32)
+ALUT_API ALint ALUT_APIENTRY alutGetMajorVersion (void);
+ALUT_API ALint ALUT_APIENTRY alutGetMinorVersion (void);
+
+ALUT_API void ALUT_APIENTRY alutMicroSleep (ALuint microSeconds);
+
 /* Nasty Compatibility stuff, WARNING: THESE FUNCTIONS ARE STRONGLY DEPRECATED */
-
-ALUTAPI void ALUTAPIENTRY alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size, ALsizei *freq, ALboolean *loop);
-ALUTAPI void ALUTAPIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *freq, ALboolean *loop);
-ALUTAPI void ALUTAPIENTRY alutUnloadWAV (ALenum format, ALvoid *data, ALsizei size, ALsizei freq);
-
-#endif /* not _WIN32 */
+#if defined(__APPLE__)
+ALUT_API void ALUT_APIENTRY alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size, ALsizei *freq);
+ALUT_API void ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *freq);
+#else
+ALUT_API void ALUT_APIENTRY alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size, ALsizei *freq, ALboolean *loop);
+ALUT_API void ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *freq, ALboolean *loop);
+#endif
+ALUT_API void ALUT_APIENTRY alutUnloadWAV (ALenum format, ALvoid *data, ALsizei size, ALsizei freq);
 
 #if defined(__MWERKS_)
  #pragma export off

@@ -2,12 +2,6 @@
 #include <stdio.h>
 #include <AL/alut.h>
 
-#if defined(_WIN32)
-#define sleep(x) Sleep(1000*(x))
-#else
-#include <unistd.h>
-#endif
-
 /*
   This program loads and plays a variety of files.
 */
@@ -58,11 +52,11 @@ main (int argc, char **argv)
   for (i = 0; i < 3; i++)
     {
       alSourcePlay (file1Source);
-      sleep (1);
+      alutMicroSleep (1000000);
       alSourcePlay (file2Source);
-      sleep (1);
+      alutMicroSleep (1000000);
       alSourcePlay (file3Source);
-      sleep (1);
+      alutMicroSleep (1000000);
     }
 
   alutExit ();

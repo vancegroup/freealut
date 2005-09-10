@@ -5,23 +5,27 @@
 #include "alutError.h"
 #include "alutInit.h"
 
-#define _ALUT_SAMPLE_FREQUENCY  44100.0f
+#if defined(_WIN32)
+#defined random() rand()
+#endif
+
+#define SAMPLE_FREQUENCY  44100.0f
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
 
 ALuint
-alutCreateBufferWaveform (ALenum waveshape,
-                          float frequency, float phase, float duration)
+alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
+                          ALfloat duration)
 {
   ALuint albuffer;
   short *buffer;
   ALsizei length;
   int numLoops;
-  float pos;
+  ALfloat pos;
   int i;
-  float last_pos = 1000000.0f;
+  ALfloat last_pos = 1000000.0f;
 
   _alutSanityCheck ();
 
@@ -29,13 +33,13 @@ alutCreateBufferWaveform (ALenum waveshape,
 
   phase /= 180.0f;
   numLoops = (int) floor (frequency * duration);
-  duration = ((float) numLoops) / frequency;
-  length = (int) floor (duration * _ALUT_SAMPLE_FREQUENCY);
+  duration = ((ALfloat) numLoops) / frequency;
+  length = (int) floor (duration * SAMPLE_FREQUENCY);
   buffer = (short *) malloc (length * sizeof (short));
 
   for (i = 0; i < length; i++)
     {
-      float p = phase + frequency * ((float) i) / _ALUT_SAMPLE_FREQUENCY;
+      ALfloat p = phase + frequency * ((ALfloat) i) / SAMPLE_FREQUENCY;
       pos = p - floor (p);
 
       switch (waveshape)
@@ -50,11 +54,7 @@ alutCreateBufferWaveform (ALenum waveshape,
           buffer[i] = (short) ((pos - 0.5f) * 65535.0f);
           break;
         case ALUT_WAVEFORM_WHITENOISE:
-#ifdef _WIN32
-          buffer[i] = (short) (rand () % 65536 - 32768);
-#else
           buffer[i] = (short) (random () % 65536 - 32768);
-#endif
           break;
         case ALUT_WAVEFORM_IMPULSE:
           buffer[i] = (short) ((last_pos > pos) ? 32767 : 0);
@@ -68,7 +68,7 @@ alutCreateBufferWaveform (ALenum waveshape,
     }
 
   alBufferData (albuffer, AL_FORMAT_MONO16, buffer,
-                length * sizeof (short), (int) _ALUT_SAMPLE_FREQUENCY);
+                length * sizeof (short), (int) SAMPLE_FREQUENCY);
   free (buffer);
   return albuffer;
 }
@@ -4174,6 +4174,6 @@ alutCreateBufferHelloWorld (void)
 
   alGenBuffers (1, &albuffer);
   alBufferData (albuffer, AL_FORMAT_MONO16, (short *) _alutHelloWorldSample,
-                sizeof (_alutHelloWorldSample), (int) _ALUT_SAMPLE_FREQUENCY);
+                sizeof (_alutHelloWorldSample), (int) SAMPLE_FREQUENCY);
   return albuffer;
 }

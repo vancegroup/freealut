@@ -4,26 +4,102 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
     <link rel="stylesheet" href="alut.css" type="text/css"/>
-    <title>OpenAL Utility Toolkit</title>
+    <title>The OpenAL Utility Toolkit</title>
   </head>
 
   <body>
-    <h1>THE OPENAL UTILITY TOOLKIT (ALUT).</h1>
-    <h2>Reference Manual Version 1.0.0.</h2>
-    <h2>First Release by Steve Baker - August 24th 2005.</h2>
-    <h2>Second Release by Sven Panne - September 2nd 2005.</h2>
+    <h1>The OpenAL Utility Toolkit (ALUT)</h1>
 
-    <h1>Introduction</h1>
+    <h1>Contents</h1>
 
-    <p>This is the first draft of the <a href="http://www.openal.org">OpenAL</a>
+    <ul>
+      <li>
+        <a href="#ReleaseHistory">Release History</a>
+      </li>
+      <li>
+        <a href="#Introduction">Introduction</a>
+        <ul>
+          <li><a href="#Licensing">Licensing</a></li>
+          <li><a href="#History">Some History</a></li>
+          <li><a href="#BackwardsCompatibility">Backwards Compatibility with Version 0.x.x</a></li>
+          <li><a href="#OpenGLGLUT">OpenGL, GLUT and using what you already know</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#CompilingLinking">Compiling and Linking</a>
+      </li>
+      <li>
+        <a href="#API">The ALUT API</a>
+        <ul>
+          <li>
+            <a href="#InitializationExit">Initialization / Exit</a>
+            <ul>
+              <li><a href="#alutInit">alutInit</a></li>
+              <li><a href="#alutExit">alutExit</a></li>
+              <li><a href="#InitializationExitNotes">Notes</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="#ErrorHandling">Error Handling</a>
+            <ul>
+              <li><a href="#alutGetError">alutGetError</a></li>
+              <li><a href="#alutGetErrorString">alutGetErrorString</a></li>
+              <li><a href="#ErrorHandlingExample">Example of Context Handling and Error Reporting</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="#Loading">Sound Sample File Loading</a>
+            <ul>
+              <li><a href="#alutCreateBufferFromFoo">alutCreateBufferFromFile / alutCreateBufferFromFileImage</a></li>
+              <li><a href="#alutLoadMemoryFromFoo">alutLoadMemoryFromFile / alutLoadMemoryFromFileImage</a></li>
+              <li><a href="#alutEnumerateSupportedFileTypes">alutEnumerateSupportedFileTypes</a></li>
+              <li><a href="#LoadingNotes">Notes</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="#BuiltinSounds">Built-in Sounds</a>
+            <ul>
+             <li><a href="#alutCreateBufferHelloWorld">alutCreateBufferHelloWorld</a></li>
+             <li><a href="#alutCreateBufferWaveform">alutCreateBufferWaveform</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="#VersionChecking">Version Checking</a>
+            <ul>
+              <li><a href="#VersioningMacros">Preprocessor Macros related to Versioning</a></li>
+              <li><a href="#alutGetFooVersion">alutGetMajorVersion / alutGetMinorVersion</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="#Sleeping">Sleeping</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <h1><a name="ReleaseHistory"></a>Release History</h1>
+
+    <p>Discussion of the API is done via the <a
+    href="mailto:openal-devel@opensource.creative.com">openal-devel</a> mailing
+    list.</p>
+
+    <ul>
+      <li>2005-08-14: Version 1.0.0 by Steve Baker</li>
+      <li>2005-09-02: Version 1.0.1 by Sven Panne</li>
+      <li>2005-09-10: Version 1.0.2 by Sven Panne</li>
+    </ul>
+
+    <h1><a name="Introduction"></a>Introduction</h1>
+
+    <p>This is a draft of the <a href="http://www.openal.org/">OpenAL</a>
     Utility Toolkit (ALUT) Reference Manual.</p>
 
-    <h2>Licensing</h2>
+    <h2><a name="Licensing"></a>Licensing</h2>
 
     <p>Some previous versions of ALUT were released under the BSD license -
     others under LGPL. This version will be released exclusively under LGPL.</p>
 
-    <h2>Some History</h2>
+    <h2><a name="History"></a>Some History</h2>
 
     <p>At time of writing (August 2005), ALUT was a set of undocumented
     semi-portable functions that were mixed up in the OpenAL library
@@ -41,14 +117,14 @@
     will arbitarily label all previous versions as 0.x.x and start this cleaned
     up version at release 1.0.0 to reflect changed API and implementations.</p>
 
-    <h2>Backwards Compatibility with Version 0.x.x.</h2>
+    <h2><a name="BackwardsCompatibility"></a>Backwards Compatibility with Version 0.x.x</h2>
 
     <p>There are no formal guarantees of reverse compatibility with the various
     versions of ALUT prior to 1.0.0. Having said that, some effort has been made
     to at least allow these programs to continue to run if they are recompiled
     against ALUT 1.0.0 or later.</p>
 
-    <h2>OpenGL, GLUT and using what you already know.</h2>
+    <h2><a name="OpenGLGLUT"></a>OpenGL, GLUT and using what you already know</h2>
 
     <p>If you are already familiar with OpenGL and its utility toolkit 'GLUT',
     then you should feel very familiar with ALUT. Wherever GLUT has 'GL', ALUT
@@ -72,45 +148,47 @@ main (int argc, char **argv)
   alGenSources (1, &amp;helloSource);
   alSourcei (helloSource, AL_BUFFER, helloBuffer);
   alSourcePlay (helloSource);
-  sleep (3);
+  alutMicroSleep (3000000);
   alutExit ();
   return EXIT_SUCCESS;
 }
 </pre>
 
-    <h2>Compiling and Linking</h2>
+    <h3><a name="CompilingLinking"></a>Compiling and Linking</h3>
 
-    <p>All ALUT programs should begin with:</p>
+    <p>All ALUT programs should contain:</p>
 
 <pre class="programlisting">
 #include &lt;AL/alut.h&gt;
 </pre>
 
-    <p>(The ALUT header includes &lt;AL/al.h&gt; and &lt;AL/alc.h&gt; for you so
+    <p>The ALUT header includes &lt;AL/al.h&gt; and &lt;AL/alc.h&gt; for you so
     you don't need to include them again - although it does not hurt to do
-    so).</p>
+    so.</p>
 
-    <p>Link with one of:</p>
+    <p>To find out the necessary compilation flags, use one of the following
+    commands:</p>
 
-<pre class="programlisting">
-libalut.so   -- Linux, BSD, UNIX, etc.
-alut.dll     -- Windows.
-???.???      -- MacOSX.
+<pre class="screen">
+pkg-config --cflags openal
+openal-config --cflags
 </pre>
 
-    <p>Under UNIX/Linux/BSD systems, the ALUT header is conventionally stored in
-    /usr/include/AL/alut.h and the library in /usr/lib/libalut.so. Place
-    '-lalut' before '-lopenal' in your link command.</p>
+    <p>To find out the necessary flags for linking, use one of the following
+    commands:</p>
 
-    <p>Under Windows systems ????</p>
+<pre class="screen">
+pkg-config --libs openal
+openal-config --libs
+</pre>
 
-    <p>Under MacOSX systems ????</p>
+    <p>On Windows, link with alut.dll and openal32.dll</p>
 
-    <h1>The ALUT API.</h1>
+    <h1><a name="API"></a>The ALUT API</h1>
 
-    <h2>Initialization / Exit</h2>
+    <h2><a name="InitializationExit"></a>Initialization / Exit</h2>
 
-    <h3>alutInit</h3>
+    <h3><a name="alutInit"></a>alutInit</h3>
 
     <p>The first call to ALUT must always be one of the following:</p>
 
@@ -129,12 +207,12 @@ ALboolean alutInitWithoutContext (int *argcp, char **argv);
     call alutInitWithoutContext instead of alutInit. Then you may use OpenAL's
     ALC API to create your own context(s) on whatever devices you prefer.</p>
 
-    <p>Both functions return AL_TRUE on success of AL_FALSE if there was a
+    <p>Both functions return AL_TRUE on success or AL_FALSE if there was a
     problem.</p>
 
     <p>If you pass alutInit/alInitWithoutContext the argc and argv from your
-    main program, it may examine your command-line options and may use (and
-    remove) those options that it recognises.</p>
+    main program, it will examine your command-line options and use (and remove)
+    those options that it recognises.</p>
 
     <p>e.g.</p>
 
@@ -156,7 +234,7 @@ main (int argc, char **argv)
     <p>It is acceptable to call alutInit(NULL,NULL) in settings where no useful
     information can be obtained from argc and argv.</p>
 
-    <h3>alutExit</h3>
+    <h3><a name="alutExit"></a>alutExit</h3>
 
     <p>When the application has finished playing audio, it should shut down ALUT
     in order to destroy the audio context it created with alutInit:</p>
@@ -170,28 +248,28 @@ void alutExit (void);
     alutExit, you may subsequently call alutInit or alutInitWithoutContext again
     if you so desire.</p>
 
-    <h3>NOTES</h3>
+    <h3><a name="InitializationExitNotes"></a>Notes</h3>
 
     <ol>
-      <li><i>It is an error to make more than one call to alutInit without first
+      <li>It is an error to make more than one call to alutInit without first
       calling alutExit. If you need more complex device/context support, please
-      use the OpenAL 'ALC' API.</i></li>
+      use the OpenAL 'ALC' API.</li>
 
-      <li><i>Under well-behaved operating systems, it should be acceptable to
+      <li>Under well-behaved operating systems, it should be acceptable to
       simply exit from your program without bothering to call alutExit - relying
       on the OS to clean up after you. However, it is dangerous to rely on this
-      behavior if portable operation is expected.</i></li>
+      behavior if portable operation is expected.</li>
 
-      <li><i>Some ALUT implementations may allow you to create a context on a
+      <li>Some ALUT implementations may allow you to create a context on a
       non-default OpenAL device using alutInit by telling ALUT which device to
       use with a flag on the command line, a Shell Variable, the '.alutrc' file
       or a 'registry' entry. But this behavior is not guaranteed. By default,
-      you'll get whatever device is the ALC default.</i></li>
+      you'll get whatever device is the ALC default.</li>
     </ol>
 
-    <h2>Error Handling</h2>
+    <h2><a name="ErrorHandling"></a>Error Handling</h2>
 
-    <h3>alutGetError and alutGetErrorString</h3>
+    <h3><a name="alutGetError"></a>alutGetError</h3>
 
     <p>Any ALUT routine that has an error return will set a global error code
     that may be retrieved with:</p>
@@ -220,22 +298,26 @@ ALenum alutGetError (void);
       <li>...others to be decided as initial implementation proceeds... </li>
     </ul>
 
-    <p>Error codes are not cleared by successful ALUT calls and if an error
-    condition occurs, is stored and a subsequent error comes along, the second
+    <p>If an error condition occurs, it is stored internally. If a subsequent
+    error occurs while there is still an error recorded internally, the second
     error will simply be ignored. Calling alutGetError will reset the error code
-    to ALUT_ERROR_NO_ERROR.</p>
+    to ALUT_ERROR_NO_ERROR. Error codes are not cleared by successful ALUT
+    calls.</p>
 
-    <p>There is a second routine:</p>
+    <h3><a name="alutGetErrorString"></a>alutGetErrorString</h3>
+
+    <p>To convert an error code into a human-readable description, use the
+    following routine:</p>
 
 <pre class="programlisting">
 const char *alutGetErrorString (ALenum error);
 </pre>
 
-    <p>...which converts an error code into a human-readable description. The
-    precise text of the strings that are returned may vary from implementation
-    to implementation and should not be relied upon by the application.</p>
+    <p>The precise text of the strings that are returned may vary from
+    implementation to implementation and should not be relied upon by the
+    application.</p>
 
-    <h2>Example of Context Handling and Error Reporting</h2>
+    <h3><a name="ErrorHandlingExample"></a>Example of Context Handling and Error Reporting</h3>
 
     <p>A typical ALUT program will look like this:</p>
 
@@ -257,12 +339,12 @@ main (int argc, char **argv)
 }
 </pre>
 
-    <h2>Sound Sample File Loading</h2>
+    <h2><a name="Loading"></a>Sound Sample File Loading</h2>
 
     <p>ALUT attempts to simplify the business of getting a simple application
     running by providing loaders for a range of file formats.</p>
 
-    <h3>alutCreateBufferFromFile / alutCreateBufferFromFileImage</h3>
+    <h3><a name="alutCreateBufferFromFoo"></a>alutCreateBufferFromFile / alutCreateBufferFromFileImage</h3>
 
     <p>Rather than enumerate a list of formats that will likely grow with time,
     there is a single entrypoint for loading files of all formats:</p>
@@ -283,7 +365,7 @@ ALuint alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length);
     <p>Both routines return zero in the event of an error - with alutGetError
     providing more detail if required.</p>
 
-    <h3>alutLoadMemoryFromFile / alutLoadMemoryFromFileImage</h3>
+    <h3><a name="alutLoadMemoryFromFoo"></a>alutLoadMemoryFromFile / alutLoadMemoryFromFileImage</h3>
 
     <p>For applications that require a more hands-on approach,</p>
 
@@ -291,13 +373,13 @@ ALuint alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length);
 ALvoid *alutLoadMemoryFromFile (const char *filename,
                                 ALenum *format,
                                 ALsizei *size,
-                                ALuint *freq);
+                                ALfloat *freq);
 
 ALvoid *alutLoadMemoryFromFileImage (const ALvoid *data,
                                      ALsizei length,
                                      ALenum *format,
                                      ALsizei *size,
-                                     ALuint *freq);
+                                     ALfloat *freq);
 </pre>
 
     <p>These routines load data from disk or memory as with the
@@ -313,7 +395,7 @@ ALvoid *alutLoadMemoryFromFileImage (const ALvoid *data,
     the data in memory or NULL in the event of an error. alutGetError will (as
     usual) provide more details.</p>
 
-    <h3>alutEnumerateSupportedFileTypes</h3>
+    <h3><a name="alutEnumerateSupportedFileTypes"></a>alutEnumerateSupportedFileTypes</h3>
 
     <p>You can obtain a comma-separated list of supported filename extensions
     (suitable for passing to a directory browser popup) using:</p>
@@ -324,27 +406,28 @@ const char *alutEnumerateSupportedFileTypes (void);
 
     <p>This will return something like "*.wav, *.ogg, *.au".</p>
 
-    <h3>NOTES</h3>
+    <h3><a name="LoadingNotes"></a>Notes</h3>
 
     <ol>
-      <li><i> It is possible that for some file types (notably '.wav') the
-      support may be only for a few sub-formats. For example, an implementation
-      may advertise that "*.wav" is supported when in fact it only supports
+      <li>It is possible that for some file types (notably '.wav') the support
+      may be only for a few sub-formats. For example, an implementation may
+      advertise that "*.wav" is supported when in fact it only supports
       uncompressed WAV files and not the compressed variety. In this event, the
       various ALUT file loaders may return an error and set
       ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE rather than
       ALUT_ERROR_UNSUPPORTED_FILE_TYPE which would indicate that no files of
-      this type are allowed.</i></li>
+      this type are allowed.</li>
 
-      <li><i> It is possible that alutLoadMemoryFromFile will be unable to
-      support some file types that alutCreateBufferFromFile can support
-      (although the reverse is never the case). In this situation, that file
-      type WILL be listed in alutEnumerateSupportedFileTypes - but the actual
-      call to alutLoadMemoryFromFile will fail - returning
-      ALUT_ERROR_UNSUPPORTED_FILE_TYPE.</i></li>
+      <li>It is possible that alutLoadMemoryFromFile will be unable to support
+      some file types that alutCreateBufferFromFile can support (although the
+      reverse is never the case). In this situation, that file type WILL be
+      listed in alutEnumerateSupportedFileTypes - but the actual call to
+      alutLoadMemoryFromFile will fail - returning
+      ALUT_ERROR_UNSUPPORTED_FILE_TYPE.</li>
 
-      <li><i>For reverse-compatibility with ALUT 0.x.x, there are three
-      deprecated functions:</i></li>
+      <li>For backwards-compatibility with ALUT 0.x.x, ALUT still offers the
+      three deprecated functions below. Note that on MacOS 0.x.x version, the
+      'loop' parameter is omitted from both alutLoadWAV* functions.</li>
     </ol>
 
 <pre class="programlisting">
@@ -365,54 +448,52 @@ void alutLoadWAVMemory (ALbyte *buffer,
 void alutUnloadWAV (ALenum format ALvoid *data, ALsizei size, ALsizei freq);
 </pre>
 
-
-    <p><i>On the MacOS 0.x.x version, the 'loop' parameter is omitted from both
-    alutLoadWAV* functions.</i></p>
-
-    <h2>Built-in Sounds</h2>
+    <h2><a name="BuiltinSounds"></a>Built-in Sounds</h2>
 
     <p>In order to simplify initial startup - and to keep test program
     distributions clean, ALUT provides built-in sounds that do not require disk
-    I/O because they are built into the ALUT library:</p>
+    I/O because they are built into the ALUT library. These functions may be
+    used to write compact ALUT test/example applications with no external file
+    dependancies whatsoever. When sending short application programs to either
+    the ALUT or OpenAL developers as a part of bug reporting, one should
+    endeavor to use these functions instead of loading ones own sound files.</p>
 
-    <h3>alutCreateBufferHelloWorld / alutCreateBufferWaveform</h3>
+    <p>Each routine returns the handle of a newly allocated OpenAL buffer - or
+    AL_NONE if there was some problem in generating it.</p>
 
-    <p>The following functions return an alBuffer handle:</p>
+    <h3><a name="alutCreateBufferHelloWorld"></a>alutCreateBufferHelloWorld</h3>
 
 <pre class="programlisting">
 ALuint alutCreateBufferHelloWorld (void);
-
-ALuint alutCreateBufferWaveform   (ALenum waveshape,
-                                   float frequency,
-                                   float phase,
-                                   float duration);
 </pre>
 
-    <p>alutCreateBufferHelloWorld returns the handle of an alBuffer containing
-    the sound of someone saying "Hello World".</p>
+    <p>alutCreateBufferHelloWorld returns the handle of an OpenAL buffer
+    containing the sound of someone saying "Hello World".</p>
 
-    <p>The alutCreateBufferWaveform returns a snippet of audio with the
-    specified waveshape (ALUT_WAVEFORM_SINE, ALUT_WAVEFORM_SQUARE,
-    ALUT_WAVEFORM_SAWTOOTH, ALUT_WAVEFORM_WHITENOISE or ALUT_WAVEFORM_IMPULSE)
-    and at the specified frequency (in Hertz), phase (in degrees: -180 to +180)
-    and duration (in seconds). The duration will always be rounded up to an
-    exact number of cycles of the sound to avoid a click if you loop the
-    sample. The frequency and phase terms are ignored for ALUT_WHITENOISE.</p>
+    <h3><a name="alutCreateBufferWaveform"></a>alutCreateBufferWaveform</h3>
 
-    <p>These functions may be used to write compact ALUT test/example
-    applications with no external file dependancies whatever. When sending short
-    application programs to either the ALUT or OpenAL developers as a part of
-    bug reporting, one should endeavor to use these functions instead of loading
-    ones own sound files.</p>
+<pre class="programlisting">
+ALuint alutCreateBufferWaveform   (ALenum waveshape,
+                                   ALfloat frequency,
+                                   ALfloat phase,
+                                   ALfloat duration);
+</pre>
 
-    <p>Each routine returns the handle of a newly allocated alBuffer - or zero
-    if there was some problem in generating it.</p>
+    <p>alutCreateBufferWaveform returns a snippet of audio with the specified
+    waveshape (ALUT_WAVEFORM_SINE, ALUT_WAVEFORM_SQUARE, ALUT_WAVEFORM_SAWTOOTH,
+    ALUT_WAVEFORM_WHITENOISE or ALUT_WAVEFORM_IMPULSE) and at the specified
+    frequency (in Hertz), phase (in degrees: -180 to +180) and duration (in
+    seconds). The duration will always be rounded up to an exact number of
+    cycles of the sound to avoid a click if you loop the sample. The frequency
+    and phase terms are ignored for ALUT_WHITENOISE.</p>
 
-    <h2>Version Checking.</h2>
+    <h2><a name="VersionChecking"></a>Version Checking</h2>
 
-    <h3>alutGetMajorVersion / alutGetMinorVersion</h3>
+    <h3><a name="VersioningMacros"></a>Preprocessor Macros related to Versioning</h3>
 
-    <p>In version 1.0.0 and later, alut.h header file contains:</p>
+    <p>In version 1.0.0 and later, the alut.h header file contains the following
+    macro definitions, whose values will be incremented appropriately in future
+    revisions of ALUT:</p>
 
 <pre class="programlisting">
 #define ALUT_API_MAJOR_VERSION 1
@@ -420,10 +501,7 @@ ALuint alutCreateBufferWaveform   (ALenum waveshape,
 #define ALUT_API_MINOR_VERSION 0
 </pre>
 
-    <p>(These will be incremented appropriately in future revisions of
-    ALUT).</p>
-
-    <p>The ALUT library contains:</p>
+    <h3><a name="alutGetFooVersion"></a>alutGetMajorVersion / alutGetMinorVersion</h3>
 
 <pre class="programlisting">
 ALint alutGetMajorVersion (void);
@@ -431,11 +509,12 @@ ALint alutGetMajorVersion (void);
 ALint alutGetMinorVersion (void);
 </pre>
 
-    <p>If the ALUT API gets added to or changed in future releases, we will
-    increment that number to match the major and minor version numbers of this
-    ALUT specification document. Applications can verify at runtime that they
-    have been compiled and linked with the matching header file and library
-    file.</p>
+    <p>The functions above can be used to dynamically retrieve the major and
+    minor version numbers of the used ALUT. If the ALUT API gets added to or
+    changed in future releases, we will increment that number to match the major
+    and minor version numbers of this ALUT specification document. Applications
+    can verify at runtime that they have been compiled and linked with the
+    matching header file and library file.</p>
 
 <pre class="programlisting">
 #ifdef ALUT_API_MAJOR_VERSION
@@ -450,8 +529,21 @@ if (alutGetMajorVersion () != ALUT_API_MAJOR_VERSION ||
     <p>The third part of the ALUT version number is incremented only when fixing
     minor bugs and is not accessible via this mechanism.</p>
 
-    <hr />
-    <p>You can email the author at: SJBaker1@airmail.net</p>
-    <hr />
+    <h2><a name="Sleeping"></a>Sleeping</h2>
+
+    <p>To make the current thread sleep for a given amount of microseconds, use
+    the following function:</p>
+
+<pre class="programlisting">
+void alutMicroSleep (ALuint microSeconds);
+</pre>
+
+    <p>Note that sleeping for 0 microseconds will give other runnable threads a
+    chance to run.</p>
+
+    <p>Having a general utility function like this in an audio-related toolkit
+    might seem strange at first, but sleeping is a common task in a lot of audio
+    demos and it can't be done portably without cluttering the source code with
+    #ifdefs.</p>
   </body>
 </html>

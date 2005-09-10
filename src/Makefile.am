@@ -6,9 +6,10 @@ libalut_la_SOURCES =	\
 	alutInit.c	\
 	alutInit.h	\
 	alutLoader.c	\
+	alutUtil.c	\
 	alutVersion.c	\
 	alutWaveform.c
 
 libalut_la_LIBADD  = $(LIBM)
 
-AM_CPPFLAGS = -I$(top_srcdir)/include
+AM_CPPFLAGS = -I$(top_srcdir)/include -I$(topdir)

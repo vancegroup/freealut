@@ -20,7 +20,7 @@ struct SampleAttribs
   unsigned char *buffer;
   int bps;
   int stereo;
-  int rate;                     /* ToDo: This should probably be an ALuint */
+  int rate;                     /* ToDo: This should probably be an ALfloat */
   char *comment;
 };
 
@@ -150,7 +150,7 @@ alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length)
 
 static void *
 _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
-                                ALsizei *size, ALuint *freq)
+                                ALsizei *size, ALfloat *freq)
 {
   struct SampleAttribs attr;
   struct DataGetter dg;
@@ -194,7 +194,7 @@ _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
     }
   if (freq != NULL)
     {
-      *freq = (ALuint) attr.rate;
+      *freq = (ALfloat) attr.rate;
     }
 
   return attr.buffer;
@@ -203,7 +203,7 @@ _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
 static void *
 _alutPrivateLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
                                      ALenum *format, ALsizei *size,
-                                     ALuint *freq)
+                                     ALfloat *freq)
 {
   struct SampleAttribs attr;
   struct DataGetter dg;
@@ -231,7 +231,7 @@ _alutPrivateLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
     }
   if (freq != NULL)
     {
-      *freq = (ALuint) attr.rate;
+      *freq = (ALfloat) attr.rate;
     }
 
   return attr.buffer;
@@ -251,29 +251,41 @@ alutEnumerateSupportedFileTypes (void)
 
 void
 alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size,
-                 ALsizei *freq, ALboolean *loop)
+                 ALsizei *freq
+#if !defined(__APPLE__)
+                 , ALboolean *loop
+#endif
+  )
 {
-  ALuint frequency;
+  ALfloat frequency;
 
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 
-  *data = _alutPrivateLoadMemoryFromFile ((const char *)filename, format, size, &frequency);
+  *data =
+    _alutPrivateLoadMemoryFromFile ((const char *) filename, format, size,
+                                    &frequency);
 
   if (freq)
     {
       *freq = (ALsizei) frequency;
     }
+#if !defined(__APPLE__)
   if (loop)
     {
       *loop = AL_FALSE;
     }
+#endif
 }
 
 void
 alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size,
-                   ALsizei *freq, ALboolean *loop)
+                   ALsizei *freq
+#if !defined(__APPLE__)
+                   , ALboolean *loop
+#endif
+  )
 {
-  ALuint frequency;
+  ALfloat frequency;
 
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 
@@ -283,10 +295,12 @@ alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size,
     {
       *freq = (ALsizei) frequency;
     }
+#if !defined(__APPLE__)
   if (loop)
     {
       *loop = AL_FALSE;
     }
+#endif
 }
 
 void
@@ -748,7 +762,7 @@ _alutLoadRawFile (struct DataGetter *dg, struct SampleAttribs *attr)
 
 ALvoid *
 alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size,
-                        ALuint *freq)
+                        ALfloat *freq)
 {
   _alutSanityCheck ();
   return _alutPrivateLoadMemoryFromFile (filename, format, size, freq);
@@ -756,9 +770,9 @@ alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size,
 
 ALvoid *
 alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
-                             ALenum *format, ALsizei *size, ALuint *freq)
+                             ALenum *format, ALsizei *size, ALfloat *freq)
 {
   _alutSanityCheck ();
-  return _alutPrivateLoadMemoryFromFileImage (data, length,
-                                              format, size, freq);
+  return _alutPrivateLoadMemoryFromFileImage (data, length, format, size,
+                                              freq);
 }

@@ -1,12 +1,6 @@
 #include <stdlib.h>
 #include <AL/alut.h>
 
-#if defined(_WIN32)
-#define sleep(x) Sleep(1000*(x))
-#else
-#include <unistd.h>
-#endif
-
 /*
   This is the 'Hello World' program from the ALUT
   reference manual.
@@ -23,7 +17,7 @@ main (int argc, char **argv)
   alGenSources (1, &helloSource);
   alSourcei (helloSource, AL_BUFFER, helloBuffer);
   alSourcePlay (helloSource);
-  sleep (3);
+  alutMicroSleep (3000000);
   alutExit ();
   return EXIT_SUCCESS;
 }

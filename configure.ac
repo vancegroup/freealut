@@ -26,9 +26,10 @@ AC_SEARCH_LIBS([alGetError], [openal32 openal])
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([AL/alc.h AL/al.h assert.h math.h stdio.h])
+AC_CHECK_HEADERS([AL/alc.h AL/al.h assert.h math.h stdio.h time.h windows.h])
 
 # Checks for library functions.
+AC_CHECK_FUNCS([nanosleep usleep Sleep])
 AC_CHECK_LIBM
 AC_SUBST([LIBM])
 
