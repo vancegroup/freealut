@@ -20,6 +20,19 @@ AC_SUBST([LIBTOOL_DEPS])
 
 AC_DEFINE([_ALUTLIB], [1], [Define to 1 if you want to build the ALUT DLL.])
 
+# We could separate this into a macro...
+AC_CACHE_CHECK([whether the C compiler supports __attribute__],
+  [alut_cv___attribute__],
+  [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+    void  foo (int bar __attribute__((unused)) ) { }
+    static void baz (void) __attribute__((unused));
+    static void baz (void) { }]])],
+    [alut_cv___attribute__=yes],
+    [alut_cv___attribute__=no])])
+if test "$alut_cv___attribute__" = yes; then
+  AC_DEFINE([HAVE___ATTRIBUTE__], [1], [Define to 1 if your C compiler supports __attribute__])
+fi
+
 # Checks for libraries. (not perfect yet)
 AC_SEARCH_LIBS([pthread_self], [pthread])
 AC_SEARCH_LIBS([alGetError], [openal32 openal])

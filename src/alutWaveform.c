@@ -1,79 +1,143 @@
 #include <stdlib.h>
+#include <stdint.h>
 #include <math.h>
 #include <AL/alut.h>
 
 #include "alutError.h"
 #include "alutInit.h"
 
+#if HAVE___ATTRIBUTE__
+#define UNUSED(x) x __attribute__((unused))
+#else
+#define UNUSED(x) x
+#endif
+
 #if defined(_WIN32)
 #defined random() rand()
 #endif
 
-#define SAMPLE_FREQUENCY  44100.0f
+static const double sampleFrequency = 44100;
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
+/*
+ * The following waveformFoo functions expect the phase of the previous call and
+ * the current phase, both in the range [0..+1). They return an amplitude in the
+ * range [-1..+1].
+ */
+
+typedef double (*waveformFunction) (double lastPhase, double phase);
+
+static double
+waveformSine (double UNUSED (lastPhase), double phase)
+{
+  static const double pi = 3.14159265358979323846;
+  return sin (phase * pi);
+}
+
+static double
+waveformSquare (double UNUSED (lastPhase), double phase)
+{
+  return (phase >= 0.5) ? -1 : 1;
+}
+
+static double
+waveformSawtooth (double UNUSED (lastPhase), double phase)
+{
+  return 2 * phase - 1;
+}
+
+static double
+waveformWhitenoise (double UNUSED (lastPhase), double UNUSED (phase))
+{
+  static long prime = 67867967;
+  return 2 * (double) (random () % prime) / prime - 1;
+}
+
+static double
+waveformImpulse (double lastPhase, double phase)
+{
+  return (lastPhase > phase) ? 1 : 0;
+}
 
 ALuint
 alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
                           ALfloat duration)
 {
-  ALuint albuffer;
-  short *buffer;
-  ALsizei length;
-  int numLoops;
-  ALfloat pos;
-  int i;
-  ALfloat last_pos = 1000000.0f;
+  waveformFunction func;
+  double sampleDuration, lastPhase;
+  size_t numSamples, i;
+  int16_t *bufferData;
+  ALuint buffer;
 
+  /* error checks */
   _alutSanityCheck ();
 
-  alGenBuffers (1, &albuffer);
-
-  phase /= 180.0f;
-  numLoops = (int) floor (frequency * duration);
-  duration = ((ALfloat) numLoops) / frequency;
-  length = (int) floor (duration * SAMPLE_FREQUENCY);
-  buffer = (short *) malloc (length * sizeof (short));
-
-  for (i = 0; i < length; i++)
+  switch (waveshape)
     {
-      ALfloat p = phase + frequency * ((ALfloat) i) / SAMPLE_FREQUENCY;
-      pos = p - floor (p);
-
-      switch (waveshape)
-        {
-        case ALUT_WAVEFORM_SINE:
-          buffer[i] = (short) (sin (pos * M_PI) * 32767.0f);
-          break;
-        case ALUT_WAVEFORM_SQUARE:
-          buffer[i] = (pos > 0.5) ? -32768 : 32767;
-          break;
-        case ALUT_WAVEFORM_SAWTOOTH:
-          buffer[i] = (short) ((pos - 0.5f) * 65535.0f);
-          break;
-        case ALUT_WAVEFORM_WHITENOISE:
-          buffer[i] = (short) (random () % 65536 - 32768);
-          break;
-        case ALUT_WAVEFORM_IMPULSE:
-          buffer[i] = (short) ((last_pos > pos) ? 32767 : 0);
-          break;
-        default:
-          _alutSetError (ALUT_ERROR_INVALID_ENUM);
-          return 0;
-        }
-
-      last_pos = pos;
+    case ALUT_WAVEFORM_SINE:
+      func = waveformSine;
+      break;
+    case ALUT_WAVEFORM_SQUARE:
+      func = waveformSquare;
+      break;
+    case ALUT_WAVEFORM_SAWTOOTH:
+      func = waveformSawtooth;
+      break;
+    case ALUT_WAVEFORM_WHITENOISE:
+      func = waveformWhitenoise;
+      break;
+    case ALUT_WAVEFORM_IMPULSE:
+      func = waveformImpulse;
+      break;
+    default:
+      _alutSetError (ALUT_ERROR_INVALID_ENUM);
+      return AL_NONE;
     }
 
-  alBufferData (albuffer, AL_FORMAT_MONO16, buffer,
-                length * sizeof (short), (int) SAMPLE_FREQUENCY);
-  free (buffer);
-  return albuffer;
+  /* ToDo: Shall we test phase for [-180 .. +180]? */
+  if (!(frequency >= 0 && duration >= 0))
+    {
+      _alutSetError (ALUT_ERROR_INVALID_VALUE);
+      return AL_NONE;
+    }
+
+  /* allocate buffer to hold sample data */
+  sampleDuration = floor ((frequency * duration) + 0.5) / frequency;
+  numSamples = (size_t) floor (sampleDuration * sampleFrequency);
+  bufferData = (int16_t *) malloc (numSamples * sizeof (int16_t));
+  if (!(bufferData != NULL))
+    {
+      _alutSetError (ALUT_ERROR_OUT_OF_MEMORY);
+      return AL_NONE;
+    }
+
+  /* normalize phase from degrees */
+  phase /= 180;
+
+  /* the value corresponding to i = -1 below */
+  lastPhase = phase - frequency / sampleFrequency;
+  lastPhase -= floor (lastPhase);
+
+  /* calculate samples */
+  for (i = 0; i < numSamples; i++)
+    {
+      double p = phase + frequency * (double) i / sampleFrequency;
+      double currentPhase = p - floor (p);
+      double amplitude = func (lastPhase, currentPhase);
+      bufferData[i] = (int16_t) (amplitude * 32767);
+      lastPhase = currentPhase;
+    }
+
+  /* pass sample data to OpenAL */
+  /* ToDo: Error checks */
+  alGenBuffers (1, &buffer);
+  alBufferData (buffer, AL_FORMAT_MONO16, bufferData,
+                numSamples * sizeof (int16_t), (ALuint) sampleFrequency);
+  free (bufferData);
+  return buffer;
 }
 
-static unsigned short _alutHelloWorldSample[] = {
+/* ToDo: We are cheating with the signedness */
+static uint16_t helloWorldSample[] = {
   0x0010, 0xffff, 0xfff1, 0xffd0, 0xffe0, 0xfff0, 0xfff0, 0xffff,
   0xffff, 0xfff2, 0xffe0, 0xffd0, 0xffe0, 0xffd1, 0xffd0, 0xffd0,
   0xffd0, 0xfff0, 0x0001, 0xffff, 0x0001, 0x000f, 0x0020, 0x0060,
@@ -4168,12 +4232,13 @@ static unsigned short _alutHelloWorldSample[] = {
 ALuint
 alutCreateBufferHelloWorld (void)
 {
-  ALuint albuffer;
+  ALuint buffer;
 
   _alutSanityCheck ();
 
-  alGenBuffers (1, &albuffer);
-  alBufferData (albuffer, AL_FORMAT_MONO16, (short *) _alutHelloWorldSample,
-                sizeof (_alutHelloWorldSample), (int) SAMPLE_FREQUENCY);
-  return albuffer;
+  /* ToDo: Error checks */
+  alGenBuffers (1, &buffer);
+  alBufferData (buffer, AL_FORMAT_MONO16, helloWorldSample,
+                sizeof (helloWorldSample), (ALuint) sampleFrequency);
+  return buffer;
 }

@@ -1,5 +1,8 @@
 2005-09-11  Sven Panne  <sven.panne@aedion.de>
 
+	* configure.ac, src/alutWaveform.c: Cleaned up
+	alutCreateBufferWaveform.
+
 	* configure.ac, src/alutInit.c: Header cleanup.
 
 	* src/alutUtil.c: Fixed braino in alutMicroSleep using nanosleep.
