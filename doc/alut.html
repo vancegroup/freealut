@@ -44,7 +44,6 @@
             <ul>
               <li><a href="#alutGetError">alutGetError</a></li>
               <li><a href="#alutGetErrorString">alutGetErrorString</a></li>
-              <li><a href="#ErrorHandlingExample">Example of Context Handling and Error Reporting</a></li>
             </ul>
           </li>
           <li>
@@ -66,12 +65,16 @@
           <li>
             <a href="#VersionChecking">Version Checking</a>
             <ul>
-              <li><a href="#VersioningMacros">Preprocessor Macros related to Versioning</a></li>
-              <li><a href="#alutGetFooVersion">alutGetMajorVersion / alutGetMinorVersion</a></li>
+              <li><a href="#alutGetMajorVersion">alutGetMajorVersion</a></li>
+              <li><a href="#alutGetMinorVersion">alutGetMinorVersion</a></li>
+              <li><a href="#VersioningMacros">Compile Time Version Checking</a></li>
             </ul>
           </li>
           <li>
             <a href="#Sleeping">Sleeping</a>
+            <ul>
+              <li><a href="#alutMicroSleep">alutMicroSleep</a></li>
+            </ul>
           </li>
         </ul>
       </li>
@@ -131,12 +134,15 @@
     has 'AL' and wherever GLUT has 'glut', ALUT has 'alut'. 'Window' is replaced
     with 'Context' throughout the API.</p>
 
-    <p>Traditionally, here is 'Hello World' in ALUT - without error
-    checking.</p>
+    <div class="example">
+      <h4>Example: 'Hello, world' in ALUT</h4>
+
+      <p>Here is the traditional first program for any language or library, but
+      this time it is actually <em>saying</em> 'Hello, world!' instead of
+      printing it:</p>
 
 <pre class="programlisting">
 #include &lt;stdlib.h&gt;
-#include &lt;unistd.h&gt;
 #include &lt;AL/alut.h&gt;
 
 int
@@ -154,6 +160,11 @@ main (int argc, char **argv)
 }
 </pre>
 
+      <p>Note that there error checks are missing in the program above to keep
+      it simple.</p>
+
+    </div>
+
     <h3><a name="CompilingLinking"></a>Compiling and Linking</h3>
 
     <p>All ALUT programs should contain:</p>
@@ -164,7 +175,10 @@ main (int argc, char **argv)
 
     <p>The ALUT header includes &lt;AL/al.h&gt; and &lt;AL/alc.h&gt; for you so
     you don't need to include them again - although it does not hurt to do
-    so.</p>
+    so. ALUT reserves the &quot;ALUT_&quot; prefix for preprocessor macros, so
+    you should never define such a macro in your own program. Furthermore, you
+    should not rely on any macro starting with &quot;ALUT_&quot; not mentioned
+    in this specification.</p>
 
     <p>To find out the necessary compilation flags, use one of the following
     commands:</p>
@@ -183,6 +197,11 @@ openal-config --libs
 </pre>
 
     <p>On Windows, link with alut.dll and openal32.dll</p>
+
+    <p>ALUT reserves the &quot;alut&quot; prefix for globally visible functions
+    and variables, so you should never define such a function or variable in
+    your own program. Furthermore, you should not rely on any such function or
+    variable not mentioned in this specification.</p>
 
     <h1><a name="API"></a>The ALUT API</h1>
 
@@ -210,18 +229,24 @@ ALboolean alutInitWithoutContext (int *argcp, char **argv);
     <p>Both functions return AL_TRUE on success or AL_FALSE if there was a
     problem.</p>
 
-    <p>If you pass alutInit/alInitWithoutContext the argc and argv from your
-    main program, it will examine your command-line options and use (and remove)
-    those options that it recognises.</p>
+    <div class="example">
 
-    <p>e.g.</p>
+      <h4>Example: Handling command-line options</h4>
+
+      <p>If you pass alutInit/alInitWithoutContext the argc and argv from your
+      main program, it will examine your command-line options and use (and
+      remove) those options that it recognises:</p>
 
 <pre class="programlisting">
 int
 main (int argc, char **argv)
 {
   alutInit (&amp;argc, argv);
+  ...
+}
 </pre>
+
+    </div>
 
     <p>Precisely which (if any) command-line options are accepted - and what
     they control is implementation and operating system dependent. Notably; some
@@ -306,20 +331,19 @@ ALenum alutGetError (void);
 
     <h3><a name="alutGetErrorString"></a>alutGetErrorString</h3>
 
-    <p>To convert an error code into a human-readable description, use the
-    following routine:</p>
-
 <pre class="programlisting">
 const char *alutGetErrorString (ALenum error);
 </pre>
 
-    <p>The precise text of the strings that are returned may vary from
-    implementation to implementation and should not be relied upon by the
+    <p>alutGetErrorString can be used to convert an error code into a
+    human-readable description. The precise text of these descriptions may vary
+    from implementation to implementation and should not be relied upon by the
     application.</p>
 
-    <h3><a name="ErrorHandlingExample"></a>Example of Context Handling and Error Reporting</h3>
+    <div class="example">
+      <h4>Example: Context Handling and Error Reporting</h4>
 
-    <p>A typical ALUT program will look like this:</p>
+      <p>A typical ALUT program will look like this:</p>
 
 <pre class="programlisting">
 int
@@ -335,9 +359,10 @@ main (int argc, char **argv)
   /* ...play audio for a while... */
 
   alutExit ();
-  exit (EXIT_SUCCESS);
+  return EXIT_SUCCESS;
 }
 </pre>
+    </div>
 
     <h2><a name="Loading"></a>Sound Sample File Loading</h2>
 
@@ -397,14 +422,13 @@ ALvoid *alutLoadMemoryFromFileImage (const ALvoid *data,
 
     <h3><a name="alutEnumerateSupportedFileTypes"></a>alutEnumerateSupportedFileTypes</h3>
 
-    <p>You can obtain a comma-separated list of supported filename extensions
-    (suitable for passing to a directory browser popup) using:</p>
-
 <pre class="programlisting">
 const char *alutEnumerateSupportedFileTypes (void);
 </pre>
 
-    <p>This will return something like "*.wav, *.ogg, *.au".</p>
+    <p>alutEnumerateSupportedFileTypes returns a comma-separated list of
+    supported filename extensions, suitable for passing to a directory browser
+    popup, e.g. something like &quot;*.wav, *.ogg, *.au&quot;.</p>
 
     <h3><a name="LoadingNotes"></a>Notes</h3>
 
@@ -468,7 +492,7 @@ ALuint alutCreateBufferHelloWorld (void);
 </pre>
 
     <p>alutCreateBufferHelloWorld returns the handle of an OpenAL buffer
-    containing the sound of someone saying "Hello World".</p>
+    containing the sound of someone saying 'Hello, world!'.</p>
 
     <h3><a name="alutCreateBufferWaveform"></a>alutCreateBufferWaveform</h3>
 
@@ -485,15 +509,36 @@ ALuint alutCreateBufferWaveform   (ALenum waveshape,
     frequency (in Hertz), phase (in degrees: -180 to +180) and duration (in
     seconds). The duration will always be rounded up to an exact number of
     cycles of the sound to avoid a click if you loop the sample. The frequency
-    and phase terms are ignored for ALUT_WHITENOISE.</p>
+    and phase arguments are ignored for ALUT_WHITENOISE.</p>
 
     <h2><a name="VersionChecking"></a>Version Checking</h2>
 
-    <h3><a name="VersioningMacros"></a>Preprocessor Macros related to Versioning</h3>
+    <p>ALUT version numbers consist of a major version number, a minor version
+    number, and a patchlevel. The former two numbers will match the major/minor
+    version number of the corresponding ALUT specification document and can be
+    accessed at compile time as well as runtime. The patchlevel is not
+    programmatically available and it is incremented only when fixing bugs
+    without any API changes.</p>
 
-    <p>In version 1.0.0 and later, the alut.h header file contains the following
-    macro definitions, whose values will be incremented appropriately in future
-    revisions of ALUT:</p>
+    <h3><a name="alutGetMajorVersion"></a>alutGetMajorVersion</h3>
+
+<pre class="programlisting">
+ALint alutGetMajorVersion (void);
+</pre>
+
+    <p>alutGetMajorVersion returns the major version numbers of the ALUT in
+    use. No AL/ALC/ALUT error state is affected.</p>
+
+    <h3><a name="alutGetMinorVersion"></a>alutGetMinorVersion</h3>
+
+<pre class="programlisting">
+ALint alutGetMinorVersion (void);
+</pre>
+
+    <p>alutGetMinorVersion returns the minor version numbers of the ALUT in
+    use. No AL/ALC/ALUT error state is affected.</p>
+
+    <h3><a name="VersioningMacros"></a>Compile Time Version Checking</h3>
 
 <pre class="programlisting">
 #define ALUT_API_MAJOR_VERSION 1
@@ -501,20 +546,16 @@ ALuint alutCreateBufferWaveform   (ALenum waveshape,
 #define ALUT_API_MINOR_VERSION 0
 </pre>
 
-    <h3><a name="alutGetFooVersion"></a>alutGetMajorVersion / alutGetMinorVersion</h3>
+    <p>In version 1.0.0 and later, the alut.h header file contains the above
+    macro definitions, whose values will be incremented appropriately in future
+    revisions of ALUT.</p>
 
-<pre class="programlisting">
-ALint alutGetMajorVersion (void);
 
-ALint alutGetMinorVersion (void);
-</pre>
+    <div class="example">
+      <h4>Example: Version consistency check</h4>
 
-    <p>The functions above can be used to dynamically retrieve the major and
-    minor version numbers of the used ALUT. If the ALUT API gets added to or
-    changed in future releases, we will increment that number to match the major
-    and minor version numbers of this ALUT specification document. Applications
-    can verify at runtime that they have been compiled and linked with the
-    matching header file and library file.</p>
+      <p>Applications can verify at runtime that they have been compiled and
+      linked with the matching header file and library file as follows:</p>
 
 <pre class="programlisting">
 #ifdef ALUT_API_MAJOR_VERSION
@@ -525,25 +566,26 @@ if (alutGetMajorVersion () != ALUT_API_MAJOR_VERSION ||
   /* Oh-oh!  We're linking against an ALUT 0.x.x header file... */
 #endif
 </pre>
-
-    <p>The third part of the ALUT version number is incremented only when fixing
-    minor bugs and is not accessible via this mechanism.</p>
+    </div>
 
     <h2><a name="Sleeping"></a>Sleeping</h2>
 
-    <p>To make the current thread sleep for a given amount of microseconds, use
-    the following function:</p>
+    <p>Having a general utility function like the following in an audio-related
+    toolkit might seem strange at first, but sleeping is a common task in a lot
+    of audio demos and it can't be done portably without cluttering the source
+    code with #ifdefs.</p>
+
+    <h3><a name="alutMicroSleep"></a>alutMicroSleep</h3>
 
 <pre class="programlisting">
 void alutMicroSleep (ALuint microSeconds);
 </pre>
 
-    <p>Note that sleeping for 0 microseconds will give other runnable threads a
-    chance to run.</p>
+    <p>alutMicroSleep will delay the execution of the current thread for at
+    least the given amount of microseconds. It will only return earlier if a
+    signal has been delivered to the thread. No AL/ALC/ALUT error state is
+    affected in any case. Note that sleeping for 0 microseconds will give other
+    runnable threads a chance to run. </p>
 
-    <p>Having a general utility function like this in an audio-related toolkit
-    might seem strange at first, but sleeping is a common task in a lot of audio
-    demos and it can't be done portably without cluttering the source code with
-    #ifdefs.</p>
   </body>
 </html>
