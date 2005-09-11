@@ -1,6 +1,4 @@
 #include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
 #include <AL/alut.h>
 
 #include "alutError.h"
