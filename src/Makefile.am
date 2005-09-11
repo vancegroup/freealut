@@ -1,3 +1,5 @@
+EXTRA_DIST = helloworld.wav README
+
 lib_LTLIBRARIES = libalut.la
 
 libalut_la_SOURCES =	\
