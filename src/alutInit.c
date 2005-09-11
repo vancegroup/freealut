@@ -6,83 +6,70 @@
 #include "alutError.h"
 #include "alutInit.h"
 
-static ALboolean alut_is_initialised = AL_FALSE;
+static ALboolean alutInitialised = AL_FALSE;
 static ALCdevice *device = NULL;
 static ALCcontext *context = NULL;
 
 void
 _alutSanityCheck (void)
 {
-  if (!alut_is_initialised)
+  if (!(alutInitialised == AL_TRUE))
     {
-      fprintf (stderr,
-               "FATAL: ALUT functions were called without alutInit\n");
-      fprintf (stderr, "alutInitWithoutContext having been called.\n");
-      assert (0);
+      _alutSetError (ALUT_ERROR_NOT_INITIALISED);
     }
-
-  if (!alcGetCurrentContext ())
+  else if (!(alcGetCurrentContext () != NULL))
     {
-      fprintf (stderr, "FATAL: ALUT functions were called without a valid\n");
-      fprintf (stderr, "OpenAL rendering context having been created.\n");
-      assert (0);
+      _alutSetError (ALUT_ERROR_NO_CONTEXT_AVAILABLE);
     }
 }
 
 ALboolean
 alutInit (int *argcp, char **argv)
 {
-  if (alut_is_initialised || device != NULL || context != NULL)
+  if (!(alutInitialised == AL_FALSE && device == NULL && context == NULL))
     {
       _alutSetError (ALUT_ERROR_INVALID_OPERATION);
       return AL_FALSE;
     }
 
-  alut_is_initialised = AL_TRUE;
-
-  device = alcOpenDevice (NULL);        /* Use the default device */
-
+  device = alcOpenDevice (NULL);
   if (device == NULL)
     {
       _alutSetError (ALUT_ERROR_NO_DEVICE_AVAILABLE);
-      context = NULL;
       return AL_FALSE;
     }
 
   context = alcCreateContext (device, NULL);
-
   if (context == NULL)
     {
       alcCloseDevice (device);
-
-      _alutSetError (ALUT_ERROR_NO_CONTEXT_AVAILABLE);
       device = NULL;
+      _alutSetError (ALUT_ERROR_NO_CONTEXT_AVAILABLE);
       return AL_FALSE;
     }
-
   alcMakeContextCurrent (context);
+
+  alutInitialised = AL_TRUE;
   return AL_TRUE;
 }
 
 ALboolean
 alutInitWithoutContext (int *argcp, char **argv)
 {
-  if (alut_is_initialised || device != NULL || context != NULL)
+  if (!(alutInitialised == AL_FALSE && device == NULL && context == NULL))
     {
       _alutSetError (ALUT_ERROR_INVALID_OPERATION);
       return AL_FALSE;
     }
 
-  alut_is_initialised = AL_TRUE;
-  device = NULL;
-  context = NULL;
+  alutInitialised = AL_TRUE;
   return AL_TRUE;
 }
 
 void
 alutExit (void)
 {
-  if (!alut_is_initialised)
+  if (!(alutInitialised == AL_TRUE))
     {
       _alutSetError (ALUT_ERROR_INVALID_OPERATION);
       return;
@@ -92,14 +79,14 @@ alutExit (void)
     {
       alcMakeContextCurrent (NULL);
       alcDestroyContext (context);
+      context = NULL;
     }
 
   if (device != NULL)
     {
       alcCloseDevice (device);
+      device = NULL;
     }
 
-  alut_is_initialised = AL_FALSE;
-  device = NULL;
-  context = NULL;
+  alutInitialised = AL_FALSE;
 }
