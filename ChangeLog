@@ -1,5 +1,9 @@
 2005-09-11  Sven Panne  <sven.panne@aedion.de>
 
+	* src/alutError.c: Print a message to stderr when an error
+	condition is set and the ALUT_DEBUG environment variable is
+	defined.
+
 	* src/Makefile.am: Include src/helloworld.wav and src/README in
 	distributions.
 

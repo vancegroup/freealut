@@ -5,17 +5,16 @@
 #include "alutError.h"
 #include "alutInit.h"
 
-/* Enable the following line to have all ALUT errors reported as they happen. */
-/* #define ALUT_DEBUG_ENABLED 1 */
-
 static ALenum lastError = ALUT_ERROR_NO_ERROR;
 
 void
 _alutSetError (ALenum err)
 {
-#ifdef ALUT_DEBUG_ENABLED
-  fprintf (stderr, "DEBUG: ALUT ERROR - %s\n", alutGetErrorString (err));
-#endif
+  /* print a message to stderr if ALUT_DEBUG environment variable is defined */
+  if (getenv ("ALUT_DEBUG"))
+    {
+      fprintf (stderr, "ALUT error: %s\n", alutGetErrorString (err));
+    }
 
   if (lastError == ALUT_ERROR_NO_ERROR)
     {
