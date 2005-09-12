@@ -12,6 +12,11 @@ libalut_la_SOURCES =	\
 	alutVersion.c	\
 	alutWaveform.c
 
-libalut_la_LIBADD  = $(LIBM)
+# We use sin and floor, so we might need -lm, autoconf takes care of this.
+libalut_la_LIBADD = $(LIBM)
 
-AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)
+# The following libtool flag is neccessary for building DLLs on Windows.
+libalut_la_LDFLAGS = -no-undefined
+
+# Specifying the following path is needed to find <AL/alut.h>.
+libalut_la_CPPFLAGS = -I$(top_srcdir)/include
