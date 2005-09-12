@@ -1,5 +1,7 @@
 2005-09-12  Sven Panne  <sven.panne@aedion.de>
 
+	* admin/.cvsignore: Improved ignorance.
+
 	* src/Makefile.am: Cleaned up and fixed include paths. Added
 	-no-undefined to libtool linker flags to prepare for building a
 	Windows DLL. Added some comments.
