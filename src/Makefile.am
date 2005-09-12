@@ -14,4 +14,4 @@ libalut_la_SOURCES =	\
 
 libalut_la_LIBADD  = $(LIBM)
 
-AM_CPPFLAGS = -I$(top_srcdir)/include -I$(topdir)
+AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)

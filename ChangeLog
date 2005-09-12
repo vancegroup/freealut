@@ -1,3 +1,7 @@
+2005-09-12  Sven Panne  <sven.panne@aedion.de>
+
+	* src/Makefile.am: Fixed typo.
+
 2005-09-11  Sven Panne  <sven.panne@aedion.de>
 
 	* configure.ac, src/alutWaveform.c: Cleaned up
