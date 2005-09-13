@@ -1,14 +1,27 @@
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <inttypes.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#if defined(_WIN32)
-#define stat(p,b) _stat((p),(b))
-#else
+
+#if HAVE_STAT
+#if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#define structStat struct stat
+#elif HAVE__STAT
+#define stat(p,b) _stat((p),(b))
+#define structStat struct _stat
+#else
+#error No stat-like function on this platform
+#endif
+
 #include <AL/alut.h>
 
 #include "alutError.h"
@@ -79,7 +92,7 @@ alutCreateBufferFromFile (const char *filename)
   ALuint albuffer;
   struct SampleAttribs attr;
   struct DataGetter dg;
-  struct stat stat_buf;
+  structStat statBuf;
   FILE *fd;
 
   _alutSanityCheck ();
@@ -87,7 +100,7 @@ alutCreateBufferFromFile (const char *filename)
   attr.buffer = NULL;
   attr.comment = NULL;
 
-  if (stat (filename, &stat_buf) != 0)
+  if (stat (filename, &statBuf) != 0)
     {
       _alutSetError (ALUT_ERROR_FILE_NOT_FOUND);
       return 0;
@@ -102,7 +115,7 @@ alutCreateBufferFromFile (const char *filename)
     }
 
   dg.fd = fd;
-  dg.length = stat_buf.st_size;
+  dg.length = statBuf.st_size;
   dg.data = NULL;
   dg.next = 0;
 
@@ -154,13 +167,13 @@ _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
 {
   struct SampleAttribs attr;
   struct DataGetter dg;
-  struct stat stat_buf;
+  structStat statBuf;
   FILE *fd;
 
   attr.buffer = NULL;
   attr.comment = NULL;
 
-  if (stat (filename, &stat_buf) != 0)
+  if (stat (filename, &statBuf) != 0)
     {
       _alutSetError (ALUT_ERROR_FILE_NOT_FOUND);
       return NULL;
@@ -175,7 +188,7 @@ _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
     }
 
   dg.fd = fd;
-  dg.length = stat_buf.st_size;
+  dg.length = statBuf.st_size;
   dg.data = NULL;
   dg.next = 0;
 
@@ -325,14 +338,47 @@ swap_int (int *i)
     ((*i >> 8) & 0x0000FF00) + ((*i >> 24) & 0x000000FF);
 }
 
-static ALboolean
-_alutStrEqual (const char *a, const char *b)
+static int
+safeToLower (int c)
 {
-#ifdef _WIN32
-  return stricmp (a, b) == 0;
-#else
-  return strcasecmp (a, b) == 0;
-#endif
+  return isupper (c) ? tolower (c) : c;
+}
+
+static int
+hasSuffixIgnoringCase (const char *string, const char *suffix)
+{
+  const char *stringPointer = string;
+  const char *suffixPointer = suffix;
+
+  if (suffix[0] == '\0')
+    {
+      return 1;
+    }
+
+  while (*stringPointer != '\0')
+    {
+      stringPointer++;
+    }
+
+  while (*suffixPointer != '\0')
+    {
+      suffixPointer++;
+    }
+
+  if (stringPointer - string < suffixPointer - suffix)
+    {
+      return 0;
+    }
+
+  while (safeToLower (*--suffixPointer) == safeToLower (*--stringPointer))
+    {
+      if (suffixPointer == suffix)
+	{
+	  return 1;
+	}
+    }
+
+  return 0;
 }
 
 static ALboolean
@@ -343,7 +389,7 @@ _alutLoadFile (const char *fname, struct DataGetter *dg,
 
   /* Raw files have no magic number - so use the filename extension */
 
-  if (_alutStrEqual (&fname[strlen (fname) - 4], ".raw"))
+  if (hasSuffixIgnoringCase (fname, ".raw"))
     {
       return _alutLoadRawFile (dg, attr);
     }
@@ -488,7 +534,8 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
 
           if (needs_swabbing)
             {
-              swap_int (&attr->length);
+	      /* ToDo: Ultra-evil cast! */
+              swap_int ((int*)&attr->length);
             }
 
           attr->buffer = (unsigned char *) malloc (attr->length);

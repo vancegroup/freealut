@@ -13,7 +13,7 @@
 #endif
 
 #if defined(_WIN32)
-#defined random() rand()
+#define random() rand()
 #endif
 
 static const double sampleFrequency = 44100;

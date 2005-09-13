@@ -1,3 +1,11 @@
+2005-09-13  Sven Panne  <sven.panne@aedion.de>
+
+	* configure.ac, src/alutLoader.c, src/alutWaveform.c: A few
+	compatibility hacks to make it compile on Linux, MinGW/MSYS and
+	Cygwin.
+
+	* acinclude.m4: Added.
+
 2005-09-12  Sven Panne  <sven.panne@aedion.de>
 
 	* admin/.cvsignore: Improved ignorance.
