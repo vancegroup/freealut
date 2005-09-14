@@ -1,9 +1,5 @@
-#include <stdlib.h>
+#include "alutInternal.h"
 #include <stdio.h>
-#include <AL/alut.h>
-
-#include "alutError.h"
-#include "alutInit.h"
 
 static ALenum lastError = ALUT_ERROR_NO_ERROR;
 

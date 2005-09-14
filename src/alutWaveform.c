@@ -1,16 +1,6 @@
-#include <stdlib.h>
-#include <stdint.h>
+#include "alutInternal.h"
 #include <math.h>
-#include <AL/alut.h>
-
-#include "alutError.h"
-#include "alutInit.h"
-
-#if HAVE___ATTRIBUTE__
-#define UNUSED(x) x __attribute__((unused))
-#else
-#define UNUSED(x) x
-#endif
+#include <stdint.h>
 
 #if defined(_WIN32)
 #define random() rand()

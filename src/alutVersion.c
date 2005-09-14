@@ -1,4 +1,4 @@
-#include <AL/alut.h>
+#include "alutInternal.h"
 
 ALint
 alutGetMajorVersion (void)

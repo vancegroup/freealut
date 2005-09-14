@@ -1,6 +1,4 @@
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include "alutInternal.h"
 
 #if HAVE_NANOSLEEP && HAVE_TIME_H
 #include <time.h>
@@ -11,8 +9,6 @@
 #else
 #error No way to sleep on this platform
 #endif
-
-#include <AL/alut.h>
 
 void
 alutMicroSleep (ALuint microSeconds)

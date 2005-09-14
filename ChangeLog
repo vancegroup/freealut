@@ -1,5 +1,14 @@
 2005-09-14  Sven Panne  <sven.panne@aedion.de>
 
+	* src/alutError.c, src/alutInit.c, src/alutLoader.c,
+	src/alutUtil.c, src/alutVersion.c, src/alutWaveform.c: Use
+	alutInternal.h.
+
+	* src/alutInternal.h: Added. This file should be #included as the
+	first header in all *.c files.
+
+	* src/alutError.h, src/alutInit.h: Removed
+
 	* Makefile.am, examples/Makefile.am, src/Makefile.am,
 	test_suite/Makefile.am: Automatically build examples and test
 	suite now. Moved local autoconf macros to a separate

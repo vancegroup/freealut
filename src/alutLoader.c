@@ -1,12 +1,8 @@
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include <stdlib.h>
+#include "alutInternal.h"
+#include <ctype.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
-#include <inttypes.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -21,11 +17,6 @@
 #else
 #error No stat-like function on this platform
 #endif
-
-#include <AL/alut.h>
-
-#include "alutError.h"
-#include "alutInit.h"
 
 struct SampleAttribs
 {

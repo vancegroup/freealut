@@ -1,8 +1,4 @@
-#include <stdlib.h>
-#include <AL/alut.h>
-
-#include "alutError.h"
-#include "alutInit.h"
+#include "alutInternal.h"
 
 static ALboolean alutInitialised = AL_FALSE;
 static ALCdevice *device = NULL;
