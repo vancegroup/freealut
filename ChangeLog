@@ -1,3 +1,14 @@
+2005-09-14  Sven Panne  <sven.panne@aedion.de>
+
+	* Makefile.am, examples/Makefile.am, src/Makefile.am,
+	test_suite/Makefile.am: Automatically build examples and test
+	suite now. Moved local autoconf macros to a separate
+	directory. Added a few comments.
+
+	* m4/alut_c__attribute.m4, m4/alut_check_func.m4: Added.
+
+	* acinclude.m4: Removed
+
 2005-09-13  Sven Panne  <sven.panne@aedion.de>
 
 	* configure.ac, src/alutLoader.c, src/alutWaveform.c: A few
