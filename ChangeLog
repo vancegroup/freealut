@@ -1,5 +1,7 @@
 2005-09-17  Sven Panne  <sven.panne@aedion.de>
 
+	* src/Makefile.am: Fixed headers.
+
 	* .cvsignore: Ignore distribution archives.
 
 2005-09-14  Sven Panne  <sven.panne@aedion.de>

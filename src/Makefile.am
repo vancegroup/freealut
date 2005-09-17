@@ -8,9 +8,8 @@ lib_LTLIBRARIES = libalut.la
 # libalut consists of the followin sources and internal headers:
 libalut_la_SOURCES =	\
 	alutError.c	\
-	alutError.h	\
 	alutInit.c	\
-	alutInit.h	\
+	alutInternal.h	\
 	alutLoader.c	\
 	alutUtil.c	\
 	alutVersion.c	\
