@@ -1,5 +1,13 @@
 2005-09-17  Sven Panne  <sven.panne@aedion.de>
 
+	* alut.sln, alut.vcproj, hello_world.vcproj: Added. I have access
+	to VisualStudio .NET only, so I can't maintain project files for
+	older versions. Note that the OpenAL SDK is assumed to live under
+	C:\OpenALSDK, not nice to hardwire this, but I don't see another
+	solution currently. Help would be appreciated.
+
+	* alut.dsp, alut.dsw, hello_world.dsp: Removed.
+
 	* configure.ac, src/alutInternal.h, src/alutLoader.c,
 	src/alutWaveform.c: As usual, Microsoft chooses to ignore
 	standards, this time C99: VisualC doesn't have stdint.h, so hack
