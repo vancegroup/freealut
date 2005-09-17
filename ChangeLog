@@ -1,5 +1,12 @@
 2005-09-17  Sven Panne  <sven.panne@aedion.de>
 
+	* Makefile.am: Moved m4 subdirectory to admin where it belongs.
+
+	* admin/m4/alut_c__attribute.m4, admin/m4/alut_check_func.m4:
+	Added.
+
+	* m4/alut_c__attribute.m4, m4/alut_check_func.m4: Removed.
+
 	* src/Makefile.am: Fixed headers.
 
 	* .cvsignore: Ignore distribution archives.

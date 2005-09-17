@@ -2,7 +2,7 @@
 SUBDIRS = src include examples test_suite
 
 # We keep our local autoconf macros in a separate 'm4'subdirectory.
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I admin/m4
 
 # The following files should be in our source distribution in addition to the
 # standard ones included by automake itself:
