@@ -1,14 +1,12 @@
 The freealut library
 =====================
 
-freealut is a free implementation of OpenAL's ALUT standard.
-
-Initial version by: Steve Baker, <sjbaker1@airmail.net>, http://www.sjbaker.org
-More hacking by Sven Panne, <sven.panne@aedion.de>
+freealut is a free implementation of OpenAL's ALUT standard. See the file
+AUTHORS for the people involved.
 
 
-INSTALLATION on *nix-alikes
-===========================
+Building and installing on *nix-alikes
+======================================
 
 To build and run ALUT, you need an OpenAL somewhere (and a sound card, of course
 :-). If OpenAL is not installed in a standard place (let's say ${OPENAL_PREFIX})
@@ -35,19 +33,29 @@ test programs in 'test_suite' and the example programs in 'examples' without
 installing ALUT. To build these, just go to the respective subdirectories and
 run 'make'.
 
-ToDo: Explain building with VisualStudio and friends.
+
+Building with VisualStudio
+==========================
+
+The admin subdirectory contains alut.sln, a solution file referencing the 'alut'
+and the 'hello_world' projects. These projects expect the OpenAL SDK (header and
+import library) at C:\OpenALSDK. If this is not the case for your setup, you can
+change this either directly with a text editor in the project files (the only
+way for *real* men ;-) or via the project settings within VisualStudio. When
+everything is OK, just build the solution and you should get the ALUT library
+itself and a demo with Steve Baker saying an immortal phrase.
 
 
-SUPPORT
+Support
 =======
 
 Please don't email me the authors directly, sign up to the OpenAL user's mailing
 list. Instructions can be found here:
 
-   http://www.openal.org
+   http://www.openal.org/
 
 
-LICENSING
+Licensing
 =========
 
 These libraries are offered as OpenSource freeware under the provisions of the
@@ -55,29 +63,33 @@ GNU Library Public License (LGPL). Those terms and conditions are detailed in
 the file 'COPYING' in this directory.
 
 
-PORTABILITY and DEPENDANCIES
+Portability and Dependencies
 ============================
 
 This library is designed to be easily portable (and more importantly so that
 programs using it can be UTTERLY portable).
 
 
-COMPILING/LINKING WITH ALUT
+Compiling/Linking with ALUT
 ===========================
 
-In your source code, add
+In your source code, simply add:
 
    #include <AL/alut.h>
 
-and use
+On *nix-alikes, use
 
    openal-config --cflags
    openal-config --libs
 
-to find out the compiler and linker flags needed.
+to find out the compiler and linker flags needed for OpenAL, the flags needed
+for ALUT itself depend on the --prefix option given to configure.
+
+In a VisualStudio project, add the path to the ALUT header, import library and
+DLL to your project settings as usual.
 
 
-DIRECTORIES
+Directories
 ===========
 
 Within this distribution, you will find the following directories:
