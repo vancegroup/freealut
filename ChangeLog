@@ -1,5 +1,7 @@
 2005-09-17  Sven Panne  <sven.panne@aedion.de>
 
+	* AUTHORS: Added Erik Hofman. Small reformatting.
+
 	* alut.sln, alut.vcproj, hello_world.vcproj: Added. I have access
 	to VisualStudio .NET only, so I can't maintain project files for
 	older versions. Note that the OpenAL SDK is assumed to live under
