@@ -8,5 +8,10 @@ config.h.in
 config.log
 config.status
 configure
+freealut-*.shar.gz
+freealut-*.tar.Z
+freealut-*.tar.bz2
+freealut-*.tar.gz
+freealut-*.zip
 libtool
 stamp-h1
