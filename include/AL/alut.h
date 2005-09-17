@@ -1,5 +1,5 @@
-#ifndef _AL_ALUT_H
-#define _AL_ALUT_H
+#if !defined(AL_ALUT_H)
+#define AL_ALUT_H
 
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 #if defined(_WIN32) && !defined(_XBOX)
- #if defined (_ALUTLIB)
+ #if defined (ALUT_BUILD_LIBRARY)
   #define ALUT_API __declspec(dllexport)
  #else
   #define ALUT_API __declspec(dllimport)
