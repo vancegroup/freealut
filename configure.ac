@@ -27,7 +27,7 @@ AC_SEARCH_LIBS([alGetError], [openal32 openal])
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([AL/alc.h AL/al.h ctype.h math.h stdio.h time.h windows.h])
+AC_CHECK_HEADERS([AL/alc.h AL/al.h basetsd.h ctype.h math.h stdio.h time.h windows.h])
 
 # Checks for library functions.
 ALUT_CHECK_FUNC([[@%:@include <time.h>]],

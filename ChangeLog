@@ -1,5 +1,10 @@
 2005-09-17  Sven Panne  <sven.panne@aedion.de>
 
+	* configure.ac, src/alutInternal.h, src/alutLoader.c,
+	src/alutWaveform.c: As usual, Microsoft chooses to ignore
+	standards, this time C99: VisualC doesn't have stdint.h, so hack
+	around this omission.
+
 	* Makefile.am: Moved m4 subdirectory to admin where it belongs.
 
 	* admin/m4/alut_c__attribute.m4, admin/m4/alut_check_func.m4:

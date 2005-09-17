@@ -1,6 +1,5 @@
 #include "alutInternal.h"
 #include <math.h>
-#include <stdint.h>
 
 #if defined(_WIN32)
 #define random() rand()
