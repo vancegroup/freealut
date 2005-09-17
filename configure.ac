@@ -14,6 +14,13 @@ m4_ifdef([AS_HELP_STRING], [], [AC_DEFUN([AS_HELP_STRING], [AC_HELP_STRING($][@)
 AC_PROG_CC
 AC_C_CONST
 ALUT_C__ATTRIBUTE__
+
+ALUT_CHECK_FLAG([-Wno-deprecated-declarations],
+                [alut_wno_deprecated_declarations=yes],
+                [alut_wno_deprecated_declarations=no])
+AM_CONDITIONAL([WNO_DEPRECATED_DECLARATIONS],
+               [test x"$alut_wno_deprecated_declarations" = xyes])
+
 AC_EXEEXT
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL

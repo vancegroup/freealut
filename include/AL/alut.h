@@ -28,6 +28,15 @@ extern "C" {
  #pragma export on
 #endif
 
+/* Flag deprecated functions if possible (VisualC++ .NET and GCC >= 3.1.1). */
+#if _MSC_VER >= 1300 && !defined(MIDL_PASS)
+#define ALUT_ATTRIBUTE_DEPRECATED __declspec(deprecated)
+#elif  __GNUC__ > 3 || (__GNUC__ == 3 && (__GNUC_MINOR__ > 1 || (__GNUC_MINOR__ == 1 && __GNUC_PATCHLEVEL__ >= 1)))
+#define ALUT_ATTRIBUTE_DEPRECATED __attribute__((deprecated))
+#else
+#define ALUT_ATTRIBUTE_DEPRECATED
+#endif
+
 #define ALUT_API_MAJOR_VERSION                 1
 #define ALUT_API_MINOR_VERSION                 0
 
@@ -74,13 +83,13 @@ ALUT_API void ALUT_APIENTRY alutMicroSleep (ALuint microSeconds);
 
 /* Nasty Compatibility stuff, WARNING: THESE FUNCTIONS ARE STRONGLY DEPRECATED */
 #if defined(__APPLE__)
-ALUT_API void ALUT_APIENTRY alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size, ALsizei *freq);
-ALUT_API void ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *freq);
+ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size, ALsizei *freq);
+ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *freq);
 #else
-ALUT_API void ALUT_APIENTRY alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size, ALsizei *freq, ALboolean *loop);
-ALUT_API void ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *freq, ALboolean *loop);
+ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size, ALsizei *freq, ALboolean *loop);
+ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *freq, ALboolean *loop);
 #endif
-ALUT_API void ALUT_APIENTRY alutUnloadWAV (ALenum format, ALvoid *data, ALsizei size, ALsizei freq);
+ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutUnloadWAV (ALenum format, ALvoid *data, ALsizei size, ALsizei freq);
 
 #if defined(__MWERKS_)
  #pragma export off

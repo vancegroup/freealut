@@ -1,5 +1,12 @@
 2005-09-17  Sven Panne  <sven.panne@aedion.de>
 
+	* configure.ac, include/AL/alut.h, test_suite/Makefile.am: Flag
+	deprecated functions if possible (VisualC++ .NET and GCC >=
+	3.1.1), but be careful to avoid those warnings in our test suite.
+
+	* admin/m4/alut_check_flag.m4, admin/m4/alut_eval_stderr.m4:
+	Added.
+
 	* configure.ac, admin/alut.vcproj, include/AL/alut.h: Use
 	AL_ALUT_H instead of _AL_ALUT_H, macros starting with "_" are
 	reserved by the C standard. For the same reason, rename _ALUTLIB

@@ -12,3 +12,9 @@ LDADD = ../src/libalut.la
 
 # Specifying the following path is needed to find <AL/alut.h>.
 AM_CPPFLAGS = -I$(top_srcdir)/include
+
+# test_retrostuff tests deprecated functions, but we don't want to get compiler
+# warnings because of that.
+if WNO_DEPRECATED_DECLARATIONS
+test_retrostuff_CFLAGS = -Wno-deprecated-declarations
+endif
