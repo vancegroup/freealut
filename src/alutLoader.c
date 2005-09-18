@@ -24,7 +24,6 @@ struct SampleAttribs
   int bps;
   int stereo;
   int rate;                     /* ToDo: This should probably be an ALfloat */
-  char *comment;
 };
 
 struct DataGetter
@@ -34,6 +33,10 @@ struct DataGetter
   const ALvoid *data;           /* For memory: length, data pointer and position in data */
   size_t next;
 };
+
+typedef ALvoid *codec (ALvoid *data, unsigned int *length);
+
+static codec linear, uLaw, pcm8s, pcm16, aLaw;
 
 /* Like fread except it reads from a DataGetter */
 
@@ -67,6 +70,54 @@ dgread (void *ptr, size_t size, size_t nmemb, struct DataGetter *source)
   return 0;
 }
 
+/****************************************************************************/
+
+typedef enum
+{
+  OK,
+  NotOK
+} Status;
+
+typedef int32_t Int32BigEndian;
+
+static Status
+skip (size_t numBytesToSkip, struct DataGetter *source)
+{
+  size_t numBytesRead;
+  char *buf = (char *) malloc (numBytesToSkip);
+  if (!(buf != NULL))
+    {
+      _alutSetError (ALUT_ERROR_OUT_OF_MEMORY);
+      return NotOK;
+    }
+  numBytesRead = dgread (buf, 1, numBytesToSkip, source);
+  free (buf);
+  if (!(numBytesRead == numBytesToSkip))
+    {
+      _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+      return NotOK;
+    }
+  return OK;
+}
+
+static Status
+readInt32BigEndian (Int32BigEndian *value, struct DataGetter *source)
+{
+  unsigned char buf[4];
+  size_t numBytesRead = dgread (buf, 1, sizeof (buf), source);
+  if (!(numBytesRead == sizeof (buf)))
+    {
+      return NotOK;
+    }
+  *value =
+    ((Int32BigEndian) buf[0] << 24) |
+    ((Int32BigEndian) buf[1] << 16) |
+    ((Int32BigEndian) buf[2] << 8) | ((Int32BigEndian) buf[3]);
+  return OK;
+}
+
+/****************************************************************************/
+
 static ALboolean _alutLoadWavFile (struct DataGetter *fd,
                                    struct SampleAttribs *attr);
 static ALboolean _alutLoadAUFile (struct DataGetter *fd,
@@ -79,29 +130,26 @@ static ALboolean _alutLoadFile (const char *fname, struct DataGetter *fd,
 ALuint
 alutCreateBufferFromFile (const char *filename)
 {
-  ALuint albuffer;
-  struct SampleAttribs attr;
-  struct DataGetter dg;
   structStat statBuf;
   FILE *fd;
+  struct DataGetter dg;
+  struct SampleAttribs attr;
+  ALuint buffer;
+  ALuint format;
 
   _alutSanityCheck ();
 
-  attr.buffer = NULL;
-  attr.comment = NULL;
-
-  if (stat (filename, &statBuf) != 0)
+  if (!(stat (filename, &statBuf) == 0))
     {
       _alutSetError (ALUT_ERROR_FILE_NOT_FOUND);
-      return 0;
+      return AL_NONE;
     }
 
   fd = fopen (filename, "rb");
-
-  if (fd == NULL)
+  if (!(fd != NULL))
     {
       _alutSetError (ALUT_ERROR_FILE_NOT_READABLE);
-      return 0;
+      return AL_NONE;
     }
 
   dg.fd = fd;
@@ -109,69 +157,102 @@ alutCreateBufferFromFile (const char *filename)
   dg.data = NULL;
   dg.next = 0;
 
-  if (!_alutLoadFile (filename, &dg, &attr))
+  attr.buffer = NULL;
+
+  if (!(_alutLoadFile (filename, &dg, &attr) == AL_TRUE))
     {
-      return 0;
+      fclose (fd);
+      return AL_NONE;
+    }
+  fclose (fd);
+
+  if (!(attr.bps == 8 || attr.bps == 16))
+    {
+      _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
+      free (attr.buffer);
+      return AL_NONE;
+    }
+  format = (attr.bps == 8) ?
+    (attr.stereo ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
+    (attr.stereo ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
+
+  buffer = AL_NONE;
+  alGenBuffers (1, &buffer);
+  if (!(buffer != AL_NONE))
+    {
+      free (attr.buffer);
+      return AL_NONE;
     }
 
-  alGenBuffers (1, &albuffer);
-  alBufferData (albuffer, attr.bps == 8 ? AL_FORMAT_MONO8 :
-                AL_FORMAT_MONO16, attr.buffer, attr.length, attr.rate);
+  alBufferData (buffer, format, attr.buffer, attr.length, attr.rate);
   free (attr.buffer);
-  fclose (fd);
-  return albuffer;
+
+  return buffer;
 }
 
 ALuint
 alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length)
 {
-  ALuint albuffer;
-  struct SampleAttribs attr;
   struct DataGetter dg;
+  struct SampleAttribs attr;
+  ALuint format;
+  ALuint buffer;
 
   _alutSanityCheck ();
-
-  attr.buffer = NULL;
-  attr.comment = NULL;
 
   dg.fd = NULL;
   dg.length = length;
   dg.data = data;
   dg.next = 0;
 
-  if (!_alutLoadFile ("", &dg, &attr))
+  attr.buffer = NULL;
+
+  if (!(_alutLoadFile (NULL, &dg, &attr) == AL_TRUE))
     {
-      return 0;
+      return AL_NONE;
     }
 
-  alGenBuffers (1, &albuffer);
-  alBufferData (albuffer, attr.bps == 8 ? AL_FORMAT_MONO8 :
-                AL_FORMAT_MONO16, attr.buffer, attr.length, attr.rate);
+  if (!(attr.bps == 8 || attr.bps == 16))
+    {
+      _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
+      free (attr.buffer);
+      return AL_NONE;
+    }
+  format = (attr.bps == 8) ?
+    (attr.stereo ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
+    (attr.stereo ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
+
+  buffer = AL_NONE;
+  alGenBuffers (1, &buffer);
+  if (!(buffer != AL_NONE))
+    {
+      free (attr.buffer);
+      return AL_NONE;
+    }
+
+  alBufferData (buffer, format, attr.buffer, attr.length, attr.rate);
   free (attr.buffer);
-  return albuffer;
+
+  return buffer;
 }
 
 static void *
 _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
                                 ALsizei *size, ALfloat *freq)
 {
-  struct SampleAttribs attr;
-  struct DataGetter dg;
   structStat statBuf;
   FILE *fd;
+  struct DataGetter dg;
+  struct SampleAttribs attr;
 
-  attr.buffer = NULL;
-  attr.comment = NULL;
-
-  if (stat (filename, &statBuf) != 0)
+  if (!(stat (filename, &statBuf) == 0))
     {
       _alutSetError (ALUT_ERROR_FILE_NOT_FOUND);
       return NULL;
     }
 
   fd = fopen (filename, "rb");
-
-  if (fd == NULL)
+  if (!(fd != NULL))
     {
       _alutSetError (ALUT_ERROR_FILE_NOT_READABLE);
       return NULL;
@@ -182,8 +263,19 @@ _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
   dg.data = NULL;
   dg.next = 0;
 
-  if (!_alutLoadFile (filename, &dg, &attr))
+  attr.buffer = NULL;
+
+  if (!(_alutLoadFile (filename, &dg, &attr) == AL_TRUE))
     {
+      fclose (fd);
+      return NULL;
+    }
+  fclose (fd);
+
+  if (!(attr.bps == 8 || attr.bps == 16))
+    {
+      _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
+      free (attr.buffer);
       return NULL;
     }
 
@@ -193,7 +285,9 @@ _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
     }
   if (format != NULL)
     {
-      *format = (attr.bps == 8) ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16;
+      *format = (attr.bps == 8) ?
+        (attr.stereo ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
+        (attr.stereo ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
     }
   if (freq != NULL)
     {
@@ -208,19 +302,25 @@ _alutPrivateLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
                                      ALenum *format, ALsizei *size,
                                      ALfloat *freq)
 {
-  struct SampleAttribs attr;
   struct DataGetter dg;
-
-  attr.buffer = NULL;
-  attr.comment = NULL;
+  struct SampleAttribs attr;
 
   dg.fd = NULL;
   dg.length = length;
   dg.data = data;
   dg.next = 0;
 
-  if (!_alutLoadFile ("", &dg, &attr))
+  attr.buffer = NULL;
+
+  if (!(_alutLoadFile (NULL, &dg, &attr) == AL_TRUE))
     {
+      return NULL;
+    }
+
+  if (!(attr.bps == 8 || attr.bps == 16))
+    {
+      _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
+      free (attr.buffer);
       return NULL;
     }
 
@@ -230,7 +330,9 @@ _alutPrivateLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
     }
   if (format != NULL)
     {
-      *format = (attr.bps == 8) ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16;
+      *format = (attr.bps == 8) ?
+        (attr.stereo ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
+        (attr.stereo ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
     }
   if (freq != NULL)
     {
@@ -363,9 +465,9 @@ hasSuffixIgnoringCase (const char *string, const char *suffix)
   while (safeToLower (*--suffixPointer) == safeToLower (*--stringPointer))
     {
       if (suffixPointer == suffix)
-	{
-	  return 1;
-	}
+        {
+          return 1;
+        }
     }
 
   return 0;
@@ -379,14 +481,14 @@ _alutLoadFile (const char *fname, struct DataGetter *dg,
 
   /* Raw files have no magic number - so use the filename extension */
 
-  if (hasSuffixIgnoringCase (fname, ".raw"))
+  if (fname != NULL && hasSuffixIgnoringCase (fname, ".raw"))
     {
       return _alutLoadRawFile (dg, attr);
     }
 
   /* For other file formats, read the quasi-standard four byte magic number */
 
-  if (dgread (magic, 4, 1, dg) == 0)
+  if (!(dgread (magic, 1, sizeof (magic), dg) == sizeof (magic)))
     {
       _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
       return AL_FALSE;
@@ -419,6 +521,7 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
   ALboolean needs_swabbing = AL_FALSE;
   int leng1;
   char magic[4];
+  codec *_codec = linear;
 
   if (attr->buffer)
     {
@@ -427,7 +530,7 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
   attr->buffer = NULL;
   attr->length = 0;
 
-  if (dgread (&leng1, sizeof (int), 1, dg) == 0)
+  if (!(dgread (&leng1, 1, sizeof (leng1), dg) == sizeof (leng1)))
     {
       _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
       return AL_FALSE;
@@ -496,20 +599,39 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
               swap_Ushort (&header[7]);
             }
 
-          if (header[0] != 0x0001)
+#if 0
+          fprintf (stderr, "encoding: %d\n", header[0]);
+#endif
+          switch (header[0])
             {
+            case 1:            /* PCM */
+              attr->bps = (header[7]);
+#if BYTE_ORDER == BIG_ENDIAN
+              if (attr->bps == 16)
+                _codec = pcm16;
+#endif
+              break;
+
+            case 7:            /* uLaw */
+              attr->bps = (header[7] * 2);
+              _codec = uLaw;
+              break;
+
+            default:
               _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
               return AL_FALSE;
             }
 
           attr->stereo = (header[1] > 1);
           attr->rate = (*((int *) (&header[2])));
-          attr->bps = (header[7]);
         }
       else
         if (magic[0] == 'd' && magic[1] == 'a' &&
             magic[2] == 't' && magic[3] == 'a')
         {
+          unsigned int len;
+          char *buf;
+
           if (!found_header)
             {
               _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
@@ -524,21 +646,26 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
 
           if (needs_swabbing)
             {
-	      /* ToDo: Ultra-evil cast! */
-              swap_int ((int*)&attr->length);
+              /* ToDo: Ultra-evil cast! */
+              swap_int ((int *) &attr->length);
             }
 
-          attr->buffer = (unsigned char *) malloc (attr->length);
+          buf = (char *) malloc (attr->length);
+          len = dgread (buf, 1, attr->length, dg);
 
-          dgread (attr->buffer, 1, attr->length, dg);
+          if (len != attr->length)
+            {
+              _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+              return AL_FALSE;
+            }
+
+          attr->buffer = _codec (buf, &len);
+          attr->length = len;
+
           return AL_TRUE;
         }
     }
 }
-
-typedef ALvoid *codec (ALvoid *data, unsigned int *length);
-
-static codec uLaw, pcm8, pcm16, aLaw;
 
 /* see: http://en.wikipedia.org/wiki/Au_file_format, G.72x are missing */
 
@@ -557,37 +684,46 @@ enum AUEncoding
 static ALboolean
 _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
 {
-  int hdr_length;
-  int dat_length;
-  int encoding;
-  int irate;
-  int nchans;
+  Int32BigEndian dataOffset;    /* byte offset to data part, minimum 24 */
+  Int32BigEndian dataSize;      /* number of bytes in the data part, -1 = not known */
+  Int32BigEndian encoding;      /* encoding of the data part, see AUEncoding */
+  Int32BigEndian sampleRate;    /* number of samples per second */
+  Int32BigEndian channels;      /* number of interleaved channels */
   codec *_codec;
+  char *buf;
+  size_t len;
 
-  if (attr->buffer)
-    {
-      free (attr->buffer);
-    }
-  attr->buffer = NULL;
-  attr->length = 0;
-
-  if (dgread (&hdr_length, sizeof (int), 1, dg) == 0 ||
-      dgread (&dat_length, sizeof (int), 1, dg) == 0 ||
-      dgread (&encoding, sizeof (int), 1, dg) == 0 ||
-      dgread (&irate, sizeof (int), 1, dg) == 0 ||
-      dgread (&nchans, sizeof (int), 1, dg) == 0)
+  if (!(readInt32BigEndian (&dataOffset, dg) == OK &&
+        readInt32BigEndian (&dataSize, dg) == OK &&
+        readInt32BigEndian (&encoding, dg) == OK &&
+        readInt32BigEndian (&sampleRate, dg) == OK &&
+        readInt32BigEndian (&channels, dg) == OK))
     {
       _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
       return AL_FALSE;
     }
 
-  if (hdr_length > 65536)
+  if (dataSize == -1)
     {
-      swap_int (&hdr_length);
-      swap_int (&dat_length);
-      swap_int (&encoding);
-      swap_int (&irate);
-      swap_int (&nchans);
+      dataSize = dg->length - dataOffset;
+    }
+
+#if 0
+  fprintf (stderr,
+           "data offset %ld, data size %ld, encoding %ld, sample rate %ld, channels %ld\n",
+           (long) dataOffset, (long) dataSize, (long) encoding,
+           (long) sampleRate, (long) channels);
+#endif
+
+  if (!(dataOffset >= 24 && dataSize > 0 && sampleRate >= 1 && channels >= 1))
+    {
+      _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+      return AL_FALSE;
+    }
+
+  if (!(skip (dataOffset - 24, dg) == OK))
+    {
+      return AL_FALSE;
     }
 
   switch (encoding)
@@ -599,12 +735,16 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
 
     case AU_PCM_8:
       attr->bps = 8;
-      _codec = pcm8;
+      _codec = pcm8s;
       break;
 
     case AU_PCM_16:
       attr->bps = 16;
+#if BYTE_ORDER == BIG_ENDIAN
+      _codec = linear;
+#else
       _codec = pcm16;
+#endif
       break;
 
     case AU_ALAW_8:
@@ -617,61 +757,49 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
       return AL_FALSE;
     }
 
-  attr->stereo = (nchans > 1);
-  attr->rate = irate;
+  attr->length = 0;
+  attr->stereo = (channels > 1);
+  attr->rate = sampleRate;
 
-#if 0
-  fprintf (stderr,
-           "hdr_length %d, dat_length %d, encoding %d, bps %d, stereo %d, rate %d\n",
-           hdr_length, dat_length, encoding, attr->bps, attr->stereo,
-           attr->rate);
-#endif
-
-  if (hdr_length > 512 || hdr_length < 24 ||
-      irate > 65526 || irate <= 1000 || nchans < 1 || nchans > 2)
+  buf = (char *) malloc (dataSize);
+  if (!(buf != NULL))
+    {
+      _alutSetError (ALUT_ERROR_OUT_OF_MEMORY);
+      return AL_FALSE;
+    }
+  if (!(dgread (buf, 1, dataSize, dg) == dataSize))
     {
       _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+      free (buf);
       return AL_FALSE;
     }
 
-  if (hdr_length > 24)
+  if (attr->buffer)
     {
-      if (attr->comment)
-        free (attr->comment);
-      attr->comment = NULL;
-      attr->comment = (char *) malloc (hdr_length - 24 + 1);
-
-      dgread (attr->comment, 1, hdr_length - 24, dg);
-      (attr->comment)[hdr_length - 24] = '\0';
+      free (attr->buffer);
     }
-
-  if (dat_length > 0)
-    {
-      char *buf = (char *) malloc (dat_length);
-      unsigned int len = dgread (buf, 1, dat_length, dg);
-
-      if (len != dat_length)
-        {
-          _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
-          return AL_FALSE;
-        }
-
-      attr->buffer = _codec (buf, &len);
-      attr->length = len;
-    }
+  len = dataSize;
+  attr->buffer = _codec (buf, &len);
+  attr->length = len;
 
   return AL_TRUE;
 }
 
 ALvoid *
-pcm8 (ALvoid *data, unsigned int *length)
+linear (ALvoid *data, unsigned int *length)
+{
+  return data;
+}
+
+ALvoid *
+pcm8s (ALvoid *data, unsigned int *length)
 {
   int8_t *d = (int8_t *) data;
   unsigned int l = *length;
   unsigned int i;
   for (i = 0; i < l; i++)
     {
-      d[i] = d[i] + 128;
+      d[i] += 128;
     }
   return data;
 }
@@ -695,10 +823,10 @@ pcm16 (ALvoid *data, unsigned int *length)
 static int16_t
 mulaw2linear (uint8_t mulawbyte)
 {
-  const static int16_t exp_lut[8] =
-    { 0, 132, 396, 924, 1980, 4092, 8316, 16764 };
+  const static int16_t exp_lut[8] = {
+    0, 132, 396, 924, 1980, 4092, 8316, 16764
+  };
   int16_t sign, exponent, mantissa, sample;
-
   mulawbyte = ~mulawbyte;
   sign = (mulawbyte & 0x80);
   exponent = (mulawbyte >> 4) & 0x07;
@@ -716,13 +844,10 @@ uLaw (ALvoid *data, unsigned int *length)
   unsigned int l = *length;
   unsigned int i;
   int16_t *buf = (int16_t *) malloc (l * 2);
-
   for (i = 0; i < l; i++)
     buf[i] = mulaw2linear (d[i]);
-
   free (data);
   *length *= 2;
-
   return buf;
 }
 
@@ -737,7 +862,7 @@ static int16_t
 alaw2linear (uint8_t a_val)
 {
   int16_t t, seg;
-  a_val = 0x55;
+  a_val ^= 0x55;
   t = (a_val & QUANT_MASK) << 4;
   seg = ((int16_t) a_val & SEG_MASK) >> SEG_SHIFT;
   switch (seg)
@@ -762,14 +887,11 @@ aLaw (ALvoid *data, unsigned int *length)
   unsigned int l = *length;
   unsigned int i;
   int16_t *buf = (int16_t *) malloc (l * 2);
-
   for (i = 0; i < l; i++)
     buf[i] = alaw2linear (d[i]);
-
   free (data);
   data = NULL;
   *length *= 2;
-
   return buf;
 }
 
@@ -781,9 +903,7 @@ _alutLoadRawFile (struct DataGetter *dg, struct SampleAttribs *attr)
       free (attr->buffer);
     }
   attr->buffer = NULL;
-
   attr->length = dg->length;
-
   if (attr->length > 0)
     {
       attr->buffer = (unsigned char *) malloc (attr->length);
@@ -793,13 +913,12 @@ _alutLoadRawFile (struct DataGetter *dg, struct SampleAttribs *attr)
   attr->bps = 8;
   attr->stereo = 0;
   attr->rate = 8000;            /* Guess */
-
   return AL_TRUE;
 }
 
 ALvoid *
-alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size,
-                        ALfloat *freq)
+alutLoadMemoryFromFile (const char *filename, ALenum *format,
+                        ALsizei *size, ALfloat *freq)
 {
   _alutSanityCheck ();
   return _alutPrivateLoadMemoryFromFile (filename, format, size, freq);

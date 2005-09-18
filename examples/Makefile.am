@@ -1,5 +1,5 @@
-# Build, but do not install the following test program:
-noinst_PROGRAMS = hello_world
+# Build, but do not install the following test programs:
+noinst_PROGRAMS = hello_world playfile
 
 # We need to link against our *own* libalut.
 LDADD = ../src/libalut.la

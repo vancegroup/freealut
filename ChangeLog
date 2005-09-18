@@ -1,3 +1,11 @@
+2005-09-18  Sven Panne  <sven.panne@aedion.de>
+
+	* admin/.indent.pro, examples/.cvsignore, examples/Makefile.am,
+	src/alutLoader.c: Merged and heavily modified Erik Hofman's fixes
+	for AU/WAV loaders. Some more cleanup + minor fixes.
+
+	* examples/playfile.c: Added.
+
 2005-09-17  Sven Panne  <sven.panne@aedion.de>
 
 	* configure.ac, include/AL/alut.h, test_suite/Makefile.am: Flag
