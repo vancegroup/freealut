@@ -1,5 +1,15 @@
 2005-09-18  Sven Panne  <sven.panne@aedion.de>
 
+	* src/alutInit.c, src/alutLoader.c: Added a few error checks. Made
+	testing for errors more consistent, it should be of the form:
+
+	   if (!<assertion>)
+	     {
+	       _alutSetError(<error>);
+	       <cleanup>
+	       return <whatever>;
+	     }
+
 	* admin/.indent.pro, examples/.cvsignore, examples/Makefile.am,
 	src/alutLoader.c: Merged and heavily modified Erik Hofman's fixes
 	for AU/WAV loaders. Some more cleanup + minor fixes.

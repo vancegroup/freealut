@@ -530,16 +530,15 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
   attr->buffer = NULL;
   attr->length = 0;
 
-  if (!(dgread (&leng1, 1, sizeof (leng1), dg) == sizeof (leng1)))
+  if (!(dgread (&leng1, 1, sizeof (leng1), dg) == sizeof (leng1) &&
+        dgread (magic, 1, sizeof (magic), dg) == sizeof (magic)))
     {
       _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
       return AL_FALSE;
     }
 
-  dgread (magic, 4, 1, dg);
-
-  if (magic[0] != 'W' || magic[1] != 'A' ||
-      magic[2] != 'V' || magic[3] != 'E')
+  if (!(magic[0] == 'W' && magic[1] == 'A' &&
+        magic[2] == 'V' && magic[3] == 'E'))
     {
       _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
       return AL_FALSE;
@@ -549,11 +548,7 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
     {
       unsigned short header[8];
       int junk;
-      int len;
-
-      len = dgread (magic, 4, 1, dg);
-
-      if (len <= 0)
+      if (!(dgread (magic, 1, sizeof (magic), dg) == sizeof (magic)))
         {
           _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
           return AL_FALSE;
@@ -563,8 +558,7 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
           magic[2] == 't' && magic[3] == ' ')
         {
           found_header = AL_TRUE;
-
-          if (dgread (&leng1, sizeof (int), 1, dg) == 0)
+          if (!(dgread (&leng1, 1, sizeof (leng1), dg) == sizeof (leng1)))
             {
               _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
               return AL_FALSE;
@@ -576,17 +570,21 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
               swap_int (&leng1);
             }
 
-          if (leng1 != sizeof (header))
+          if (!(leng1 == sizeof (header) &&
+                dgread (&header, 1, sizeof (header), dg) == sizeof (header)))
             {
               _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
             }
 
-          dgread (&header, sizeof (header), 1, dg);
-
           for (junk = sizeof (header); junk < leng1; junk++)
             {
-              char throw_away;
-              dgread (&throw_away, 1, 1, dg);
+              char throwAway;
+              if (!
+                  (dgread (&throwAway, 1, sizeof (throwAway), dg) ==
+                   sizeof (throwAway)))
+                {
+                  _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+                }
             }
 
           if (needs_swabbing)
@@ -611,12 +609,10 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
                 _codec = pcm16;
 #endif
               break;
-
             case 7:            /* uLaw */
               attr->bps = (header[7] * 2);
               _codec = uLaw;
               break;
-
             default:
               _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
               return AL_FALSE;
@@ -631,14 +627,15 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
         {
           unsigned int len;
           char *buf;
-
           if (!found_header)
             {
               _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
               return AL_FALSE;
             }
 
-          if (dgread (&attr->length, sizeof (int), 1, dg) == 0)
+          if (!
+              (dgread (&attr->length, 1, sizeof (attr->length), dg) ==
+               sizeof (attr->length)))
             {
               _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
               return AL_FALSE;
@@ -652,8 +649,7 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
 
           buf = (char *) malloc (attr->length);
           len = dgread (buf, 1, attr->length, dg);
-
-          if (len != attr->length)
+          if (!(len == attr->length))
             {
               _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
               return AL_FALSE;
@@ -661,7 +657,6 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
 
           attr->buffer = _codec (buf, &len);
           attr->length = len;
-
           return AL_TRUE;
         }
     }
@@ -680,7 +675,6 @@ enum AUEncoding
   AU_FLOAT_64 = 7,              /* 64-bit IEEE floating point */
   AU_ALAW_8 = 27                /* 8-bit ISDN a-law */
 };
-
 static ALboolean
 _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
 {
@@ -692,7 +686,6 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
   codec *_codec;
   char *buf;
   size_t len;
-
   if (!(readInt32BigEndian (&dataOffset, dg) == OK &&
         readInt32BigEndian (&dataSize, dg) == OK &&
         readInt32BigEndian (&encoding, dg) == OK &&
@@ -714,7 +707,6 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
            (long) dataOffset, (long) dataSize, (long) encoding,
            (long) sampleRate, (long) channels);
 #endif
-
   if (!(dataOffset >= 24 && dataSize > 0 && sampleRate >= 1 && channels >= 1))
     {
       _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
@@ -732,12 +724,10 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
       attr->bps = 16;
       _codec = uLaw;
       break;
-
     case AU_PCM_8:
       attr->bps = 8;
       _codec = pcm8s;
       break;
-
     case AU_PCM_16:
       attr->bps = 16;
 #if BYTE_ORDER == BIG_ENDIAN
@@ -746,12 +736,10 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
       _codec = pcm16;
 #endif
       break;
-
     case AU_ALAW_8:
       attr->bps = 16;
       _codec = aLaw;
       break;
-
     default:
       _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
       return AL_FALSE;
@@ -760,7 +748,6 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
   attr->length = 0;
   attr->stereo = (channels > 1);
   attr->rate = sampleRate;
-
   buf = (char *) malloc (dataSize);
   if (!(buf != NULL))
     {
@@ -781,7 +768,6 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
   len = dataSize;
   attr->buffer = _codec (buf, &len);
   attr->length = len;
-
   return AL_TRUE;
 }
 

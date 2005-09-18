@@ -27,14 +27,14 @@ alutInit (int *argcp, char **argv)
     }
 
   device = alcOpenDevice (NULL);
-  if (device == NULL)
+  if (!(device != NULL))
     {
       _alutSetError (ALUT_ERROR_NO_DEVICE_AVAILABLE);
       return AL_FALSE;
     }
 
   context = alcCreateContext (device, NULL);
-  if (context == NULL)
+  if (!(context != NULL))
     {
       alcCloseDevice (device);
       device = NULL;
