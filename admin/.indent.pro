@@ -36,4 +36,5 @@
 -T ALCvoid
 -T ALCdevice
 -T ALCcontext
+-T UInt16LittleEndian
 -T Int32BigEndian

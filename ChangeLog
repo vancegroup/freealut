@@ -1,3 +1,12 @@
+2005-09-21  Sven Panne  <sven.panne@aedion.de>
+
+	* src/alutLoader.c: Removed evil byte-swapping. Fixed WAV loading
+	(still not 100% bullet-proof, I think). Cleanup.
+
+	* admin/.indent.pro: Added new typedef.
+
+	* src/alutInternal.h: Handle 32bit sized types on Windows.
+
 2005-09-18  Sven Panne  <sven.panne@aedion.de>
 
 	* src/alutInit.c, src/alutLoader.c: Added a few error checks. Made
