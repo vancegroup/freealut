@@ -17,6 +17,31 @@
 #error No stat-like function on this platform
 #endif
 
+/****************************************************************************/
+
+typedef enum
+{
+  LittleEndian,
+  BigEndian,
+  UnknwonEndian                 /* has anybody still a PDP11? :-) */
+} Endianess;
+
+static Endianess
+endianess (void)
+{
+  union
+  {
+    long l;
+    char c[sizeof (long)];
+  } u;
+
+  u.l = 1;
+  return (u.c[sizeof (long) - 1] == 1) ?
+    LittleEndian : ((u.c[0] == 1) ? BigEndian : UnknwonEndian);
+}
+
+/****************************************************************************/
+
 struct SampleAttribs
 {
   ALsizei length;
@@ -635,11 +660,8 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
             {
             case 1:            /* PCM */
               attr->bps = bitsPerSample;
-#if BYTE_ORDER == BIG_ENDIAN
-              _codec = (attr->bps == 16) ? pcm16 : linear;
-#else
-              _codec = linear;
-#endif
+              _codec = (attr->bps == 8
+                        || endianess () == LittleEndian) ? linear : pcm16;
               break;
             case 7:            /* uLaw */
               attr->bps = bitsPerSample * 2;    /* ToDo: ??? */
@@ -768,11 +790,7 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
       break;
     case AU_PCM_16:
       attr->bps = 16;
-#if BYTE_ORDER == BIG_ENDIAN
-      _codec = linear;
-#else
-      _codec = pcm16;
-#endif
+      _codec = (endianess () == BigEndian) ? linear : pcm16;
       break;
     case AU_ALAW_8:
       attr->bps = 16;
