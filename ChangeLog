@@ -1,5 +1,7 @@
 2005-09-23  Sven Panne  <sven.panne@aedion.de>
 
+	* admin/.cvsignore: Ignore mkinstalldirs.
+
 	* src/alutLoader.c: Make the endianess test dynamic.
 
 2005-09-21  Sven Panne  <sven.panne@aedion.de>
