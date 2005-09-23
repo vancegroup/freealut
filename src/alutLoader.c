@@ -26,6 +26,8 @@ typedef enum
   UnknwonEndian                 /* has anybody still a PDP11? :-) */
 } Endianess;
 
+
+/* test from Harbison & Steele, "C - A Reference Manual", section 6.1.2 */
 static Endianess
 endianess (void)
 {
@@ -36,8 +38,8 @@ endianess (void)
   } u;
 
   u.l = 1;
-  return (u.c[sizeof (long) - 1] == 1) ?
-    LittleEndian : ((u.c[0] == 1) ? BigEndian : UnknwonEndian);
+  return (u.c[0] == 1) ? LittleEndian :
+    ((u.c[sizeof (long) - 1] == 1) ? BigEndian : UnknwonEndian);
 }
 
 /****************************************************************************/
