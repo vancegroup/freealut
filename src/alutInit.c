@@ -1,86 +1,140 @@
 #include "alutInternal.h"
 
-static ALboolean alutInitialised = AL_FALSE;
-static ALCdevice *device = NULL;
-static ALCcontext *context = NULL;
+static enum
+{
+  Unintialized,                 /* ALUT has not been initialized yet or has been de-initialised */
+  ALUTDeviceAndContext,         /* alutInit has been called successfully */
+  ExternalDeviceAndContext      /* alutInitWithoutContext has been called */
+} initialisationState = Unintialized;
 
-void
+/*
+ * Note: alutContext contains something valid only when initialisationState
+ * contains ALUTDeviceAndContext.
+ */
+static ALCcontext *alutContext;
+
+ALboolean
 _alutSanityCheck (void)
 {
-  if (!(alutInitialised == AL_TRUE))
+  ALCcontext *context;
+
+  if (initialisationState == Unintialized)
     {
       _alutSetError (ALUT_ERROR_NOT_INITIALISED);
+      return AL_FALSE;
     }
-  else if (!(alcGetCurrentContext () != NULL))
+
+  context = alcGetCurrentContext ();
+  if (context == NULL)
     {
-      _alutSetError (ALUT_ERROR_NO_CONTEXT_AVAILABLE);
+      _alutSetError (ALUT_ERROR_NO_CURRENT_CONTEXT);
+      return AL_FALSE;
     }
+
+  if (alGetError () != AL_NO_ERROR)
+    {
+      _alutSetError (ALUT_ERROR_AL_ERROR_ON_ENTRY);
+      return AL_FALSE;
+    }
+
+  if (alcGetError (alcGetContextsDevice (context)) != ALC_NO_ERROR)
+    {
+      _alutSetError (ALUT_ERROR_ALC_ERROR_ON_ENTRY);
+      return AL_FALSE;
+    }
+
+  return AL_TRUE;
 }
 
 ALboolean
 alutInit (int *argcp, char **argv)
 {
-  if (!(alutInitialised == AL_FALSE && device == NULL && context == NULL))
+  ALCdevice *device;
+  ALCcontext *context;
+
+  if (initialisationState != Unintialized)
     {
       _alutSetError (ALUT_ERROR_INVALID_OPERATION);
       return AL_FALSE;
     }
 
   device = alcOpenDevice (NULL);
-  if (!(device != NULL))
+  if (device == NULL)
     {
-      _alutSetError (ALUT_ERROR_NO_DEVICE_AVAILABLE);
+      _alutSetError (ALUT_ERROR_OPEN_DEVICE);
       return AL_FALSE;
     }
 
   context = alcCreateContext (device, NULL);
-  if (!(context != NULL))
+  if (context == NULL)
     {
       alcCloseDevice (device);
-      device = NULL;
-      _alutSetError (ALUT_ERROR_NO_CONTEXT_AVAILABLE);
+      _alutSetError (ALUT_ERROR_CREATE_CONTEXT);
       return AL_FALSE;
     }
-  alcMakeContextCurrent (context);
 
-  alutInitialised = AL_TRUE;
+  if (alcMakeContextCurrent (context) == AL_FALSE)
+    {
+      alcDestroyContext (context);
+      alcCloseDevice (device);
+      _alutSetError (ALUT_ERROR_MAKE_CONTEXT_CURRENT);
+      return AL_FALSE;
+    }
+
+  initialisationState = ALUTDeviceAndContext;
+  alutContext = context;
   return AL_TRUE;
 }
 
 ALboolean
 alutInitWithoutContext (int *argcp, char **argv)
 {
-  if (!(alutInitialised == AL_FALSE && device == NULL && context == NULL))
+  if (initialisationState == Unintialized)
     {
       _alutSetError (ALUT_ERROR_INVALID_OPERATION);
       return AL_FALSE;
     }
 
-  alutInitialised = AL_TRUE;
+  initialisationState = ExternalDeviceAndContext;
   return AL_TRUE;
 }
 
-void
+ALboolean
 alutExit (void)
 {
-  if (!(alutInitialised == AL_TRUE))
+  ALCdevice *device;
+
+  if (_alutSanityCheck () == AL_FALSE)
     {
-      _alutSetError (ALUT_ERROR_INVALID_OPERATION);
-      return;
+      return AL_FALSE;
     }
 
-  if (context != NULL)
+  if (initialisationState == ExternalDeviceAndContext)
     {
-      alcMakeContextCurrent (NULL);
-      alcDestroyContext (context);
-      context = NULL;
+      initialisationState = Unintialized;
+      return AL_TRUE;
     }
 
-  if (device != NULL)
+  if (alcMakeContextCurrent (NULL) == AL_FALSE)
     {
-      alcCloseDevice (device);
-      device = NULL;
+      _alutSetError (ALUT_ERROR_MAKE_CONTEXT_CURRENT);
+      return AL_FALSE;
     }
 
-  alutInitialised = AL_FALSE;
+  device = alcGetContextsDevice (alutContext);
+  alcDestroyContext (alutContext);
+  if (alcGetError (device) != ALC_NO_ERROR)
+    {
+      _alutSetError (ALUT_ERROR_DESTROY_CONTEXT);
+      return AL_FALSE;
+    }
+
+  if (alcCloseDevice (device) == AL_FALSE)
+    {
+      _alutSetError (ALUT_ERROR_CLOSE_DEVICE);
+      return AL_FALSE;
+    }
+
+  initialisationState = Unintialized;
+  return AL_TRUE;
 }

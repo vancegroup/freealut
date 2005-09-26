@@ -37,6 +37,6 @@ typedef UINT32 uint32_t;
 extern void _alutSetError (ALenum err);
 
 /* in alutInit.c */
-extern void _alutSanityCheck (void);
+extern ALboolean _alutSanityCheck (void);
 
 #endif /* not ALUT_INTERNAL_H */

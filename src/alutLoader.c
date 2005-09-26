@@ -26,7 +26,6 @@ typedef enum
   UnknwonEndian                 /* has anybody still a PDP11? :-) */
 } Endianess;
 
-
 /* test from Harbison & Steele, "C - A Reference Manual", section 6.1.2 */
 static Endianess
 endianess (void)
@@ -227,7 +226,10 @@ alutCreateBufferFromFile (const char *filename)
   ALuint buffer;
   ALuint format;
 
-  _alutSanityCheck ();
+  if (_alutSanityCheck () == AL_FALSE)
+    {
+      return AL_NONE;
+    }
 
   if (!(stat (filename, &statBuf) == 0))
     {
@@ -288,7 +290,10 @@ alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length)
   ALuint format;
   ALuint buffer;
 
-  _alutSanityCheck ();
+  if (_alutSanityCheck () == AL_FALSE)
+    {
+      return AL_NONE;
+    }
 
   dg.fd = NULL;
   dg.length = length;
@@ -435,7 +440,10 @@ _alutPrivateLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
 const char *
 alutEnumerateSupportedFileTypes (void)
 {
-  _alutSanityCheck ();
+  if (_alutSanityCheck () == AL_FALSE)
+    {
+      return NULL;
+    }
 
   return "*.wav, *.au, *.raw";
 }
@@ -968,7 +976,11 @@ ALvoid *
 alutLoadMemoryFromFile (const char *filename, ALenum *format,
                         ALsizei *size, ALfloat *freq)
 {
-  _alutSanityCheck ();
+  if (_alutSanityCheck () == AL_FALSE)
+    {
+      return NULL;
+    }
+
   return _alutPrivateLoadMemoryFromFile (filename, format, size, freq);
 }
 
@@ -976,7 +988,11 @@ ALvoid *
 alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
                              ALenum *format, ALsizei *size, ALfloat *freq)
 {
-  _alutSanityCheck ();
+  if (_alutSanityCheck () == AL_FALSE)
+    {
+      return NULL;
+    }
+
   return _alutPrivateLoadMemoryFromFileImage (data, length, format, size,
                                               freq);
 }

@@ -22,7 +22,6 @@ ALenum
 alutGetError (void)
 {
   ALint ret = lastError;
-  _alutSanityCheck ();
   lastError = ALUT_ERROR_NO_ERROR;
   return ret;
 }
@@ -30,7 +29,6 @@ alutGetError (void)
 const char *
 alutGetErrorString (ALenum error)
 {
-  _alutSanityCheck ();
   switch (error)
     {
     case ALUT_ERROR_NO_ERROR:
@@ -40,22 +38,40 @@ alutGetErrorString (ALenum error)
       return "ALUT ran out of memory";
 
     case ALUT_ERROR_INVALID_ENUM:
-      return "ALUT was given an invalid enumeration";
+      return "ALUT was given an invalid enumeration token";
 
     case ALUT_ERROR_INVALID_VALUE:
       return "ALUT was given an invalid value";
 
     case ALUT_ERROR_INVALID_OPERATION:
-      return "ALUT was given an invalid operation";
+      return "ALUT was asked to do an invalid operation";
 
     case ALUT_ERROR_NOT_INITIALISED:
-      return "alutInit was not called";
+      return "ALUT has not been initialised";
 
-    case ALUT_ERROR_NO_DEVICE_AVAILABLE:
-      return "ALUT could not find a valid OpenAL device";
+    case ALUT_ERROR_NO_CURRENT_CONTEXT:
+      return "There is no current AL context";
 
-    case ALUT_ERROR_NO_CONTEXT_AVAILABLE:
-      return "ALUT could not create a valid OpenAL context";
+    case ALUT_ERROR_AL_ERROR_ON_ENTRY:
+      return "There was already an AL error on entry to an ALUT function";
+
+    case ALUT_ERROR_ALC_ERROR_ON_ENTRY:
+      return "There was already an ALC error on entry to an ALUT function";
+
+    case ALUT_ERROR_OPEN_DEVICE:
+      return "There was an error opening the ALC device";
+
+    case ALUT_ERROR_CLOSE_DEVICE:
+      return "There was an error closing the ALC device";
+
+    case ALUT_ERROR_CREATE_CONTEXT:
+      return "There was an error creating an ALC context";
+
+    case ALUT_ERROR_MAKE_CONTEXT_CURRENT:
+      return "Could not change the current ALC context";
+
+    case ALUT_ERROR_DESTROY_CONTEXT:
+      return "There was an error destroying the ALC context";
 
     case ALUT_ERROR_FILE_NOT_FOUND:
       return "File not found";

@@ -10,7 +10,7 @@
 #error No way to sleep on this platform
 #endif
 
-void
+ALboolean
 alutMicroSleep (ALuint microSeconds)
 {
 #if HAVE_NANOSLEEP && HAVE_TIME_H
@@ -25,4 +25,5 @@ alutMicroSleep (ALuint microSeconds)
 #elif HAVE_SLEEP && HAVE_WINDOWS_H
   Sleep (microSeconds / 1000);
 #endif
+  return AL_TRUE;
 }

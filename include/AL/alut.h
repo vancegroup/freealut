@@ -41,18 +41,24 @@ extern "C" {
 #define ALUT_API_MINOR_VERSION                 0
 
 #define ALUT_ERROR_NO_ERROR                    0
-#define ALUT_ERROR_OUT_OF_MEMORY               0x201
-#define ALUT_ERROR_INVALID_ENUM                0x202
-#define ALUT_ERROR_INVALID_VALUE               0x203
-#define ALUT_ERROR_INVALID_OPERATION           0x204
-#define ALUT_ERROR_NOT_INITIALISED             0x205
-#define ALUT_ERROR_NO_DEVICE_AVAILABLE         0x206
-#define ALUT_ERROR_NO_CONTEXT_AVAILABLE        0x207
-#define ALUT_ERROR_FILE_NOT_FOUND              0x208
-#define ALUT_ERROR_FILE_NOT_READABLE           0x209
-#define ALUT_ERROR_UNSUPPORTED_FILE_TYPE       0x20A
-#define ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE    0x20B
-#define ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE   0x20C
+#define ALUT_ERROR_OUT_OF_MEMORY               0x200
+#define ALUT_ERROR_INVALID_ENUM                0x201
+#define ALUT_ERROR_INVALID_VALUE               0x202
+#define ALUT_ERROR_INVALID_OPERATION           0x203
+#define ALUT_ERROR_NOT_INITIALISED             0x204
+#define ALUT_ERROR_NO_CURRENT_CONTEXT          0x205
+#define ALUT_ERROR_AL_ERROR_ON_ENTRY           0x206
+#define ALUT_ERROR_ALC_ERROR_ON_ENTRY          0x207
+#define ALUT_ERROR_OPEN_DEVICE                 0x208
+#define ALUT_ERROR_CLOSE_DEVICE                0x209
+#define ALUT_ERROR_CREATE_CONTEXT              0x20A
+#define ALUT_ERROR_MAKE_CONTEXT_CURRENT        0x20B
+#define ALUT_ERROR_DESTROY_CONTEXT             0x20C
+#define ALUT_ERROR_FILE_NOT_FOUND              0x20D
+#define ALUT_ERROR_FILE_NOT_READABLE           0x20E
+#define ALUT_ERROR_UNSUPPORTED_FILE_TYPE       0x20F
+#define ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE    0x210
+#define ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE   0x211
 
 #define ALUT_WAVEFORM_SINE                     0x100
 #define ALUT_WAVEFORM_SQUARE                   0x101
@@ -62,16 +68,16 @@ extern "C" {
 
 ALUT_API ALboolean ALUT_APIENTRY alutInit (int *argcp, char **argv);
 ALUT_API ALboolean ALUT_APIENTRY alutInitWithoutContext (int *argcp, char **argv);
-ALUT_API void ALUT_APIENTRY alutExit (void);
+ALUT_API ALboolean ALUT_APIENTRY alutExit (void);
 
 ALUT_API ALenum ALUT_APIENTRY alutGetError (void);
-ALUT_API const char * ALUT_APIENTRY alutGetErrorString (ALenum error);
+ALUT_API const char *ALUT_APIENTRY alutGetErrorString (ALenum error);
 
 ALUT_API ALuint ALUT_APIENTRY alutCreateBufferFromFile (const char *filename);
 ALUT_API ALuint ALUT_APIENTRY alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length);
-ALUT_API ALvoid * ALUT_APIENTRY alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size, ALfloat *freq);
-ALUT_API ALvoid * ALUT_APIENTRY alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length, ALenum *format, ALsizei *size, ALfloat *freq);
-ALUT_API const char * ALUT_APIENTRY alutEnumerateSupportedFileTypes (void);
+ALUT_API ALvoid *ALUT_APIENTRY alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size, ALfloat *freq);
+ALUT_API ALvoid *ALUT_APIENTRY alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length, ALenum *format, ALsizei *size, ALfloat *freq);
+ALUT_API const char *ALUT_APIENTRY alutEnumerateSupportedFileTypes (void);
 
 ALUT_API ALuint ALUT_APIENTRY alutCreateBufferHelloWorld (void);
 ALUT_API ALuint ALUT_APIENTRY alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase, ALfloat duration);
@@ -79,7 +85,7 @@ ALUT_API ALuint ALUT_APIENTRY alutCreateBufferWaveform (ALenum waveshape, ALfloa
 ALUT_API ALint ALUT_APIENTRY alutGetMajorVersion (void);
 ALUT_API ALint ALUT_APIENTRY alutGetMinorVersion (void);
 
-ALUT_API void ALUT_APIENTRY alutMicroSleep (ALuint microSeconds);
+ALUT_API ALboolean ALUT_APIENTRY alutMicroSleep (ALuint microSeconds);
 
 /* Nasty Compatibility stuff, WARNING: THESE FUNCTIONS ARE STRONGLY DEPRECATED */
 #if defined(__APPLE__)

@@ -1,3 +1,10 @@
+2005-09-26  Sven Panne  <sven.panne@aedion.de>
+
+	* doc/alut.html, include/AL/alut.h, src/alutError.c,
+	src/alutInit.c, src/alutInternal.h, src/alutLoader.c,
+	src/alutUtil.c: Clarified and changed the ALUT error handling and
+	reporting after the corresponding discussion on the mailing list.
+
 2005-09-23  Sven Panne  <sven.panne@aedion.de>
 
 	* admin/.cvsignore: Ignore mkinstalldirs.
