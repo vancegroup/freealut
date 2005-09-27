@@ -42,8 +42,8 @@
             <a href="#InitializationExit">Initialization / Exit</a>
             <ul>
               <li><a href="#alutInit">alutInit</a></li>
+              <li><a href="#alutInitWithoutContext">alutInitWithoutContext</a></li>
               <li><a href="#alutExit">alutExit</a></li>
-              <li><a href="#InitializationExitNotes">Notes</a></li>
             </ul>
           </li>
           <li>
@@ -53,6 +53,7 @@
               <li><a href="#alutLoadMemoryFromFoo">alutLoadMemoryFromFile / alutLoadMemoryFromFileImage</a></li>
               <li><a href="#alutEnumerateSupportedFileTypes">alutEnumerateSupportedFileTypes</a></li>
               <li><a href="#LoadingNotes">Notes</a></li>
+              <li><a href="DeprecatedWAVLoaders">Deprecated WAV loaders</a></li>
             </ul>
           </li>
           <li>
@@ -91,6 +92,7 @@
       <li>2005-09-02: Version 1.0.1 by Sven Panne</li>
       <li>2005-09-10: Version 1.0.2 by Sven Panne</li>
       <li>2005-09-26: Version 1.0.3 by Sven Panne</li>
+      <li>2005-09-27: Version 1.0.4 by Sven Panne</li>
     </ul>
 
     <h1><a name="Introduction"></a>Introduction</h1>
@@ -128,9 +130,18 @@
     to at least allow these programs to continue to run if they are recompiled
     against ALUT 1.0.0 or later.</p>
 
+    <p>The old Linux implementation of OpenAL poses a special compatibility
+    problem: ALUT 0.x.x was not a physically separate library on this platform,
+    it was actually part of libopenal itself. This is bad for at least two
+    reasons: It was handled differently on other platforms and much more
+    seriously it locked together OpenAL and ALUT releases. So a deliberate
+    decision was made to break binary compatibility in this respect and cleanly
+    split the libraries into an OpenAL (i.e. AL and ALC) part and an ALUT
+    one.</p>
+
     <h2><a name="OpenGLGLUT"></a>OpenGL, GLUT and using what you already know</h2>
 
-    <p>If you are already familiar with OpenGL and its utility toolkit 'GLUT',
+    <p>If you are already familiar with OpenGL and its utility toolkit GLUT,
     then you should feel very familiar with ALUT. Wherever GLUT has 'GL', ALUT
     has 'AL' and wherever GLUT has 'glut', ALUT has 'alut'. 'Window' is replaced
     with 'Context' throughout the API.</p>
@@ -174,12 +185,13 @@ main (int argc, char **argv)
 #include &lt;AL/alut.h&gt;
 </pre>
 
-    <p>The ALUT header includes &lt;AL/al.h&gt; and &lt;AL/alc.h&gt; for you so
-    you don't need to include them again - although it does not hurt to do
-    so. ALUT reserves the &quot;ALUT_&quot; prefix for preprocessor macros, so
-    you should never define such a macro in your own program. Furthermore, you
-    should not rely on any macro starting with &quot;ALUT_&quot; not mentioned
-    in this specification.</p>
+    <p>The ALUT header includes <tt>&lt;AL/al.h&gt;</tt> and
+    <tt>&lt;AL/alc.h&gt;</tt> for you so you don't need to include them again -
+    although it does not hurt to do so. ALUT reserves the
+    &quot;<tt>ALUT_</tt>&quot; prefix for preprocessor macros, so you should
+    never define such a macro in your own program. Furthermore, you should not
+    rely on any macro starting with &quot;<tt>ALUT_</tt>&quot; not mentioned in
+    this specification.</p>
 
     <p>To find out the necessary compilation flags, use one of the following
     commands:</p>
@@ -199,10 +211,10 @@ openal-config --libs
 
     <p>On Windows, link with alut.dll and openal32.dll</p>
 
-    <p>ALUT reserves the &quot;alut&quot; prefix for globally visible functions
-    and variables, so you should never define such a function or variable in
-    your own program. Furthermore, you should not rely on any such function or
-    variable not mentioned in this specification.</p>
+    <p>ALUT reserves the &quot;<tt>alut</tt>&quot; prefix for globally visible
+    functions and variables, so you should never define such a function or
+    variable in your own program. Furthermore, you should not rely on any such
+    function or variable not mentioned in this specification.</p>
 
     <h1><a name="API"></a>The ALUT API</h1>
 
@@ -210,104 +222,169 @@ openal-config --libs
 
     <p>ALUT's error handling and reporting is a little bit different from the
     one used in OpenAL and OpenGL: All functions which can fail report
-    success/failure via a return value, where AL_FALSE/AL_NONE/NULL mean
-    failure. alutGetError can be used to find out what exactly went wrong.</p>
-
-    <p>ALUT starts in an <em>uninitialized</em> state. alutInit and
-    alutInitWithoutContext put ALUT into the <em>initialized</em> state. Those
-    functions must only be called when the state is <em>uninitialized</em>.
-    alutExit puts ALUT back from an <em>initialized</em> state to an
-    <em>uninitialized</em> one.</p>
-
-    <p>The following functions must only be called in an <em>initialized</em>
-    state and with a current context: alutExit, alutCreateBufferFromFile,
-    alutCreateBufferFromFileImage, alutLoadMemoryFromFile,
-    alutLoadMemoryFromFileImage, alutEnumerateSupportedFileTypes,
-    alutCreateBufferHelloWorld, alutCreateBufferWaveform. All these functions
-    check for AL/ALC errors on entry and immediately return
-    ALUT_ERROR_AL_ERROR_ON_ENTRY or ALUT_ERROR_ALC_ERROR_ON_ENTRY if there was
-    one.</p>
-
-    <p>The following functions never fail and can be called in any state:
-    alutGetError, alutGetErrorString, alutGetMajorVersion,
-    alutGetMinorVersion.</p>
-
-    <p>alutMicroSleep can be called in every state.</p>
+    success/failure via a return value, where <tt>AL_FALSE</tt> /
+    <tt>AL_NONE</tt> / <tt>NULL</tt> mean failure. <tt>alutGetError</tt> can be
+    used to find out what exactly went wrong.</p>
 
     <p>It is guaranteed that if a function fails, no data pointed to by pointer
     arguments has been changed.</p>
 
-    <h3><a name="alutGetError"></a>alutGetError</h3>
+    <h3 class="manpage"><a name="alutGetError"></a>alutGetError</h3>
 
-    <p>Any ALUT routine that has an error return will set a global error code
-    that may be retrieved with:</p>
+    <h4>Name</h4>
+
+    <p><tt>alutGetError</tt> - return and clear the current error state</p>
+
+    <h4>Synopsis</h4>
 
 <pre class="programlisting">
 ALenum alutGetError (void);
 </pre>
 
-    <p>A number of tokens named ALUT_ERROR_xxxxx are defined in alut.h, the list
-    is:</p>
+    <h4>Description</h4>
 
-    <ul>
-      <li>ALUT_ERROR_NO_ERROR: No ALUT error found</li>
-      <li>ALUT_ERROR_OUT_OF_MEMORY: ALUT ran out of memory</li>
-      <li>ALUT_ERROR_INVALID_ENUM: ALUT was given an invalid enumeration token</li>
-      <li>ALUT_ERROR_INVALID_VALUE: ALUT was given an invalid value</li>
-      <li>ALUT_ERROR_INVALID_OPERATION: ALUT was asked to do an invalid operation</li>
-      <li>ALUT_ERROR_NOT_INITIALISED: ALUT has not been initialised</li>
-      <li>ALUT_ERROR_NO_CURRENT_CONTEXT: There is no current AL context</li>
-      <li>ALUT_ERROR_AL_ERROR_ON_ENTRY: There was already an AL error on entry to an ALUT function</li>
-      <li>ALUT_ERROR_ALC_ERROR_ON_ENTRY: There was already an ALC error on entry to an ALUT function</li>
-      <li>ALUT_ERROR_OPEN_DEVICE: There was an error opening the ALC device</li>
-      <li>ALUT_ERROR_CLOSE_DEVICE: There was an error closing the ALC device</li>
-      <li>ALUT_ERROR_CREATE_CONTEXT: There was an error creating an ALC context</li>
-      <li>ALUT_ERROR_MAKE_CONTEXT_CURRENT: Could not change the current ALC context</li>
-      <li>ALUT_ERROR_DESTROY_CONTEXT: There was an error destroying the ALC context</li>
-      <li>ALUT_ERROR_FILE_NOT_FOUND: File not found</li>
-      <li>ALUT_ERROR_FILE_NOT_READABLE: File found but not readable</li>
-      <li>ALUT_ERROR_UNSUPPORTED_FILE_TYPE: Unsupported file type</li>
-      <li>ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE: Unsupported mode within an otherwise usable file type</li>
-      <li>ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE: File was corrupt or truncated</li>
-    </ul>
+    <p>Any ALUT routine that fails will return <tt>AL_FALSE</tt> /
+    <tt>AL_NONE</tt> / <tt>NULL</tt> and set the global error state. If a
+    subsequent error occurs while there is still an error recorded internally,
+    the second error will simply be ignored. Calling <tt>alutGetError</tt> will
+    reset the error code to <tt>ALUT_ERROR_NO_ERROR</tt>. Note that the error
+    state is <em>not</em> cleared by other successful ALUT calls.</p>
 
-    <p>If an error condition occurs, it is stored internally. If a subsequent
-    error occurs while there is still an error recorded internally, the second
-    error will simply be ignored. Calling alutGetError will reset the error code
-    to ALUT_ERROR_NO_ERROR. Error codes are not cleared by successful ALUT
-    calls.</p>
+    <h4>Return Value</h4>
 
-    <h3><a name="alutGetErrorString"></a>alutGetErrorString</h3>
+    <p><tt>alutGetError</tt> returns the contents of the global error state,
+    which can be one of the following values:</p>
+
+    <dl>
+      <dt><tt>ALUT_ERROR_NO_ERROR</tt></dt>
+      <dd>No ALUT error found.</dd>
+
+      <dt><tt>ALUT_ERROR_OUT_OF_MEMORY</tt></dt>
+      <dd>ALUT ran out of memory.</dd>
+
+      <dt><tt>ALUT_ERROR_INVALID_ENUM</tt></dt>
+      <dd>ALUT was given an invalid enumeration token.</dd>
+
+      <dt><tt>ALUT_ERROR_INVALID_VALUE</tt></dt>
+      <dd>ALUT was given an invalid value.</dd>
+
+      <dt><tt>ALUT_ERROR_ALREADY_INITIALISED</tt></dt>
+      <dd>ALUT has already been initialised.</dd>
+
+      <dt><tt>ALUT_ERROR_NOT_INITIALISED</tt></dt>
+      <dd>ALUT has not been initialised.</dd>
+
+      <dt><tt>ALUT_ERROR_NO_CURRENT_CONTEXT</tt></dt>
+      <dd>There is no current AL context.</dd>
+
+      <dt><tt>ALUT_ERROR_AL_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an AL error on entry to an ALUT function.</dd>
+
+      <dt><tt>ALUT_ERROR_ALC_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an ALC error on entry to an ALUT function.</dd>
+
+      <dt><tt>ALUT_ERROR_OPEN_DEVICE</tt></dt>
+      <dd>There was an error opening the ALC device.</dd>
+
+      <dt><tt>ALUT_ERROR_CLOSE_DEVICE</tt></dt>
+      <dd>There was an error closing the ALC device.</dd>
+
+      <dt><tt>ALUT_ERROR_CREATE_CONTEXT</tt></dt>
+      <dd>There was an error creating an ALC context.</dd>
+
+      <dt><tt>ALUT_ERROR_MAKE_CONTEXT_CURRENT</tt></dt>
+      <dd>Could not change the current ALC context.</dd>
+
+      <dt><tt>ALUT_ERROR_DESTROY_CONTEXT</tt></dt>
+      <dd>There was an error destroying the ALC context.</dd>
+
+      <dt><tt>ALUT_ERROR_GEN_BUFFERS</tt></dt>
+      <dd>There was an error generating an AL buffer.</dd>
+
+      <dt><tt>ALUT_ERROR_BUFFER_DATA</tt></dt>
+      <dd>There was an error passing buffer data to AL.</dd>
+
+      <dt><tt>ALUT_ERROR_FILE_NOT_FOUND</tt></dt>
+      <dd>File not found.</dd>
+
+      <dt><tt>ALUT_ERROR_FILE_NOT_READABLE</tt></dt>
+      <dd>File found but not readable.</dd>
+
+      <dt><tt>ALUT_ERROR_UNSUPPORTED_FILE_TYPE</tt></dt>
+      <dd>Unsupported file type.</dd>
+
+      <dt><tt>ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE</tt></dt>
+      <dd>Unsupported mode within an otherwise usable file type.</dd>
+
+      <dt><tt>ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE</tt></dt>
+      <dd>File was corrupt or truncated.</dd>
+    </dl>
+
+    <h4>Errors</h4>
+
+    <p><tt>alutGetError</tt> can be called in any ALUT state and will never
+    fail.</p>
+
+    <h3 class="manpage"><a name="alutGetErrorString"></a>alutGetErrorString</h3>
+
+    <h4>Name</h4>
+
+    <p><tt>alutGetErrorString</tt> - return an error message string
+    given an error code</p>
+
+    <h4>Synopsis</h4>
 
 <pre class="programlisting">
 const char *alutGetErrorString (ALenum error);
 </pre>
 
-    <p>alutGetErrorString can be used to convert an error code into a
+    <h4>Description</h4>
+
+    <p><tt>alutGetErrorString</tt> can be used to convert an error code into a
     human-readable description. The precise text of these descriptions may vary
     from implementation to implementation and should not be relied upon by the
-    application. An unknown error code is not considered an error and a generic
-    description is returned in that case.</p>
+    application.</p>
+
+    <h4>Return Value</h4>
+
+    <p><tt>alutGetErrorString</tt> returns a pointer to an immutable
+    zero-terminated string corresponding to the given error code.</p>
+
+    <h4>Errors</h4>
+
+    <p><tt>alutGetErrorString</tt> can be called in any ALUT state and
+    will never fail. An unknown error code is not considered an error
+    and a generic description will be returned in that case.</p>
 
     <div class="example">
       <h4>Example: Context Handling and Error Reporting</h4>
 
-      <p>A typical ALUT program will look like this:</p>
+      <p>A typical ALUT program might look like this:</p>
 
 <pre class="programlisting">
+static void
+reportError (void)
+{
+  fprintf (stderr, "ALUT error: %s\n",
+           alutGetErrorString (alutGetError ()));
+  exit (EXIT_FAILURE);
+}
+
 int
 main (int argc, char **argv)
 {
   if (!alutInit (&amp;argc, argv))
     {
-      ALenum error = alutGetError ();
-      fprintf (stderr, "%s: %s\n", argv[0], alutGetErrorString (error));
-      exit (EXIT_FAILURE);
+      reportError ();
     }
 
   /* ...play audio for a while... */
 
-  alutExit ();
+  if (!alutExit ())
+    {
+      reportError ();
+    }
+
   return EXIT_SUCCESS;
 }
 </pre>
@@ -315,35 +392,85 @@ main (int argc, char **argv)
 
     <h2><a name="InitializationExit"></a>Initialization / Exit</h2>
 
-    <h3><a name="alutInit"></a>alutInit</h3>
+    <p>ALUT starts in an <em>uninitialized</em> state. <tt>alutInit</tt> and
+    <tt>alutInitWithoutContext</tt> put ALUT into the <em>initialized</em>
+    state. Those functions must only be called when the state is
+    <em>uninitialized</em>. <tt>alutExit</tt> puts ALUT back from an
+    <em>initialized</em> state to an <em>uninitialized</em> one.</p>
 
-    <p>The first call to ALUT must always be one of the following:</p>
+    <p>The following functions must only be called in an <em>initialized</em>
+    state and with a current context: <tt>alutExit</tt>,
+    <tt>alutCreateBufferFromFile</tt>, <tt>alutCreateBufferFromFileImage</tt>,
+    <tt>alutLoadMemoryFromFile</tt>, <tt>alutLoadMemoryFromFileImage</tt>,
+    <tt>alutEnumerateSupportedFileTypes</tt>,
+    <tt>alutCreateBufferHelloWorld</tt>, <tt>alutCreateBufferWaveform</tt>. All
+    these functions check for AL/ALC errors on entry and immediately return
+    <tt>ALUT_ERROR_AL_ERROR_ON_ENTRY</tt> or
+    <tt>ALUT_ERROR_ALC_ERROR_ON_ENTRY</tt> if there was one. Note that as a
+    consequence of these checks the AL/ALC error states for the current
+    context/device are cleared after calling any of these functions.</p>
+
+    <p><tt>alutMicroSleep</tt> can be called in every state.</p>
+
+    <p>The following functions never fail and can be called in any state:
+    <tt>alutGetError</tt>, <tt>alutGetErrorString</tt>,
+    <tt>alutGetMajorVersion</tt>, <tt>alutGetMinorVersion</tt>.</p>
+
+    <h3 class="manpage"><a name="alutInit"></a>alutInit</h3>
+
+    <h4>Name</h4>
+
+    <p><tt>alutInit</tt> - initialize the ALUT library and create a default
+    current context</p>
+
+    <h4>Synopsis</h4>
 
 <pre class="programlisting">
 ALboolean alutInit (int *argcp, char **argv);
-
-ALboolean alutInitWithoutContext (int *argcp, char **argv);
 </pre>
 
-    <p>Both calls initialise the ALUT internals - alutInit() also creates a
-    single OpenAL 'context' on the default device. If you don't know what an
-    OpenAL context is - use alutInit and be happy!</p>
+    <h4>Description</h4>
 
-    <p>If you want something more complex than that (eg running on a non-default
-    device - or opening multiple contexts on multiple devices) then you should
-    call alutInitWithoutContext instead of alutInit. Then you may use OpenAL's
-    ALC API to create your own context(s) on whatever devices you prefer.</p>
+    <p><tt>alutInit</tt> initializes the ALUT internals and creates an OpenAL
+    context on the default device and makes it the current OpenAL context. If
+    you want something more complex than that (e.g. running on a non-default
+    device or opening multiple contexts on multiple devices), you can use <a
+    href="#alutInitWithoutContext"><tt>alutInitWithoutContext</tt></a>
+    instead. <tt>alutInit</tt> examines the commandline arguments passed to it
+    and remove those it recognizes. It is acceptable to pass two <tt>NULL</tt>
+    pointers in settings where no useful information can be obtained from argc
+    and argv.</p>
 
-    <p>Both functions return AL_TRUE on success or AL_FALSE if there was a
-    problem.</p>
+    <h4>Return Value</h4>
+
+    <p><tt>alutInit</tt> returns <tt>AL_TRUE</tt> on success or
+    <tt>AL_FALSE</tt> on failure.</p>
+
+    <h4>Errors</h4>
+
+    <dl>
+      <dt><tt>ALUT_ERROR_INVALID_VALUE</tt></dt>
+      <dd>One of the arguments was <tt>NULL</tt>, but not the other one.</dd>
+
+      <dt><tt>ALUT_ERROR_ALREADY_INITIALISED</tt></dt>
+      <dd>ALUT has already been initialized.</dd>
+
+      <dt><tt>ALUT_ERROR_OPEN_DEVICE</tt></dt>
+      <dd>There was an error opening the default ALC device.</dd>
+
+      <dt><tt>ALUT_ERROR_CREATE_CONTEXT</tt></dt>
+      <dd>There was an error creating an ALC context.</dd>
+
+      <dt><tt>ALUT_ERROR_MAKE_CONTEXT_CURRENT</tt></dt>
+      <dd>Could not change the current ALC context.</dd>
+    </dl>
 
     <div class="example">
-
       <h4>Example: Handling command-line options</h4>
 
-      <p>If you pass alutInit/alInitWithoutContext the argc and argv from your
-      main program, it will examine your command-line options and use (and
-      remove) those options that it recognises:</p>
+      <p>If you pass <tt>alutInit</tt> the argc and argv from your main program,
+      it will examine your command-line options and use (and remove) those
+      options that it recognises:</p>
 
 <pre class="programlisting">
 int
@@ -354,61 +481,121 @@ main (int argc, char **argv)
 }
 </pre>
 
+      <p>Precisely which (if any) command-line options are accepted and what
+      they control is implementation and operating system dependent. Note that
+      some implementations will use argv[0] in debug and error messages - but
+      this is not guaranteed by the API because it is operating-system
+      dependent. On some OS's, <tt>alutInit</tt> may use initial settings from
+      other sources such as 'registry' data, '<tt>.alutrc</tt>' files or shell
+      variables. Please consult the README.xxx file for your OS if you need
+      further details.</p>
     </div>
 
-    <p>Precisely which (if any) command-line options are accepted - and what
-    they control is implementation and operating system dependent. Notably; some
-    implementations will use argv[0] in debug and error messages - but this is
-    not guaranteed by the API because it is operating-system dependent. On some
-    OS's, alutInit may garner initial settings from other sources such as
-    'registry' data, '.alutrc' files or shell variables. Please consult the
-    README.xxx file for your OS if you need further details.</p>
+    <h3 class="manpage"><a name="alutInitWithoutContext"></a>alutInitWithoutContext</h3>
 
-    <p>It is acceptable to call alutInit(NULL,NULL) in settings where no useful
-    information can be obtained from argc and argv.</p>
+    <h4>Name</h4>
 
-    <h3><a name="alutExit"></a>alutExit</h3>
+    <p><tt>alutInitWithoutContext</tt> - initialize the ALUT library</p>
 
-    <p>When the application has finished playing audio, it should shut down ALUT
-    in order to destroy the audio context it created with alutInit:</p>
+    <h4>Synopsis</h4>
+
+<pre class="programlisting">
+ALboolean alutInitWithoutContext (int *argcp, char **argv);
+</pre>
+
+    <h4>Description</h4>
+
+    <p><tt>alutInitWithoutContext</tt> initializes the ALUT internals. It does
+    not create any OpenAL context or device, so this has to be done via the
+    usual ALC calls. <tt>alutInitWithoutContext</tt> examines the commandline
+    arguments passed to it and remove those it recognizes. It is acceptable to
+    pass two <tt>NULL</tt> pointers in settings where no useful information can
+    be obtained from argc and argv.</p>
+
+    <h4>Return Value</h4>
+
+    <p><tt>alutInitWithoutContext</tt> returns <tt>AL_TRUE</tt> on success or
+    <tt>AL_FALSE</tt> on failure.</p>
+
+    <h4>Errors</h4>
+
+    <dl>
+      <dt><tt>ALUT_ERROR_INVALID_VALUE</tt></dt>
+      <dd>One of the arguments was <tt>NULL</tt>, but not the other one.</dd>
+
+      <dt><tt>ALUT_ERROR_ALREADY_INITIALISED</tt></dt>
+      <dd>ALUT has already been initialized.</dd>
+    </dl>
+
+    <h3 class="manpage"><a name="alutExit"></a>alutExit</h3>
+
+    <h4>Name</h4>
+
+    <p><tt>alutExit</tt> - shutdown the ALUT library</p>
+
+    <h4>Synopsis</h4>
 
 <pre class="programlisting">
 ALboolean alutExit (void);
 </pre>
 
-    <p>This closes any OpenAL device/context that ALUT may have created in
-    alutInit (but not any that the application created using ALC). After calling
-    alutExit, you may subsequently call alutInit or alutInitWithoutContext again
-    if you so desire. alutExit returns AL_TRUE on success and AL_FALSE on failure.</p>
+    <h4>Description</h4>
 
-    <h3><a name="InitializationExitNotes"></a>Notes</h3>
+    <p>When the application has finished playing audio, it should shut down ALUT
+    using <tt>aluExit</tt>. This closes any OpenAL device/context that ALUT may
+    have created in <tt>alutInit</tt> (but not any that the application created
+    using ALC). After calling <tt>alutExit</tt>, you may subsequently call
+    <tt>alutInit</tt> or <tt>alutInitWithoutContext</tt> again. Note that under
+    well-behaved operating systems, it should be acceptable to simply exit from
+    your program without bothering to call <tt>alutExit</tt>, relying on the OS
+    to clean up after you. However, it is dangerous to rely on this behavior if
+    portable operation is expected.</p>
 
-    <ol>
-      <li>It is an error to make more than one call to alutInit without first
-      calling alutExit. If you need more complex device/context support, please
-      use the OpenAL 'ALC' API.</li>
+    <h4>Return Value</h4>
 
-      <li>Under well-behaved operating systems, it should be acceptable to
-      simply exit from your program without bothering to call alutExit - relying
-      on the OS to clean up after you. However, it is dangerous to rely on this
-      behavior if portable operation is expected.</li>
+    <p><tt>alutExit</tt> returns <tt>AL_TRUE</tt> on success or
+    <tt>AL_FALSE</tt> on failure.</p>
 
-      <li>Some ALUT implementations may allow you to create a context on a
-      non-default OpenAL device using alutInit by telling ALUT which device to
-      use with a flag on the command line, a Shell Variable, the '.alutrc' file
-      or a 'registry' entry. But this behavior is not guaranteed. By default,
-      you'll get whatever device is the ALC default.</li>
-    </ol>
+    <h4>Errors</h4>
+
+    <dl>
+      <dt><tt>ALUT_ERROR_NOT_INITIALISED</tt></dt>
+      <dd>ALUT has not been initialised yet.</dd>
+
+      <dt><tt>ALUT_ERROR_NO_CURRENT_CONTEXT</tt></dt>
+      <dd>There is no current AL context.</dd>
+
+      <dt><tt>ALUT_ERROR_AL_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an AL error on entry to <tt>alutExit</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_ALC_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an ALC error on entry to <tt>alutExit</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_CLOSE_DEVICE</tt></dt>
+      <dd>There was an error closing the ALC device created by
+      <tt>alutInit</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_MAKE_CONTEXT_CURRENT</tt></dt>
+      <dd>Could not release the current ALC context.</dd>
+
+      <dt><tt>ALUT_ERROR_DESTROY_CONTEXT</tt></dt>
+      <dd>There was an error destroying the ALC context created by
+      <tt>alutInit</tt>.</dd>
+    </dl>
 
     <h2><a name="Loading"></a>Sound Sample File Loading</h2>
 
     <p>ALUT attempts to simplify the business of getting a simple application
     running by providing loaders for a range of file formats.</p>
 
-    <h3><a name="alutCreateBufferFromFoo"></a>alutCreateBufferFromFile / alutCreateBufferFromFileImage</h3>
+    <h3 class="manpage"><a name="alutCreateBufferFromFoo"></a>alutCreateBufferFromFile / alutCreateBufferFromFileImage</h3>
 
     <p>Rather than enumerate a list of formats that will likely grow with time,
     there is a single entrypoint for loading files of all formats:</p>
+
+    <h4>Name</h4>
+
+    <h4>Synopsis</h4>
 
 <pre class="programlisting">
 ALuint alutCreateBufferFromFile (const char *filename);
@@ -416,19 +603,25 @@ ALuint alutCreateBufferFromFile (const char *filename);
 ALuint alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length);
 </pre>
 
-    <p>alutCreateBufferFromFile opens the specified filename, reads enough of
-    the header to determine whether the file is one of the types that ALUT
-    recognises. If so then the file is read and placed into an alBuffer whose
-    handle is returned as the result. alutCreateBufferFromFileImage does the
-    same thing for a file image which has been placed into a block of memory
-    whose length is given in the 'length' parameter.</p>
+    <p><tt>alutCreateBufferFromFile</tt> opens the specified filename, reads
+    enough of the header to determine whether the file is one of the types that
+    ALUT recognises. If so then the file is read and placed into an AL buffer
+    whose handle is returned as the
+    result. <tt>alutCreateBufferFromFileImage</tt> does the same thing for a
+    file image which has been placed into a block of memory whose start and
+    length in bytes are given as parameters.</p>
 
-    <p>Both routines return AL_NONE in the event of an error - with alutGetError
-    providing more detail if required.</p>
+    <p>Both routines return <tt>AL_NONE</tt> in the event of an error. Use
+    <tt>alutGetError</tt> to find out more details if required.</p>
 
-    <h3><a name="alutLoadMemoryFromFoo"></a>alutLoadMemoryFromFile / alutLoadMemoryFromFileImage</h3>
+    <h3 class="manpage"><a name="alutLoadMemoryFromFoo"></a>alutLoadMemoryFromFile / alutLoadMemoryFromFileImage</h3>
 
-    <p>For applications that require a more hands-on approach,</p>
+    <p>For applications that require a more hands-on approach, you can use one
+    of the following functions:</p>
+
+    <h4>Name</h4>
+
+    <h4>Synopsis</h4>
 
 <pre class="programlisting">
 ALvoid *alutLoadMemoryFromFile (const char *filename,
@@ -443,28 +636,33 @@ ALvoid *alutLoadMemoryFromFileImage (const ALvoid *data,
                                      ALfloat *freq);
 </pre>
 
-    <p>These routines load data from disk or memory as with the
-    alutCreateBuffer* versions - but allocate a block of RAM to store it in -
-    leaving it up to the application to make alBufferData calls to pass it on to
-    OpenAL and to free() the memory after use.</p>
+    <p>These routines load data from disk or memory just like their
+    <tt>alutCreateBuffer</tt>* counterparts, but allocate a block of RAM to
+    store it in, leaving it up to the application to e.g. make
+    <tt>alBufferData</tt> calls to pass the data on to OpenAL. Use the standard
+    <tt>free</tt> function to release the memory after use.</p>
 
     <p>Additionally, if any of the format, size, freq or loop parameters are
-    non-NULL, they will be populated with the format of the file (one of the
-    standard AL_ tokens will be returned - suitable for passing into
-    alBufferData), the size or the block in bytes and the frequency in Hertz at
-    which the sample was recorded. The returned result will be the address of
-    the data in memory or NULL in the event of an error. alutGetError will (as
-    usual) provide more details.</p>
+    non-<tt>NULL</tt>, they will be populated with the format of the file (one
+    of the standard <tt>AL_</tt> tokens will be returned - suitable for passing
+    into <tt>alBufferData</tt>), the size or the block in bytes and the
+    frequency in Hertz at which the sample was recorded. The returned result
+    will be the address of the data in memory or <tt>NULL</tt> in the event of
+    an error. <tt>alutGetError</tt> will (as usual) provide more details.</p>
 
-    <h3><a name="alutEnumerateSupportedFileTypes"></a>alutEnumerateSupportedFileTypes</h3>
+    <h3 class="manpage"><a name="alutEnumerateSupportedFileTypes"></a>alutEnumerateSupportedFileTypes</h3>
+
+    <h4>Name</h4>
+
+    <h4>Synopsis</h4>
 
 <pre class="programlisting">
 const char *alutEnumerateSupportedFileTypes (void);
 </pre>
 
-    <p>alutEnumerateSupportedFileTypes returns a comma-separated list of
-    supported filename extensions, suitable for passing to a directory browser
-    popup, e.g. something like &quot;*.wav, *.ogg, *.au&quot;.</p>
+    <p><tt>alutEnumerateSupportedFileTypes</tt> returns a comma-separated list
+    of supported filename extensions, suitable for passing to a directory
+    browser popup, e.g. something like &quot;*.wav, *.ogg, *.au&quot;.</p>
 
     <h3><a name="LoadingNotes"></a>Notes</h3>
 
@@ -474,21 +672,23 @@ const char *alutEnumerateSupportedFileTypes (void);
       advertise that "*.wav" is supported when in fact it only supports
       uncompressed WAV files and not the compressed variety. In this event, the
       various ALUT file loaders may return an error and set
-      ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE rather than
-      ALUT_ERROR_UNSUPPORTED_FILE_TYPE which would indicate that no files of
-      this type are allowed.</li>
+      <tt>ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE</tt> rather than
+      <tt>ALUT_ERROR_UNSUPPORTED_FILE_TYPE</tt> which would indicate that no
+      files of this type are allowed.</li>
 
-      <li>It is possible that alutLoadMemoryFromFile will be unable to support
-      some file types that alutCreateBufferFromFile can support (although the
-      reverse is never the case). In this situation, that file type WILL be
-      listed in alutEnumerateSupportedFileTypes - but the actual call to
-      alutLoadMemoryFromFile will fail - returning
-      ALUT_ERROR_UNSUPPORTED_FILE_TYPE.</li>
-
-      <li>For backwards-compatibility with ALUT 0.x.x, ALUT still offers the
-      three deprecated functions below. Note that on MacOS 0.x.x version, the
-      'loop' parameter is omitted from both alutLoadWAV* functions.</li>
+      <li>It is possible that <tt>alutLoadMemoryFromFile</tt> will be unable to
+      support some file types that <tt>alutCreateBufferFromFile</tt> can support
+      (although the reverse is never the case). In this situation, that file
+      type WILL be listed in <tt>alutEnumerateSupportedFileTypes</tt> - but the
+      actual call to <tt>alutLoadMemoryFromFile</tt> will fail - returning
+      <tt>ALUT_ERROR_UNSUPPORTED_FILE_TYPE</tt>.</li>
     </ol>
+
+    <h3><a name="DeprecatedWAVLoaders"></a>Deprecated WAV loaders</h3>
+
+    <p>For backwards-compatibility with ALUT 0.x.x, ALUT still offers the three
+    deprecated functions below. Note that on MacOS 0.x.x version, the
+    '<tt>loop</tt>' parameter is omitted from both loader functions.</p>
 
 <pre class="programlisting">
 void alutLoadWAVFile (ALbyte *filename,
@@ -510,7 +710,7 @@ void alutUnloadWAV (ALenum format ALvoid *data, ALsizei size, ALsizei freq);
 
     <h2><a name="BuiltinSounds"></a>Built-in Sounds</h2>
 
-    <p>In order to simplify initial startup - and to keep test program
+    <p>In order to simplify initial startup and to keep test program
     distributions clean, ALUT provides built-in sounds that do not require disk
     I/O because they are built into the ALUT library. These functions may be
     used to write compact ALUT test/example applications with no external file
@@ -518,36 +718,126 @@ void alutUnloadWAV (ALenum format ALvoid *data, ALsizei size, ALsizei freq);
     the ALUT or OpenAL developers as a part of bug reporting, one should
     endeavor to use these functions instead of loading ones own sound files.</p>
 
-    <p>Each routine returns the handle of a newly allocated OpenAL buffer - or
-    AL_NONE if there was some problem in generating it.</p>
+    <h3 class="manpage"><a name="alutCreateBufferHelloWorld"></a>alutCreateBufferHelloWorld</h3>
 
-    <h3><a name="alutCreateBufferHelloWorld"></a>alutCreateBufferHelloWorld</h3>
+    <h4>Name</h4>
+
+    <p><tt>alutCreateBufferHelloWorld</tt> - create a buffer with a 'Hello, world!' sound</p>
+
+    <h4>Synopsis</h4>
 
 <pre class="programlisting">
 ALuint alutCreateBufferHelloWorld (void);
 </pre>
 
-    <p>alutCreateBufferHelloWorld returns the handle of an OpenAL buffer
-    containing the sound of someone saying 'Hello, world!'. It returns AL_NONE
-    on failure.</p>
+    <h4>Description</h4>
 
-    <h3><a name="alutCreateBufferWaveform"></a>alutCreateBufferWaveform</h3>
+    <p><tt>alutCreateBufferHelloWorld</tt> returns a handle to an OpenAL buffer
+    containing the sound of someone saying 'Hello, world!'.</p>
+
+    <h4>Return Value</h4>
+
+    <p>On success, <tt>alutCreateBufferHelloWorld</tt> returns a handle to an
+    OpenAL buffer containing a 'Hello, world!' sound. It returns
+    <tt>AL_NONE</tt> on failure.</p>
+
+    <h4>Errors</h4>
+
+    <dl>
+      <dt><tt>ALUT_ERROR_NOT_INITIALISED</tt></dt>
+      <dd>ALUT has not been initialised.</dd>
+
+      <dt><tt>ALUT_ERROR_NO_CURRENT_CONTEXT</tt></dt>
+      <dd>There is no current AL context.</dd>
+
+      <dt><tt>ALUT_ERROR_AL_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an AL error on entry to
+      <tt>alutCreateBufferHelloWorld</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_ALC_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an ALC error on entry to
+      <tt>alutCreateBufferHelloWorld</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_GEN_BUFFERS</tt></dt>
+      <dd>There was an error generating an AL buffer.</dd>
+
+      <dt><tt>ALUT_ERROR_BUFFER_DATA</tt></dt>
+      <dd>There was an error passing buffer data to AL.</dd>
+    </dl>
+
+    <h3 class="manpage"><a name="alutCreateBufferWaveform"></a>alutCreateBufferWaveform</h3>
+
+    <h4>Name</h4>
+
+    <p><tt>alutCreateBufferWaveform</tt> - create a buffer with a synthesized waveform sound</p>
+
+    <h4>Synopsis</h4>
 
 <pre class="programlisting">
-ALuint alutCreateBufferWaveform   (ALenum waveshape,
-                                   ALfloat frequency,
-                                   ALfloat phase,
-                                   ALfloat duration);
+ALuint alutCreateBufferWaveform (ALenum waveshape,
+                                 ALfloat frequency,
+                                 ALfloat phase,
+                                 ALfloat duration);
 </pre>
 
-    <p>alutCreateBufferWaveform returns a handle of an OpenAL buffer containing
-    a snippet of audio with the specified waveshape (ALUT_WAVEFORM_SINE,
-    ALUT_WAVEFORM_SQUARE, ALUT_WAVEFORM_SAWTOOTH, ALUT_WAVEFORM_WHITENOISE or
-    ALUT_WAVEFORM_IMPULSE) and at the specified frequency (in Hertz), phase (in
-    degrees: -180 to +180) and duration (in seconds). The duration will always
-    be rounded up to an exact number of cycles of the sound to avoid a click if
-    you loop the sample. The frequency and phase arguments are ignored for
-    ALUT_WHITENOISE. alutCreateBufferWaveform returns AL_NONE on failure.</p>
+    <h4>Description</h4>
+
+    <p><tt>alutCreateBufferWaveform</tt> returns a handle to an OpenAL buffer
+    containing a snippet of audio with the specified waveshape at the specified
+    frequency (in Hertz), phase (in degrees: -180 to +180) and duration (in
+    seconds). Allowed waveforms are:</p>
+
+    <ul>
+      <li><tt>ALUT_WAVEFORM_SINE</tt></li>
+      <li><tt>ALUT_WAVEFORM_SQUARE</tt></li>
+      <li><tt>ALUT_WAVEFORM_SAWTOOTH</tt></li>
+      <li><tt>ALUT_WAVEFORM_WHITENOISE</tt></li>
+      <li><tt>ALUT_WAVEFORM_IMPULSE</tt></li>
+     </ul>
+
+    <p>The duration will always be rounded up to an exact number of cycles of
+    the sound to avoid a click if you loop the sample. The frequency and phase
+    arguments are ignored for <tt>ALUT_WHITENOISE</tt>.</p>
+
+    <h4>Return Value</h4>
+
+    <p>On success, <tt>alutCreateBufferWaveform</tt> returns a handle to an
+    OpenAL buffer containing the synthesized waveform. It returns
+    <tt>AL_NONE</tt> on failure.</p>
+
+    <h4>Errors</h4>
+
+    <dl>
+      <dt><tt>ALUT_ERROR_OUT_OF_MEMORY</tt></dt>
+      <dd>ALUT ran out of memory.</dd>
+
+      <dt><tt>ALUT_ERROR_INVALID_ENUM</tt></dt>
+      <dd>An invalid waveform token was given to
+      <tt>alutCreateBufferWaveform</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_INVALID_VALUE</tt></dt>
+      <dd>The frequency was not positive or the duration was negative.</dd>
+
+      <dt><tt>ALUT_ERROR_NOT_INITIALISED</tt></dt>
+      <dd>ALUT has not been initialised.</dd>
+
+      <dt><tt>ALUT_ERROR_NO_CURRENT_CONTEXT</tt></dt>
+      <dd>There is no current AL context.</dd>
+
+      <dt><tt>ALUT_ERROR_AL_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an AL error on entry to
+      <tt>alutCreateBufferWaveform</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_ALC_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an ALC error on entry to
+      <tt>alutCreateBufferWaveform</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_GEN_BUFFERS</tt></dt>
+      <dd>There was an error generating an AL buffer.</dd>
+
+      <dt><tt>ALUT_ERROR_BUFFER_DATA</tt></dt>
+      <dd>There was an error passing buffer data to AL.</dd>
+    </dl>
 
     <h2><a name="VersionChecking"></a>Version Checking</h2>
 
@@ -558,25 +848,61 @@ ALuint alutCreateBufferWaveform   (ALenum waveshape,
     programmatically available and it is incremented only when fixing bugs
     without any API changes.</p>
 
-    <h3><a name="alutGetMajorVersion"></a>alutGetMajorVersion</h3>
+    <h3 class="manpage"><a name="alutGetMajorVersion"></a>alutGetMajorVersion</h3>
+
+    <h4>Name</h4>
+
+    <p><tt>alutGetMajorVersion</tt> - return the major ALUT version number</p>
+
+    <h4>Synopsis</h4>
 
 <pre class="programlisting">
 ALint alutGetMajorVersion (void);
 </pre>
 
-    <p>alutGetMajorVersion returns the major version numbers of the ALUT in
-    use. This function never fails and no AL/ALC/ALUT error state is
-    affected.</p>
+    <h4>Description</h4>
 
-    <h3><a name="alutGetMinorVersion"></a>alutGetMinorVersion</h3>
+    <p><tt>alutGetMajorVersion</tt> returns the major version number of the ALUT
+    in use, which will match the major version number of the corresponding ALUT
+    specification document.</p>
+
+    <h4>Return Value</h4>
+
+    <p><tt>alutGetMajorVersion</tt> returns the major version number of the ALUT
+    in use.</p>
+
+    <h4>Errors</h4>
+
+    <p><tt>alutGetMajorVersion</tt> can be called in any ALUT state and will
+    never fail.</p>
+
+    <h3 class="manpage"><a name="alutGetMinorVersion"></a>alutGetMinorVersion</h3>
+
+    <h4>Name</h4>
+
+    <p><tt>alutGetMinorVersion</tt> - return the minor ALUT version number</p>
+
+    <h4>Synopsis</h4>
 
 <pre class="programlisting">
 ALint alutGetMinorVersion (void);
 </pre>
 
-    <p>alutGetMinorVersion returns the minor version numbers of the ALUT in
-    use. This function never fails and no AL/ALC/ALUT error state is
-    affected.</p>
+    <h4>Description</h4>
+
+    <p><tt>alutGetMinorVersion</tt> returns the minor version number of the ALUT
+    in use, which will match the minor version number of the corresponding ALUT
+    specification document.</p>
+
+    <h4>Return Value</h4>
+
+    <p><tt>alutGetMinorVersion</tt> returns the minor version number of the ALUT
+    in use.</p>
+
+    <h4>Errors</h4>
+
+    <p><tt>alutGetMinorVersion</tt> can be called in any ALUT state and will
+    never fail.</p>
 
     <h3><a name="VersioningMacros"></a>Compile Time Version Checking</h3>
 
@@ -589,7 +915,6 @@ ALint alutGetMinorVersion (void);
     <p>In version 1.0.0 and later, the alut.h header file contains the above
     macro definitions, whose values will be incremented appropriately in future
     revisions of ALUT.</p>
-
 
     <div class="example">
       <h4>Example: Version consistency check</h4>
@@ -613,20 +938,37 @@ if (alutGetMajorVersion () != ALUT_API_MAJOR_VERSION ||
     <p>Having a general utility function like the following in an audio-related
     toolkit might seem strange at first, but sleeping is a common task in a lot
     of audio demos and it can't be done portably without cluttering the source
-    code with #ifdefs.</p>
+    code with <tt>#ifdefs</tt>.</p>
 
-    <h3><a name="alutMicroSleep"></a>alutMicroSleep</h3>
+    <h3 class="manpage"><a name="alutMicroSleep"></a>alutMicroSleep</h3>
+
+    <h4>Name</h4>
+
+    <p><tt>alutMicroSleep</tt> - sleep for a given number of microseconds</p>
+
+    <h4>Synopsis</h4>
 
 <pre class="programlisting">
 ALboolean alutMicroSleep (ALuint microSeconds);
 </pre>
 
-    <p>alutMicroSleep will delay the execution of the current thread for at
-    least the given amount of microseconds. It will only return earlier if a
-    signal has been delivered to the thread, but this does not count as an
-    error. alutMicroSleep returns AL_TRUE on success and AL_FALSE on failure.
-    Note that sleeping for 0 microseconds will give other runnable threads a
-    chance to run.</p>
+    <h4>Description</h4>
+
+    <p><tt>alutMicroSleep</tt> will delay the execution of the current thread
+    for at least the given amount of microseconds. It will only return earlier
+    if a signal has been delivered to the thread, but this does not count as an
+    error. Note that sleeping for zero microseconds will give other runnable
+    threads a chance to run.</p>
+
+    <h4>Return Value</h4>
+
+    <p><tt>alutMicroSleep</tt> returns <tt>AL_TRUE</tt> on success or
+    <tt>AL_FALSE</tt> on failure. Note that current implementations will always
+    succeed, but this might change in the future.</p>
+
+    <h4>Errors</h4>
+
+    <p>None so far.</p>
 
   </body>
 </html>

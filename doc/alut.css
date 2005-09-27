@@ -6,6 +6,8 @@ body, div {
 
 h1, h2, h3, h4, h5, h6, p.title { color: #005A9C }
 
+h3.manpage { background-color: #e6edf2 }
+
 h1 { font:            170% sans-serif }
 h2 { font:            140% sans-serif }
 h3 { font:            120% sans-serif }
