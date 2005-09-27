@@ -1,3 +1,15 @@
+2005-09-27  Sven Panne  <sven.panne@aedion.de>
+
+	* include/AL/alut.h, src/alutError.c, src/alutInit.c,
+	src/alutInternal.h, src/alutLoader.c, src/alutWaveform.c: Adapted
+	to spec changes. Added a few missing error checks. Improved
+	SampleAttribs a bit.
+
+	* doc/alut.css, doc/alut.html: Make descriptions of API entries
+	more formal, following the usual manual page style (not finished
+	yet). Added some clarifications. Changed the set of possible ALUT
+	errors.
+
 2005-09-26  Sven Panne  <sven.panne@aedion.de>
 
 	* doc/alut.html, include/AL/alut.h, src/alutError.c,

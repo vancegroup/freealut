@@ -54,7 +54,13 @@ alutInit (int *argcp, char **argv)
 
   if (initialisationState != Unintialized)
     {
-      _alutSetError (ALUT_ERROR_INVALID_OPERATION);
+      _alutSetError (ALUT_ERROR_ALREADY_INITIALISED);
+      return AL_FALSE;
+    }
+
+  if ((argcp == NULL) != (argv == NULL))
+    {
+      _alutSetError (ALUT_ERROR_INVALID_VALUE);
       return AL_FALSE;
     }
 
@@ -91,7 +97,13 @@ alutInitWithoutContext (int *argcp, char **argv)
 {
   if (initialisationState == Unintialized)
     {
-      _alutSetError (ALUT_ERROR_INVALID_OPERATION);
+      _alutSetError (ALUT_ERROR_ALREADY_INITIALISED);
+      return AL_FALSE;
+    }
+
+  if ((argcp == NULL) != (argv == NULL))
+    {
+      _alutSetError (ALUT_ERROR_INVALID_VALUE);
       return AL_FALSE;
     }
 

@@ -5,6 +5,32 @@
 #define random() rand()
 #endif
 
+ALuint
+_alutGenBuffer (void)
+{
+  ALuint buffer;
+  alGenBuffers (1, &buffer);
+  if (alGetError () != AL_NO_ERROR)
+    {
+      _alutSetError (ALUT_ERROR_GEN_BUFFERS);
+      return AL_NONE;
+    }
+  return buffer;
+}
+
+ALboolean
+_alutBufferData (ALuint bid, ALenum format, const ALvoid *data, ALsizei size,
+                 ALfloat freq)
+{
+  alBufferData (bid, format, data, size, (ALsizei) freq);
+  if (alGetError () != AL_NO_ERROR)
+    {
+      _alutSetError (ALUT_ERROR_BUFFER_DATA);
+      return AL_FALSE;
+    }
+  return AL_TRUE;
+}
+
 static const double sampleFrequency = 44100;
 
 /*
@@ -58,7 +84,10 @@ alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
   ALuint buffer;
 
   /* error checks */
-  _alutSanityCheck ();
+  if (_alutSanityCheck () == AL_FALSE)
+    {
+      return AL_NONE;
+    }
 
   switch (waveshape)
     {
@@ -83,7 +112,7 @@ alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
     }
 
   /* ToDo: Shall we test phase for [-180 .. +180]? */
-  if (!(frequency >= 0 && duration >= 0))
+  if (frequency <= 0 || duration < 0)
     {
       _alutSetError (ALUT_ERROR_INVALID_VALUE);
       return AL_NONE;
@@ -93,7 +122,7 @@ alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
   sampleDuration = floor ((frequency * duration) + 0.5) / frequency;
   numSamples = (size_t) floor (sampleDuration * sampleFrequency);
   bufferData = (int16_t *) malloc (numSamples * sizeof (int16_t));
-  if (!(bufferData != NULL))
+  if (bufferData == NULL)
     {
       _alutSetError (ALUT_ERROR_OUT_OF_MEMORY);
       return AL_NONE;
@@ -117,10 +146,20 @@ alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
     }
 
   /* pass sample data to OpenAL */
-  /* ToDo: Error checks */
-  alGenBuffers (1, &buffer);
-  alBufferData (buffer, AL_FORMAT_MONO16, bufferData,
-                numSamples * sizeof (int16_t), (ALuint) sampleFrequency);
+  buffer = _alutGenBuffer ();
+  if (buffer == AL_NONE)
+    {
+      free (bufferData);
+      return AL_NONE;
+    }
+
+  if (!_alutBufferData (buffer, AL_FORMAT_MONO16, bufferData,
+                        numSamples * sizeof (int16_t), sampleFrequency))
+    {
+      free (bufferData);
+      return AL_NONE;
+    }
+
   free (bufferData);
   return buffer;
 }
@@ -4223,11 +4262,22 @@ alutCreateBufferHelloWorld (void)
 {
   ALuint buffer;
 
-  _alutSanityCheck ();
+  if (_alutSanityCheck () == AL_FALSE)
+    {
+      return AL_NONE;
+    }
 
-  /* ToDo: Error checks */
-  alGenBuffers (1, &buffer);
-  alBufferData (buffer, AL_FORMAT_MONO16, helloWorldSample,
-                sizeof (helloWorldSample), (ALuint) sampleFrequency);
+  buffer = _alutGenBuffer ();
+  if (buffer == AL_NONE)
+    {
+      return AL_NONE;
+    }
+
+  if (!_alutBufferData (buffer, AL_FORMAT_MONO16, helloWorldSample,
+                        sizeof (helloWorldSample), sampleFrequency))
+    {
+      return AL_NONE;
+    }
+
   return buffer;
 }

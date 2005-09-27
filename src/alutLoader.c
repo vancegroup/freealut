@@ -48,8 +48,8 @@ struct SampleAttribs
   ALsizei length;
   unsigned char *buffer;
   int bps;
-  int stereo;
-  int rate;                     /* ToDo: This should probably be an ALfloat */
+  ALint numChannels;
+  ALfloat sampleRate;
 };
 
 struct DataGetter
@@ -90,7 +90,7 @@ eof (struct DataGetter *source)
       return (source->length - source->next) == 0;
     }
 
-  _alutSetError (ALUT_ERROR_INVALID_OPERATION);
+  /* ToDo: This should never happen. Abort? */
   return 0;
 }
 
@@ -127,7 +127,7 @@ dgread (void *ptr, size_t numBytesToRead, struct DataGetter *source)
       return OK;
     }
 
-  _alutSetError (ALUT_ERROR_INVALID_OPERATION);
+  /* ToDo: This should never happen. Abort? */
   return NotOK;
 }
 
@@ -264,21 +264,26 @@ alutCreateBufferFromFile (const char *filename)
       free (attr.buffer);
       return AL_NONE;
     }
+  /* ToDo: Check numChannels, should be 1 or 2 */
   format = (attr.bps == 8) ?
-    (attr.stereo ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
-    (attr.stereo ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
+    ((attr.numChannels == 2) ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
+    ((attr.numChannels == 2) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
 
-  buffer = AL_NONE;
-  alGenBuffers (1, &buffer);
-  if (!(buffer != AL_NONE))
+  buffer = _alutGenBuffer ();
+  if (buffer == AL_NONE)
     {
       free (attr.buffer);
       return AL_NONE;
     }
 
-  alBufferData (buffer, format, attr.buffer, attr.length, attr.rate);
-  free (attr.buffer);
+  if (!_alutBufferData
+      (buffer, format, attr.buffer, attr.length, attr.sampleRate))
+    {
+      free (attr.buffer);
+      return AL_NONE;
+    }
 
+  free (attr.buffer);
   return buffer;
 }
 
@@ -313,21 +318,26 @@ alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length)
       free (attr.buffer);
       return AL_NONE;
     }
+  /* ToDo: Check numChannels, should be 1 or 2 */
   format = (attr.bps == 8) ?
-    (attr.stereo ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
-    (attr.stereo ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
+    ((attr.numChannels == 2) ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
+    ((attr.numChannels == 2) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
 
-  buffer = AL_NONE;
-  alGenBuffers (1, &buffer);
-  if (!(buffer != AL_NONE))
+  buffer = _alutGenBuffer ();
+  if (buffer == AL_NONE)
     {
       free (attr.buffer);
       return AL_NONE;
     }
 
-  alBufferData (buffer, format, attr.buffer, attr.length, attr.rate);
-  free (attr.buffer);
+  if (!_alutBufferData
+      (buffer, format, attr.buffer, attr.length, attr.sampleRate))
+    {
+      free (attr.buffer);
+      return AL_NONE;
+    }
 
+  free (attr.buffer);
   return buffer;
 }
 
@@ -380,13 +390,14 @@ _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
     }
   if (format != NULL)
     {
+      /* ToDo: Check numChannels, should be 1 or 2 */
       *format = (attr.bps == 8) ?
-        (attr.stereo ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
-        (attr.stereo ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
+        ((attr.numChannels == 2) ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
+        ((attr.numChannels == 2) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
     }
   if (freq != NULL)
     {
-      *freq = (ALfloat) attr.rate;
+      *freq = attr.sampleRate;
     }
 
   return attr.buffer;
@@ -425,13 +436,14 @@ _alutPrivateLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
     }
   if (format != NULL)
     {
+      /* ToDo: Check numChannels, should be 1 or 2 */
       *format = (attr.bps == 8) ?
-        (attr.stereo ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
-        (attr.stereo ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
+        ((attr.numChannels == 2) ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
+        ((attr.numChannels == 2) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
     }
   if (freq != NULL)
     {
-      *freq = (ALfloat) attr.rate;
+      *freq = attr.sampleRate;
     }
 
   return attr.buffer;
@@ -682,8 +694,8 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
               return NotOK;
             }
 
-          attr->stereo = (numChannels > 1);
-          attr->rate = sampleRate;
+          attr->numChannels = numChannels;
+          attr->sampleRate = sampleRate;
         }
       else
         if (magic[0] == 'd' && magic[1] == 'a' &&
@@ -812,8 +824,8 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
     }
 
   attr->length = 0;
-  attr->stereo = (channels > 1);
-  attr->rate = sampleRate;
+  attr->numChannels = channels;
+  attr->sampleRate = sampleRate;
   buf = (char *) malloc (dataSize);
   if (!(buf != NULL))
     {
@@ -967,8 +979,8 @@ _alutLoadRawFile (struct DataGetter *dg, struct SampleAttribs *attr)
     }
 
   attr->bps = 8;
-  attr->stereo = 0;
-  attr->rate = 8000;            /* Guess */
+  attr->numChannels = 1;
+  attr->sampleRate = 8000;      /* Guess */
   return OK;
 }
 

@@ -39,4 +39,10 @@ extern void _alutSetError (ALenum err);
 /* in alutInit.c */
 extern ALboolean _alutSanityCheck (void);
 
+/* in alutWaveform.c */
+extern ALuint _alutGenBuffer (void);
+extern ALboolean _alutBufferData (ALuint bid, ALenum format,
+                                  const ALvoid *data, ALsizei size,
+                                  ALfloat freq);
+
 #endif /* not ALUT_INTERNAL_H */

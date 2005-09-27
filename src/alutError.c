@@ -43,8 +43,8 @@ alutGetErrorString (ALenum error)
     case ALUT_ERROR_INVALID_VALUE:
       return "ALUT was given an invalid value";
 
-    case ALUT_ERROR_INVALID_OPERATION:
-      return "ALUT was asked to do an invalid operation";
+    case ALUT_ERROR_ALREADY_INITIALISED:
+      return "ALUT has already been initialised";
 
     case ALUT_ERROR_NOT_INITIALISED:
       return "ALUT has not been initialised";
@@ -72,6 +72,12 @@ alutGetErrorString (ALenum error)
 
     case ALUT_ERROR_DESTROY_CONTEXT:
       return "There was an error destroying the ALC context";
+
+    case ALUT_ERROR_GEN_BUFFERS:
+      return "There was an error generating an AL buffer";
+
+    case ALUT_ERROR_BUFFER_DATA:
+      return "There was an error passing buffer data to AL";
 
     case ALUT_ERROR_FILE_NOT_FOUND:
       return "File not found";
