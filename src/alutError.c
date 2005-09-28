@@ -43,11 +43,8 @@ alutGetErrorString (ALenum error)
     case ALUT_ERROR_INVALID_VALUE:
       return "ALUT was given an invalid value";
 
-    case ALUT_ERROR_ALREADY_INITIALISED:
-      return "ALUT has already been initialised";
-
-    case ALUT_ERROR_NOT_INITIALISED:
-      return "ALUT has not been initialised";
+    case ALUT_ERROR_INVALID_OPERATION:
+      return "The operation was invalid in the current ALUT state";
 
     case ALUT_ERROR_NO_CURRENT_CONTEXT:
       return "There is no current AL context";
@@ -79,11 +76,8 @@ alutGetErrorString (ALenum error)
     case ALUT_ERROR_BUFFER_DATA:
       return "There was an error passing buffer data to AL";
 
-    case ALUT_ERROR_FILE_NOT_FOUND:
-      return "File not found";
-
-    case ALUT_ERROR_FILE_NOT_READABLE:
-      return "File found but not readable";
+    case ALUT_ERROR_IO_ERROR:
+      return "I/O error";
 
     case ALUT_ERROR_UNSUPPORTED_FILE_TYPE:
       return "Unsupported file type";
@@ -91,8 +85,8 @@ alutGetErrorString (ALenum error)
     case ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE:
       return "Unsupported mode within an otherwise usable file type";
 
-    case ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE:
-      return "File was corrupt or truncated";
+    case ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA:
+      return "The sound data was corrupt or truncated";
 
     default:
       return "An impossible ALUT error condition was reported?!?";

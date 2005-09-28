@@ -20,7 +20,7 @@ _alutSanityCheck (void)
 
   if (initialisationState == Unintialized)
     {
-      _alutSetError (ALUT_ERROR_NOT_INITIALISED);
+      _alutSetError (ALUT_ERROR_INVALID_OPERATION);
       return AL_FALSE;
     }
 
@@ -54,7 +54,7 @@ alutInit (int *argcp, char **argv)
 
   if (initialisationState != Unintialized)
     {
-      _alutSetError (ALUT_ERROR_ALREADY_INITIALISED);
+      _alutSetError (ALUT_ERROR_INVALID_OPERATION);
       return AL_FALSE;
     }
 
@@ -97,7 +97,7 @@ alutInitWithoutContext (int *argcp, char **argv)
 {
   if (initialisationState == Unintialized)
     {
-      _alutSetError (ALUT_ERROR_ALREADY_INITIALISED);
+      _alutSetError (ALUT_ERROR_INVALID_OPERATION);
       return AL_FALSE;
     }
 

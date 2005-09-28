@@ -107,7 +107,9 @@ dgread (void *ptr, size_t numBytesToRead, struct DataGetter *source)
       size_t numBytesRead = fread (ptr, 1, numBytesToRead, source->fd);
       if (!(numBytesToRead == numBytesRead))
         {
-          _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+          _alutSetError (ferror (source->fd) ?
+                         ALUT_ERROR_IO_ERROR :
+                         ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA);
           return NotOK;
         }
       return OK;
@@ -118,7 +120,7 @@ dgread (void *ptr, size_t numBytesToRead, struct DataGetter *source)
       size_t numBytesLeft = source->length - source->next;
       if (!(numBytesToRead <= numBytesLeft))
         {
-          _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+          _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA);
           return NotOK;
         }
       memcpy (ptr, &(((char *) (source->data))[source->next]),
@@ -233,14 +235,14 @@ alutCreateBufferFromFile (const char *filename)
 
   if (!(stat (filename, &statBuf) == 0))
     {
-      _alutSetError (ALUT_ERROR_FILE_NOT_FOUND);
+      _alutSetError (ALUT_ERROR_IO_ERROR);
       return AL_NONE;
     }
 
   fd = fopen (filename, "rb");
   if (!(fd != NULL))
     {
-      _alutSetError (ALUT_ERROR_FILE_NOT_READABLE);
+      _alutSetError (ALUT_ERROR_IO_ERROR);
       return AL_NONE;
     }
 
@@ -343,7 +345,7 @@ alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length)
 
 static void *
 _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
-                                ALsizei *size, ALfloat *freq)
+                                ALsizei *size, ALfloat *frequency)
 {
   structStat statBuf;
   FILE *fd;
@@ -352,14 +354,14 @@ _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
 
   if (!(stat (filename, &statBuf) == 0))
     {
-      _alutSetError (ALUT_ERROR_FILE_NOT_FOUND);
+      _alutSetError (ALUT_ERROR_IO_ERROR);
       return NULL;
     }
 
   fd = fopen (filename, "rb");
   if (!(fd != NULL))
     {
-      _alutSetError (ALUT_ERROR_FILE_NOT_READABLE);
+      _alutSetError (ALUT_ERROR_IO_ERROR);
       return NULL;
     }
 
@@ -395,9 +397,9 @@ _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
         ((attr.numChannels == 2) ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
         ((attr.numChannels == 2) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
     }
-  if (freq != NULL)
+  if (frequency != NULL)
     {
-      *freq = attr.sampleRate;
+      *frequency = attr.sampleRate;
     }
 
   return attr.buffer;
@@ -406,7 +408,7 @@ _alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
 static void *
 _alutPrivateLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
                                      ALenum *format, ALsizei *size,
-                                     ALfloat *freq)
+                                     ALfloat *frequency)
 {
   struct DataGetter dg;
   struct SampleAttribs attr;
@@ -441,23 +443,35 @@ _alutPrivateLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
         ((attr.numChannels == 2) ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
         ((attr.numChannels == 2) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
     }
-  if (freq != NULL)
+  if (frequency != NULL)
     {
-      *freq = attr.sampleRate;
+      *frequency = attr.sampleRate;
     }
 
   return attr.buffer;
 }
 
 const char *
-alutEnumerateSupportedFileTypes (void)
+alutGetMIMETypes (ALenum loader)
 {
   if (_alutSanityCheck () == AL_FALSE)
     {
       return NULL;
     }
 
-  return "*.wav, *.au, *.raw";
+  /* We do not distinguish the loaders yet... */
+  switch (loader)
+    {
+    case ALUT_LOADER_BUFFER:
+      return "audio/basic,audio/x-raw,audio/x-wav";
+
+    case ALUT_LOADER_MEMORY:
+      return "audio/basic,audio/x-raw,audio/x-wav";
+
+    default:
+      _alutSetError (ALUT_ERROR_INVALID_ENUM);
+      return NULL;
+    }
 }
 
 /*
@@ -466,23 +480,23 @@ alutEnumerateSupportedFileTypes (void)
 
 void
 alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size,
-                 ALsizei *freq
+                 ALsizei *frequency
 #if !defined(__APPLE__)
                  , ALboolean *loop
 #endif
   )
 {
-  ALfloat frequency;
+  ALfloat freq;
 
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 
   *data =
     _alutPrivateLoadMemoryFromFile ((const char *) filename, format, size,
-                                    &frequency);
+                                    &freq);
 
-  if (freq)
+  if (frequency)
     {
-      *freq = (ALsizei) frequency;
+      *frequency = (ALsizei) freq;
     }
 #if !defined(__APPLE__)
   if (loop)
@@ -494,21 +508,21 @@ alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size,
 
 void
 alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size,
-                   ALsizei *freq
+                   ALsizei *frequency
 #if !defined(__APPLE__)
                    , ALboolean *loop
 #endif
   )
 {
-  ALfloat frequency;
+  ALfloat freq;
 
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 
   *data = _alutPrivateLoadMemoryFromFileImage ((const ALvoid *) buffer, 0x7FFFFFFF,     /* Eeek! */
-                                               format, size, &frequency);
-  if (freq)
+                                               format, size, &freq);
+  if (frequency)
     {
-      *freq = (ALsizei) frequency;
+      *frequency = (ALsizei) freq;
     }
 #if !defined(__APPLE__)
   if (loop)
@@ -519,7 +533,7 @@ alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size,
 }
 
 void
-alutUnloadWAV (ALenum format, ALvoid *data, ALsizei size, ALsizei freq)
+alutUnloadWAV (ALenum format, ALvoid *data, ALsizei size, ALsizei frequency)
 {
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 
@@ -659,7 +673,7 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
 
           if (!(leng1 >= 16))
             {
-              _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+              _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA);
               return NotOK;
             }
 
@@ -706,7 +720,7 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
           if (!found_header)
             {
               /* ToDo: A bit wrong to check here, fmt chunk could come later... */
-              _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+              _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA);
               return NotOK;
             }
 
@@ -774,7 +788,6 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
         readInt32BigEndian (&sampleRate, dg) == OK &&
         readInt32BigEndian (&channels, dg) == OK))
     {
-      _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
       return NotOK;
     }
 
@@ -791,7 +804,7 @@ _alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
 #endif
   if (!(dataOffset >= 24 && dataSize > 0 && sampleRate >= 1 && channels >= 1))
     {
-      _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE);
+      _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA);
       return NotOK;
     }
 
@@ -986,19 +999,20 @@ _alutLoadRawFile (struct DataGetter *dg, struct SampleAttribs *attr)
 
 ALvoid *
 alutLoadMemoryFromFile (const char *filename, ALenum *format,
-                        ALsizei *size, ALfloat *freq)
+                        ALsizei *size, ALfloat *frequency)
 {
   if (_alutSanityCheck () == AL_FALSE)
     {
       return NULL;
     }
 
-  return _alutPrivateLoadMemoryFromFile (filename, format, size, freq);
+  return _alutPrivateLoadMemoryFromFile (filename, format, size, frequency);
 }
 
 ALvoid *
 alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
-                             ALenum *format, ALsizei *size, ALfloat *freq)
+                             ALenum *format, ALsizei *size,
+                             ALfloat *frequency)
 {
   if (_alutSanityCheck () == AL_FALSE)
     {
@@ -1006,5 +1020,5 @@ alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
     }
 
   return _alutPrivateLoadMemoryFromFileImage (data, length, format, size,
-                                              freq);
+                                              frequency);
 }

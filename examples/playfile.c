@@ -20,8 +20,9 @@ playFile (const char *filename)
   buffer = alutCreateBufferFromFile (filename);
   if (buffer == AL_NONE)
     {
+      error = alutGetError ();
       fprintf (stderr, "Error loading file: '%s'\n",
-               alutGetErrorString (alutGetError ()));
+               alutGetErrorString (error));
       exit (EXIT_FAILURE);
     }
 
@@ -51,15 +52,10 @@ playFile (const char *filename)
 int
 main (int argc, char **argv)
 {
-  ALenum error;
-
   /* Initialise ALUT and eat any ALUT-specific commandline flags. */
-  alutInit (&argc, argv);
-
-  /* Check if ALUT could be initialized. */
-  error = alutGetError ();
-  if (error != ALUT_ERROR_NO_ERROR)
+  if (!alutInit (&argc, argv))
     {
+      ALenum error = alutGetError ();
       fprintf (stderr, "%s\n", alutGetErrorString (error));
       exit (EXIT_FAILURE);
     }
@@ -74,6 +70,12 @@ main (int argc, char **argv)
 
   /* If everything is OK, play the sound file and exit when finished. */
   playFile (argv[1]);
-  alutExit ();
+
+  if (!alutExit ())
+    {
+      ALenum error = alutGetError ();
+      fprintf (stderr, "%s\n", alutGetErrorString (error));
+      exit (EXIT_FAILURE);
+    }
   return EXIT_SUCCESS;
 }

@@ -44,29 +44,30 @@ extern "C" {
 #define ALUT_ERROR_OUT_OF_MEMORY               0x200
 #define ALUT_ERROR_INVALID_ENUM                0x201
 #define ALUT_ERROR_INVALID_VALUE               0x202
-#define ALUT_ERROR_ALREADY_INITIALISED         0x203
-#define ALUT_ERROR_NOT_INITIALISED             0x204
-#define ALUT_ERROR_NO_CURRENT_CONTEXT          0x205
-#define ALUT_ERROR_AL_ERROR_ON_ENTRY           0x206
-#define ALUT_ERROR_ALC_ERROR_ON_ENTRY          0x207
-#define ALUT_ERROR_OPEN_DEVICE                 0x208
-#define ALUT_ERROR_CLOSE_DEVICE                0x209
-#define ALUT_ERROR_CREATE_CONTEXT              0x20A
-#define ALUT_ERROR_MAKE_CONTEXT_CURRENT        0x20B
-#define ALUT_ERROR_DESTROY_CONTEXT             0x20C
-#define ALUT_ERROR_GEN_BUFFERS                 0x20D
-#define ALUT_ERROR_BUFFER_DATA                 0x20E
-#define ALUT_ERROR_FILE_NOT_FOUND              0x20F
-#define ALUT_ERROR_FILE_NOT_READABLE           0x210
-#define ALUT_ERROR_UNSUPPORTED_FILE_TYPE       0x211
-#define ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE    0x212
-#define ALUT_ERROR_CORRUPT_OR_TRUNCATED_FILE   0x213
+#define ALUT_ERROR_INVALID_OPERATION           0x203
+#define ALUT_ERROR_NO_CURRENT_CONTEXT          0x204
+#define ALUT_ERROR_AL_ERROR_ON_ENTRY           0x205
+#define ALUT_ERROR_ALC_ERROR_ON_ENTRY          0x206
+#define ALUT_ERROR_OPEN_DEVICE                 0x207
+#define ALUT_ERROR_CLOSE_DEVICE                0x208
+#define ALUT_ERROR_CREATE_CONTEXT              0x209
+#define ALUT_ERROR_MAKE_CONTEXT_CURRENT        0x20A
+#define ALUT_ERROR_DESTROY_CONTEXT             0x20B
+#define ALUT_ERROR_GEN_BUFFERS                 0x20C
+#define ALUT_ERROR_BUFFER_DATA                 0x20D
+#define ALUT_ERROR_IO_ERROR                    0x20E
+#define ALUT_ERROR_UNSUPPORTED_FILE_TYPE       0x20F
+#define ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE    0x210
+#define ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA   0x211
 
 #define ALUT_WAVEFORM_SINE                     0x100
 #define ALUT_WAVEFORM_SQUARE                   0x101
 #define ALUT_WAVEFORM_SAWTOOTH                 0x102
 #define ALUT_WAVEFORM_WHITENOISE               0x103
 #define ALUT_WAVEFORM_IMPULSE                  0x104
+
+#define ALUT_LOADER_BUFFER                     0x300
+#define ALUT_LOADER_MEMORY                     0x301
 
 ALUT_API ALboolean ALUT_APIENTRY alutInit (int *argcp, char **argv);
 ALUT_API ALboolean ALUT_APIENTRY alutInitWithoutContext (int *argcp, char **argv);
@@ -77,9 +78,9 @@ ALUT_API const char *ALUT_APIENTRY alutGetErrorString (ALenum error);
 
 ALUT_API ALuint ALUT_APIENTRY alutCreateBufferFromFile (const char *filename);
 ALUT_API ALuint ALUT_APIENTRY alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length);
-ALUT_API ALvoid *ALUT_APIENTRY alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size, ALfloat *freq);
-ALUT_API ALvoid *ALUT_APIENTRY alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length, ALenum *format, ALsizei *size, ALfloat *freq);
-ALUT_API const char *ALUT_APIENTRY alutEnumerateSupportedFileTypes (void);
+ALUT_API ALvoid *ALUT_APIENTRY alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size, ALfloat *frequency);
+ALUT_API ALvoid *ALUT_APIENTRY alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length, ALenum *format, ALsizei *size, ALfloat *frequency);
+ALUT_API const char *ALUT_APIENTRY alutGetMIMETypes (ALenum loader);
 
 ALUT_API ALuint ALUT_APIENTRY alutCreateBufferHelloWorld (void);
 ALUT_API ALuint ALUT_APIENTRY alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase, ALfloat duration);
@@ -91,13 +92,13 @@ ALUT_API ALboolean ALUT_APIENTRY alutMicroSleep (ALuint microSeconds);
 
 /* Nasty Compatibility stuff, WARNING: THESE FUNCTIONS ARE STRONGLY DEPRECATED */
 #if defined(__APPLE__)
-ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size, ALsizei *freq);
-ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *freq);
+ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size, ALsizei *frequency);
+ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *frequency);
 #else
-ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size, ALsizei *freq, ALboolean *loop);
-ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *freq, ALboolean *loop);
+ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size, ALsizei *frequency, ALboolean *loop);
+ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *frequency, ALboolean *loop);
 #endif
-ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutUnloadWAV (ALenum format, ALvoid *data, ALsizei size, ALsizei freq);
+ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutUnloadWAV (ALenum format, ALvoid *data, ALsizei size, ALsizei frequency);
 
 #if defined(__MWERKS_)
  #pragma export off
