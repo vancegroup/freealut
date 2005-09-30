@@ -36,5 +36,10 @@
 -T ALCvoid
 -T ALCdevice
 -T ALCcontext
--T UInt16LittleEndian
+-T BufferData
+-T InputStream
 -T Int32BigEndian
+-T Status
+-T UInt16LittleEndian
+-T UInt32LittleEndian
+-T size_t

@@ -76,9 +76,9 @@ ALUT_API ALboolean ALUT_APIENTRY alutExit (void);
 ALUT_API ALenum ALUT_APIENTRY alutGetError (void);
 ALUT_API const char *ALUT_APIENTRY alutGetErrorString (ALenum error);
 
-ALUT_API ALuint ALUT_APIENTRY alutCreateBufferFromFile (const char *filename);
+ALUT_API ALuint ALUT_APIENTRY alutCreateBufferFromFile (const char *fileName);
 ALUT_API ALuint ALUT_APIENTRY alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length);
-ALUT_API ALvoid *ALUT_APIENTRY alutLoadMemoryFromFile (const char *filename, ALenum *format, ALsizei *size, ALfloat *frequency);
+ALUT_API ALvoid *ALUT_APIENTRY alutLoadMemoryFromFile (const char *fileName, ALenum *format, ALsizei *size, ALfloat *frequency);
 ALUT_API ALvoid *ALUT_APIENTRY alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length, ALenum *format, ALsizei *size, ALfloat *frequency);
 ALUT_API const char *ALUT_APIENTRY alutGetMIMETypes (ALenum loader);
 
@@ -92,10 +92,10 @@ ALUT_API ALboolean ALUT_APIENTRY alutMicroSleep (ALuint microSeconds);
 
 /* Nasty Compatibility stuff, WARNING: THESE FUNCTIONS ARE STRONGLY DEPRECATED */
 #if defined(__APPLE__)
-ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size, ALsizei *frequency);
+ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVFile (ALbyte *fileName, ALenum *format, void **data, ALsizei *size, ALsizei *frequency);
 ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *frequency);
 #else
-ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size, ALsizei *frequency, ALboolean *loop);
+ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVFile (ALbyte *fileName, ALenum *format, void **data, ALsizei *size, ALsizei *frequency, ALboolean *loop);
 ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size, ALsizei *frequency, ALboolean *loop);
 #endif
 ALUT_API ALUT_ATTRIBUTE_DEPRECATED void ALUT_APIENTRY alutUnloadWAV (ALenum format, ALvoid *data, ALsizei size, ALsizei frequency);

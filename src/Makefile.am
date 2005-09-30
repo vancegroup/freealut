@@ -6,13 +6,15 @@ EXTRA_DIST = helloworld.wav README
 lib_LTLIBRARIES = libalut.la
 
 # libalut consists of the followin sources and internal headers:
-libalut_la_SOURCES =	\
-	alutError.c	\
-	alutInit.c	\
-	alutInternal.h	\
-	alutLoader.c	\
-	alutUtil.c	\
-	alutVersion.c	\
+libalut_la_SOURCES =		\
+	alutBufferData.c	\
+	alutError.c		\
+	alutInit.c		\
+	alutInputStream.c	\
+	alutInternal.h		\
+	alutLoader.c		\
+	alutUtil.c		\
+	alutVersion.c		\
 	alutWaveform.c
 
 # We use sin and floor, so we might need -lm, autoconf takes care of this.

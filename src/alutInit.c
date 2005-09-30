@@ -79,7 +79,7 @@ alutInit (int *argcp, char **argv)
       return AL_FALSE;
     }
 
-  if (alcMakeContextCurrent (context) == AL_FALSE)
+  if (!alcMakeContextCurrent (context))
     {
       alcDestroyContext (context);
       alcCloseDevice (device);
@@ -116,7 +116,7 @@ alutExit (void)
 {
   ALCdevice *device;
 
-  if (_alutSanityCheck () == AL_FALSE)
+  if (!_alutSanityCheck ())
     {
       return AL_FALSE;
     }
@@ -127,7 +127,7 @@ alutExit (void)
       return AL_TRUE;
     }
 
-  if (alcMakeContextCurrent (NULL) == AL_FALSE)
+  if (!alcMakeContextCurrent (NULL))
     {
       _alutSetError (ALUT_ERROR_MAKE_CONTEXT_CURRENT);
       return AL_FALSE;
@@ -141,7 +141,7 @@ alutExit (void)
       return AL_FALSE;
     }
 
-  if (alcCloseDevice (device) == AL_FALSE)
+  if (!alcCloseDevice (device))
     {
       _alutSetError (ALUT_ERROR_CLOSE_DEVICE);
       return AL_FALSE;

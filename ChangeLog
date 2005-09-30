@@ -1,5 +1,14 @@
 2005-09-30  Sven Panne  <sven.panne@aedion.de>
 
+	* admin/.indent.pro,examples/playfile.c, include/AL/alut.h,
+	src/Makefile.am, src/alutInit.c, src/alutInternal.h,
+	src/alutLoader.c, src/alutWaveform.c: Some heavy refactoring of
+	the input streams and buffer data types, we are moving towards
+	common OO techniques here. Not completely finished, but much
+	better than before.
+
+	* src/alutBufferData.c, src/alutInputStream.c: Added.
+
 	* src/alutWaveform.c: Instead of the 44.1kHz 16bit PCM data, use
 	11.025kHz 8-bit ISDN u-law for the "Hello, world!" sound, saving
 	56kB in the resulting ALUT library.

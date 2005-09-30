@@ -9,7 +9,7 @@
  */
 
 static void
-playFile (const char *filename)
+playFile (const char *fileName)
 {
   ALuint buffer;
   ALuint source;
@@ -17,7 +17,7 @@ playFile (const char *filename)
   ALint status;
 
   /* Create an AL buffer from the given sound file. */
-  buffer = alutCreateBufferFromFile (filename);
+  buffer = alutCreateBufferFromFile (fileName);
   if (buffer == AL_NONE)
     {
       error = alutGetError ();
@@ -63,7 +63,7 @@ main (int argc, char **argv)
   /* Check for correct usage. */
   if (argc != 2)
     {
-      fprintf (stderr, "usage: playfile <filename>\n");
+      fprintf (stderr, "usage: playfile <fileName>\n");
       alutExit ();
       exit (EXIT_FAILURE);
     }

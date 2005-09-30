@@ -1,21 +1,5 @@
 #include "alutInternal.h"
 #include <ctype.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#if HAVE_STAT
-#if HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#define structStat struct stat
-#elif HAVE__STAT
-#define stat(p,b) _stat((p),(b))
-#define structStat struct _stat
-#else
-#error No stat-like function on this platform
-#endif
 
 /****************************************************************************/
 
@@ -43,366 +27,121 @@ endianess (void)
 
 /****************************************************************************/
 
-struct SampleAttribs
-{
-  ALsizei length;
-  unsigned char *buffer;
-  int bps;
-  ALint numChannels;
-  ALfloat sampleRate;
-};
-
-struct DataGetter
-{
-  size_t length;                /* Total length of file */
-  FILE *fd;                     /* For files: just the file descriptor */
-  const ALvoid *data;           /* For memory: length, data pointer and position in data */
-  size_t next;
-};
-
 typedef ALvoid *codec (ALvoid *data, unsigned int *length);
 
 static codec linear, uLaw, pcm8s, pcm16, aLaw;
 
-typedef enum
-{
-  OK,
-  NotOK
-} Status;
-
-/****************************************************************************/
-
-static int
-eof (struct DataGetter *source)
-{
-  if (source->fd != NULL)
-    {
-      int c = fgetc (source->fd);
-      if (c != EOF)
-        {
-          ungetc (c, source->fd);
-        }
-      return c == EOF;
-    }
-
-  if (source->data != NULL)
-    {
-      return (source->length - source->next) == 0;
-    }
-
-  /* ToDo: This should never happen. Abort? */
-  return 0;
-}
-
-/*
- * Like fread except it reads from a DataGetter and is only concerned
- * about bytes (not records).
- */
-
-static Status
-dgread (void *ptr, size_t numBytesToRead, struct DataGetter *source)
-{
-  if (source->fd != NULL)
-    {
-      size_t numBytesRead = fread (ptr, 1, numBytesToRead, source->fd);
-      if (!(numBytesToRead == numBytesRead))
-        {
-          _alutSetError (ferror (source->fd) ?
-                         ALUT_ERROR_IO_ERROR :
-                         ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA);
-          return NotOK;
-        }
-      return OK;
-    }
-
-  if (source->data != NULL)
-    {
-      size_t numBytesLeft = source->length - source->next;
-      if (!(numBytesToRead <= numBytesLeft))
-        {
-          _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA);
-          return NotOK;
-        }
-      memcpy (ptr, &(((char *) (source->data))[source->next]),
-              numBytesToRead);
-      source->next += numBytesToRead;
-      return OK;
-    }
-
-  /* ToDo: This should never happen. Abort? */
-  return NotOK;
-}
-
-static Status
-skip (size_t numBytesToSkip, struct DataGetter *source)
-{
-  Status status;
-  char *buf;
-  if (numBytesToSkip == 0)
-    {
-      return OK;
-    }
-  buf = (char *) malloc (numBytesToSkip);
-  if (!(buf != NULL))
-    {
-      _alutSetError (ALUT_ERROR_OUT_OF_MEMORY);
-      return NotOK;
-    }
-  status = dgread (buf, numBytesToSkip, source);
-  free (buf);
-  return status;
-}
-
-/****************************************************************************/
-
-typedef uint16_t UInt16LittleEndian;
-
-static Status
-readUInt16LittleEndian (UInt16LittleEndian *value, struct DataGetter *source)
-{
-  unsigned char buf[2];
-  if (!(dgread (buf, sizeof (buf), source) == OK))
-    {
-      return NotOK;
-    }
-  *value = ((UInt16LittleEndian) buf[1] << 8) | ((UInt16LittleEndian) buf[0]);
-  return OK;
-}
-
-/****************************************************************************/
-
-typedef uint32_t UInt32LittleEndian;
-
-static Status
-readUInt32LittleEndian (UInt32LittleEndian * value, struct DataGetter *source)
-{
-  unsigned char buf[4];
-  if (!(dgread (buf, sizeof (buf), source) == OK))
-    {
-      return NotOK;
-    }
-  *value =
-    ((UInt32LittleEndian) buf[3] << 24) |
-    ((UInt32LittleEndian) buf[2] << 16) |
-    ((UInt32LittleEndian) buf[1] << 8) | ((UInt32LittleEndian) buf[0]);
-  return OK;
-}
-
-/****************************************************************************/
-
-typedef int32_t Int32BigEndian;
-
-static Status
-readInt32BigEndian (Int32BigEndian *value, struct DataGetter *source)
-{
-  unsigned char buf[4];
-  if (!(dgread (buf, sizeof (buf), source) == OK))
-    {
-      return NotOK;
-    }
-  *value =
-    ((Int32BigEndian) buf[0] << 24) |
-    ((Int32BigEndian) buf[1] << 16) |
-    ((Int32BigEndian) buf[2] << 8) | ((Int32BigEndian) buf[3]);
-  return OK;
-}
-
-/****************************************************************************/
-
-static Status _alutLoadWavFile (struct DataGetter *fd,
-                                struct SampleAttribs *attr);
-static Status _alutLoadAUFile (struct DataGetter *fd,
-                               struct SampleAttribs *attr);
-static Status _alutLoadRawFile (struct DataGetter *fd,
-                                struct SampleAttribs *attr);
-static Status _alutLoadFile (const char *fname, struct DataGetter *fd,
-                             struct SampleAttribs *attr);
+static ALboolean _alutLoadWavFile (InputStream *stream,
+                                   BufferData *bufferData);
+static ALboolean _alutLoadAUFile (InputStream *stream,
+                                  BufferData *bufferData);
+static ALboolean _alutLoadRawFile (InputStream *stream,
+                                   BufferData *bufferData);
+static ALboolean _alutLoadFile (InputStream *stream, BufferData *bufferData);
 
 ALuint
-alutCreateBufferFromFile (const char *filename)
+alutCreateBufferFromFile (const char *fileName)
 {
-  structStat statBuf;
-  FILE *fd;
-  struct DataGetter dg;
-  struct SampleAttribs attr;
+  InputStream *stream;
+  BufferData bufferData;
   ALuint buffer;
-  ALuint format;
 
-  if (_alutSanityCheck () == AL_FALSE)
+  if (!_alutSanityCheck ())
     {
       return AL_NONE;
     }
 
-  if (!(stat (filename, &statBuf) == 0))
+  stream = _alutStreamFromFile (fileName);
+  if (stream == NULL)
     {
-      _alutSetError (ALUT_ERROR_IO_ERROR);
       return AL_NONE;
     }
 
-  fd = fopen (filename, "rb");
-  if (!(fd != NULL))
+  if (!_alutLoadFile (stream, &bufferData))
     {
-      _alutSetError (ALUT_ERROR_IO_ERROR);
+      _alutStreamDestroy (stream);
       return AL_NONE;
     }
+  _alutStreamDestroy (stream);
 
-  dg.fd = fd;
-  dg.length = statBuf.st_size;
-  dg.data = NULL;
-  dg.next = 0;
-
-  attr.buffer = NULL;
-
-  if (!(_alutLoadFile (filename, &dg, &attr) == OK))
-    {
-      fclose (fd);
-      return AL_NONE;
-    }
-  fclose (fd);
-
-  if (!(attr.bps == 8 || attr.bps == 16))
-    {
-      _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
-      free (attr.buffer);
-      return AL_NONE;
-    }
-  /* ToDo: Check numChannels, should be 1 or 2 */
-  format = (attr.bps == 8) ?
-    ((attr.numChannels == 2) ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
-    ((attr.numChannels == 2) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
-
-  buffer = _alutGenBuffer ();
-  if (buffer == AL_NONE)
-    {
-      free (attr.buffer);
-      return AL_NONE;
-    }
-
-  if (!_alutBufferData
-      (buffer, format, attr.buffer, attr.length, attr.sampleRate))
-    {
-      free (attr.buffer);
-      return AL_NONE;
-    }
-
-  free (attr.buffer);
+  buffer = _alutPassBufferData (&bufferData);
+  free (bufferData.data);
   return buffer;
 }
 
 ALuint
 alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length)
 {
-  struct DataGetter dg;
-  struct SampleAttribs attr;
-  ALuint format;
+  InputStream *stream;
+  BufferData bufferData;
   ALuint buffer;
 
-  if (_alutSanityCheck () == AL_FALSE)
+  if (!_alutSanityCheck ())
     {
       return AL_NONE;
     }
 
-  dg.fd = NULL;
-  dg.length = length;
-  dg.data = data;
-  dg.next = 0;
-
-  attr.buffer = NULL;
-
-  if (!(_alutLoadFile (NULL, &dg, &attr) == OK))
+  stream = _alutStreamFromMemory (data, length);
+  if (stream == NULL)
     {
       return AL_NONE;
     }
 
-  if (!(attr.bps == 8 || attr.bps == 16))
+  if (!_alutLoadFile (stream, &bufferData))
     {
-      _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
-      free (attr.buffer);
+      _alutStreamDestroy (stream);
       return AL_NONE;
     }
-  /* ToDo: Check numChannels, should be 1 or 2 */
-  format = (attr.bps == 8) ?
-    ((attr.numChannels == 2) ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
-    ((attr.numChannels == 2) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
+  _alutStreamDestroy (stream);
 
-  buffer = _alutGenBuffer ();
-  if (buffer == AL_NONE)
-    {
-      free (attr.buffer);
-      return AL_NONE;
-    }
-
-  if (!_alutBufferData
-      (buffer, format, attr.buffer, attr.length, attr.sampleRate))
-    {
-      free (attr.buffer);
-      return AL_NONE;
-    }
-
-  free (attr.buffer);
+  buffer = _alutPassBufferData (&bufferData);
+  free (bufferData.data);
   return buffer;
 }
 
 static void *
-_alutPrivateLoadMemoryFromFile (const char *filename, ALenum *format,
+_alutPrivateLoadMemoryFromFile (const char *fileName, ALenum *format,
                                 ALsizei *size, ALfloat *frequency)
 {
-  structStat statBuf;
-  FILE *fd;
-  struct DataGetter dg;
-  struct SampleAttribs attr;
+  InputStream *stream;
+  BufferData bufferData;
+  ALenum fmt;
 
-  if (!(stat (filename, &statBuf) == 0))
+  stream = _alutStreamFromFile (fileName);
+  if (stream == NULL)
     {
-      _alutSetError (ALUT_ERROR_IO_ERROR);
-      return NULL;
+      return AL_NONE;
     }
 
-  fd = fopen (filename, "rb");
-  if (!(fd != NULL))
+  if (!_alutLoadFile (stream, &bufferData))
     {
-      _alutSetError (ALUT_ERROR_IO_ERROR);
+      _alutStreamDestroy (stream);
       return NULL;
     }
+  _alutStreamDestroy (stream);
 
-  dg.fd = fd;
-  dg.length = statBuf.st_size;
-  dg.data = NULL;
-  dg.next = 0;
-
-  attr.buffer = NULL;
-
-  if (!(_alutLoadFile (filename, &dg, &attr) == OK))
+  if (!_alutGetFormat (&bufferData, &fmt))
     {
-      fclose (fd);
-      return NULL;
-    }
-  fclose (fd);
-
-  if (!(attr.bps == 8 || attr.bps == 16))
-    {
-      _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
-      free (attr.buffer);
+      free (bufferData.data);
       return NULL;
     }
 
   if (size != NULL)
     {
-      *size = attr.length;
-    }
-  if (format != NULL)
-    {
-      /* ToDo: Check numChannels, should be 1 or 2 */
-      *format = (attr.bps == 8) ?
-        ((attr.numChannels == 2) ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
-        ((attr.numChannels == 2) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
-    }
-  if (frequency != NULL)
-    {
-      *frequency = attr.sampleRate;
+      *size = bufferData.length;
     }
 
-  return attr.buffer;
+  if (format != NULL)
+    {
+      *format = fmt;
+    }
+
+  if (frequency != NULL)
+    {
+      *frequency = bufferData.sampleFrequency;
+    }
+
+  return bufferData.data;
 }
 
 static void *
@@ -410,51 +149,51 @@ _alutPrivateLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
                                      ALenum *format, ALsizei *size,
                                      ALfloat *frequency)
 {
-  struct DataGetter dg;
-  struct SampleAttribs attr;
+  InputStream *stream;
+  BufferData bufferData;
+  ALenum fmt;
 
-  dg.fd = NULL;
-  dg.length = length;
-  dg.data = data;
-  dg.next = 0;
-
-  attr.buffer = NULL;
-
-  if (!(_alutLoadFile (NULL, &dg, &attr) == OK))
+  stream = _alutStreamFromMemory (data, length);
+  if (stream == NULL)
     {
       return NULL;
     }
 
-  if (!(attr.bps == 8 || attr.bps == 16))
+  if (!_alutLoadFile (stream, &bufferData))
     {
-      _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
-      free (attr.buffer);
+      _alutStreamDestroy (stream);
+      return NULL;
+    }
+  _alutStreamDestroy (stream);
+
+  if (!_alutGetFormat (&bufferData, &fmt))
+    {
+      free (bufferData.data);
       return NULL;
     }
 
   if (size != NULL)
     {
-      *size = attr.length;
-    }
-  if (format != NULL)
-    {
-      /* ToDo: Check numChannels, should be 1 or 2 */
-      *format = (attr.bps == 8) ?
-        ((attr.numChannels == 2) ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8) :
-        ((attr.numChannels == 2) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16);
-    }
-  if (frequency != NULL)
-    {
-      *frequency = attr.sampleRate;
+      *size = bufferData.length;
     }
 
-  return attr.buffer;
+  if (format != NULL)
+    {
+      *format = fmt;
+    }
+
+  if (frequency != NULL)
+    {
+      *frequency = bufferData.sampleFrequency;
+    }
+
+  return bufferData.data;
 }
 
 const char *
 alutGetMIMETypes (ALenum loader)
 {
-  if (_alutSanityCheck () == AL_FALSE)
+  if (!_alutSanityCheck ())
     {
       return NULL;
     }
@@ -479,7 +218,7 @@ alutGetMIMETypes (ALenum loader)
 */
 
 void
-alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size,
+alutLoadWAVFile (ALbyte *fileName, ALenum *format, void **data, ALsizei *size,
                  ALsizei *frequency
 #if !defined(__APPLE__)
                  , ALboolean *loop
@@ -491,7 +230,7 @@ alutLoadWAVFile (ALbyte *filename, ALenum *format, void **data, ALsizei *size,
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 
   *data =
-    _alutPrivateLoadMemoryFromFile ((const char *) filename, format, size,
+    _alutPrivateLoadMemoryFromFile ((const char *) fileName, format, size,
                                     &freq);
 
   if (frequency)
@@ -583,24 +322,25 @@ hasSuffixIgnoringCase (const char *string, const char *suffix)
   return 0;
 }
 
-static Status
-_alutLoadFile (const char *fname, struct DataGetter *dg,
-               struct SampleAttribs *attr)
+static ALboolean
+_alutLoadFile (InputStream *stream, BufferData *bufferData)
 {
+  const char *fileName;
   char magic[4];
 
-  /* Raw files have no magic number - so use the filename extension */
+  /* Raw files have no magic number - so use the fileName extension */
 
-  if (fname != NULL && hasSuffixIgnoringCase (fname, ".raw"))
+  fileName = _alutStreamGetFileName (stream);
+  if (fileName != NULL && hasSuffixIgnoringCase (fileName, ".raw"))
     {
-      return _alutLoadRawFile (dg, attr);
+      return _alutLoadRawFile (stream, bufferData);
     }
 
   /* For other file formats, read the quasi-standard four byte magic number */
 
-  if (!(dgread (magic, sizeof (magic), dg) == OK))
+  if (!_alutStreamRead (stream, magic, sizeof (magic)))
     {
-      return NotOK;
+      return AL_FALSE;
     }
 
   /* Magic number 'RIFF' == Microsoft '.wav' format */
@@ -608,7 +348,7 @@ _alutLoadFile (const char *fname, struct DataGetter *dg,
   if (magic[0] == 'R' && magic[1] == 'I' &&
       magic[2] == 'F' && magic[3] == 'F')
     {
-      return _alutLoadWavFile (dg, attr);
+      return _alutLoadWavFile (stream, bufferData);
     }
 
   /* Magic number '.snd' == Sun & Next's '.au' format */
@@ -616,54 +356,50 @@ _alutLoadFile (const char *fname, struct DataGetter *dg,
   if (magic[0] == '.' && magic[1] == 's' &&
       magic[2] == 'n' && magic[3] == 'd')
     {
-      return _alutLoadAUFile (dg, attr);
+      return _alutLoadAUFile (stream, bufferData);
     }
 
   _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_TYPE);
-  return NotOK;
+  return AL_FALSE;
 }
 
-static Status
-_alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
+static ALboolean
+_alutLoadWavFile (InputStream *stream, BufferData *bufferData)
 {
   ALboolean found_header = AL_FALSE;
   UInt32LittleEndian leng1;
   char magic[4];
   codec *_codec = linear;
 
-  if (attr->buffer)
-    {
-      free (attr->buffer);
-    }
-  attr->buffer = NULL;
-  attr->length = 0;
+  bufferData->data = NULL;
+  bufferData->length = 0;
 
-  if (!(readUInt32LittleEndian (&leng1, dg) == OK &&
-        dgread (magic, sizeof (magic), dg) == OK))
+  if (!_alutReadUInt32LittleEndian (stream, &leng1) ||
+      !_alutStreamRead (stream, magic, sizeof (magic)))
     {
-      return NotOK;
+      return AL_FALSE;
     }
 
-  if (!(magic[0] == 'W' && magic[1] == 'A' &&
-        magic[2] == 'V' && magic[3] == 'E'))
+  if (magic[0] != 'W' || magic[1] != 'A' || magic[2] != 'V'
+      || magic[3] != 'E')
     {
       _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
-      return NotOK;
+      return AL_FALSE;
     }
 
   while (1)
     {
       UInt16LittleEndian audioFormat;
       UInt16LittleEndian numChannels;
-      UInt32LittleEndian sampleRate;
+      UInt32LittleEndian sampleFrequency;
       UInt32LittleEndian byteRate;
       UInt16LittleEndian blockAlign;
       UInt16LittleEndian bitsPerSample;
 
-      if (!(dgread (magic, sizeof (magic), dg) == OK &&
-            readUInt32LittleEndian (&leng1, dg) == OK))
+      if (!_alutStreamRead (stream, magic, sizeof (magic)) ||
+          !_alutReadUInt32LittleEndian (stream, &leng1))
         {
-          return NotOK;
+          return AL_FALSE;
         }
 
       if (magic[0] == 'f' && magic[1] == 'm' &&
@@ -671,45 +407,45 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
         {
           found_header = AL_TRUE;
 
-          if (!(leng1 >= 16))
+          if (leng1 < 16)
             {
               _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA);
-              return NotOK;
+              return AL_FALSE;
             }
 
-          if (!(readUInt16LittleEndian (&audioFormat, dg) == OK &&
-                readUInt16LittleEndian (&numChannels, dg) == OK &&
-                readUInt32LittleEndian (&sampleRate, dg) == OK &&
-                readUInt32LittleEndian (&byteRate, dg) == OK &&
-                readUInt16LittleEndian (&blockAlign, dg) == OK &&
-                readUInt16LittleEndian (&bitsPerSample, dg) == OK))
+          if (!_alutReadUInt16LittleEndian (stream, &audioFormat) ||
+              !_alutReadUInt16LittleEndian (stream, &numChannels) ||
+              !_alutReadUInt32LittleEndian (stream, &sampleFrequency) ||
+              !_alutReadUInt32LittleEndian (stream, &byteRate) ||
+              !_alutReadUInt16LittleEndian (stream, &blockAlign) ||
+              !_alutReadUInt16LittleEndian (stream, &bitsPerSample))
             {
-              return NotOK;
+              return AL_FALSE;
             }
 
-          if (!(skip (leng1 - 16, dg) == OK))
+          if (!_alutStreamSkip (stream, leng1 - 16))
             {
-              return NotOK;
+              return AL_FALSE;
             }
 
           switch (audioFormat)
             {
             case 1:            /* PCM */
-              attr->bps = bitsPerSample;
-              _codec = (attr->bps == 8
+              bufferData->bitsPerSample = bitsPerSample;
+              _codec = (bufferData->bitsPerSample == 8
                         || endianess () == LittleEndian) ? linear : pcm16;
               break;
             case 7:            /* uLaw */
-              attr->bps = bitsPerSample * 2;    /* ToDo: ??? */
+              bufferData->bitsPerSample = bitsPerSample * 2;    /* ToDo: ??? */
               _codec = uLaw;
               break;
             default:
               _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
-              return NotOK;
+              return AL_FALSE;
             }
 
-          attr->numChannels = numChannels;
-          attr->sampleRate = sampleRate;
+          bufferData->numChannels = numChannels;
+          bufferData->sampleFrequency = sampleFrequency;
         }
       else
         if (magic[0] == 'd' && magic[1] == 'a' &&
@@ -721,39 +457,40 @@ _alutLoadWavFile (struct DataGetter *dg, struct SampleAttribs *attr)
             {
               /* ToDo: A bit wrong to check here, fmt chunk could come later... */
               _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA);
-              return NotOK;
+              return AL_FALSE;
             }
 
-          attr->length = leng1;
-          len = attr->length;
+          bufferData->length = leng1;
+          len = bufferData->length;
           buf = (char *) malloc (len);
-          if (!(buf != NULL))
+          if (buf == NULL)
             {
               _alutSetError (ALUT_ERROR_OUT_OF_MEMORY);
-              return NotOK;
+              return AL_FALSE;
             }
 
-          if (!(dgread (buf, len, dg) == OK))
+          if (!_alutStreamRead (stream, buf, len))
             {
               free (buf);
-              return NotOK;
+              return AL_FALSE;
             }
 
-          attr->buffer = _codec (buf, &len);
-          attr->length = len;
-          return OK;
+          bufferData->data = _codec (buf, &len);
+          bufferData->length = len;
+          return AL_TRUE;
         }
       else
         {
-          if (!(skip (leng1, dg) == OK))
+          if (!_alutStreamSkip (stream, leng1))
             {
-              return NotOK;
+              return AL_FALSE;
             }
         }
 
-      if (!((leng1 & 1) == 0 || eof (dg) || skip (1, dg) == OK))
+      if ((leng1 & 1) && !_alutStreamEOF (stream)
+          && !_alutStreamSkip (stream, 1))
         {
-          return NotOK;
+          return AL_FALSE;
         }
     }
 }
@@ -771,94 +508,93 @@ enum AUEncoding
   AU_FLOAT_64 = 7,              /* 64-bit IEEE floating point */
   AU_ALAW_8 = 27                /* 8-bit ISDN a-law */
 };
-static Status
-_alutLoadAUFile (struct DataGetter *dg, struct SampleAttribs *attr)
+
+static ALboolean
+_alutLoadAUFile (InputStream *stream, BufferData *bufferData)
 {
   Int32BigEndian dataOffset;    /* byte offset to data part, minimum 24 */
   Int32BigEndian dataSize;      /* number of bytes in the data part, -1 = not known */
   Int32BigEndian encoding;      /* encoding of the data part, see AUEncoding */
-  Int32BigEndian sampleRate;    /* number of samples per second */
+  Int32BigEndian sampleFrequency;       /* number of samples per second */
   Int32BigEndian channels;      /* number of interleaved channels */
   codec *_codec;
   char *buf;
   size_t len;
-  if (!(readInt32BigEndian (&dataOffset, dg) == OK &&
-        readInt32BigEndian (&dataSize, dg) == OK &&
-        readInt32BigEndian (&encoding, dg) == OK &&
-        readInt32BigEndian (&sampleRate, dg) == OK &&
-        readInt32BigEndian (&channels, dg) == OK))
+  if (!_alutReadInt32BigEndian (stream, &dataOffset) ||
+      !_alutReadInt32BigEndian (stream, &dataSize) ||
+      !_alutReadInt32BigEndian (stream, &encoding) ||
+      !_alutReadInt32BigEndian (stream, &sampleFrequency) ||
+      !_alutReadInt32BigEndian (stream, &channels))
     {
-      return NotOK;
+      return AL_FALSE;
     }
 
   if (dataSize == -1)
     {
-      dataSize = dg->length - dataOffset;
+      dataSize = _alutStreamGetRemainingLength (stream) - 24 - dataOffset;
     }
 
 #if 0
   fprintf (stderr,
            "data offset %ld, data size %ld, encoding %ld, sample rate %ld, channels %ld\n",
            (long) dataOffset, (long) dataSize, (long) encoding,
-           (long) sampleRate, (long) channels);
+           (long) sampleFrequency, (long) channels);
 #endif
-  if (!(dataOffset >= 24 && dataSize > 0 && sampleRate >= 1 && channels >= 1))
+  if (!
+      (dataOffset >= 24 && dataSize > 0 && sampleFrequency >= 1
+       && channels >= 1))
     {
       _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA);
-      return NotOK;
+      return AL_FALSE;
     }
 
-  if (!(skip (dataOffset - 24, dg) == OK))
+  if (!_alutStreamSkip (stream, dataOffset - 24))
     {
-      return NotOK;
+      return AL_FALSE;
     }
 
   switch (encoding)
     {
     case AU_ULAW_8:
-      attr->bps = 16;
+      bufferData->bitsPerSample = 16;
       _codec = uLaw;
       break;
     case AU_PCM_8:
-      attr->bps = 8;
+      bufferData->bitsPerSample = 8;
       _codec = pcm8s;
       break;
     case AU_PCM_16:
-      attr->bps = 16;
+      bufferData->bitsPerSample = 16;
       _codec = (endianess () == BigEndian) ? linear : pcm16;
       break;
     case AU_ALAW_8:
-      attr->bps = 16;
+      bufferData->bitsPerSample = 16;
       _codec = aLaw;
       break;
     default:
       _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
-      return NotOK;
+      return AL_FALSE;
     }
 
-  attr->length = 0;
-  attr->numChannels = channels;
-  attr->sampleRate = sampleRate;
+  bufferData->length = 0;
+  bufferData->numChannels = channels;
+  bufferData->sampleFrequency = sampleFrequency;
   buf = (char *) malloc (dataSize);
-  if (!(buf != NULL))
+  if (buf == NULL)
     {
       _alutSetError (ALUT_ERROR_OUT_OF_MEMORY);
-      return NotOK;
+      return AL_FALSE;
     }
-  if (!(dgread (buf, dataSize, dg) == OK))
+  if (!_alutStreamRead (stream, buf, dataSize))
     {
       free (buf);
-      return NotOK;
+      return AL_FALSE;
     }
 
-  if (attr->buffer)
-    {
-      free (attr->buffer);
-    }
   len = dataSize;
-  attr->buffer = _codec (buf, &len);
-  attr->length = len;
-  return OK;
+  bufferData->data = _codec (buf, &len);
+  bufferData->length = len;
+  return AL_TRUE;
 }
 
 ALvoid *
@@ -972,41 +708,37 @@ aLaw (ALvoid *data, unsigned int *length)
   return buf;
 }
 
-static Status
-_alutLoadRawFile (struct DataGetter *dg, struct SampleAttribs *attr)
+static ALboolean
+_alutLoadRawFile (InputStream *stream, BufferData *bufferData)
 {
-  if (attr->buffer)
+  bufferData->data = NULL;
+  bufferData->length = _alutStreamGetRemainingLength (stream);
+  if (bufferData->length > 0)
     {
-      free (attr->buffer);
-    }
-  attr->buffer = NULL;
-  attr->length = dg->length;
-  if (attr->length > 0)
-    {
-      attr->buffer = (unsigned char *) malloc (attr->length);
-      if (!(dgread (attr->buffer, attr->length, dg) == OK))
+      bufferData->data = (unsigned char *) malloc (bufferData->length);
+      if (!_alutStreamRead (stream, bufferData->data, bufferData->length))
         {
-          free (attr->buffer);
-          return NotOK;
+          free (bufferData->data);
+          return AL_FALSE;
         }
     }
 
-  attr->bps = 8;
-  attr->numChannels = 1;
-  attr->sampleRate = 8000;      /* Guess */
-  return OK;
+  bufferData->bitsPerSample = 8;
+  bufferData->numChannels = 1;
+  bufferData->sampleFrequency = 8000;   /* Guess */
+  return AL_TRUE;
 }
 
 ALvoid *
-alutLoadMemoryFromFile (const char *filename, ALenum *format,
+alutLoadMemoryFromFile (const char *fileName, ALenum *format,
                         ALsizei *size, ALfloat *frequency)
 {
-  if (_alutSanityCheck () == AL_FALSE)
+  if (!_alutSanityCheck ())
     {
       return NULL;
     }
 
-  return _alutPrivateLoadMemoryFromFile (filename, format, size, frequency);
+  return _alutPrivateLoadMemoryFromFile (fileName, format, size, frequency);
 }
 
 ALvoid *
@@ -1014,7 +746,7 @@ alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
                              ALenum *format, ALsizei *size,
                              ALfloat *frequency)
 {
-  if (_alutSanityCheck () == AL_FALSE)
+  if (!_alutSanityCheck ())
     {
       return NULL;
     }
