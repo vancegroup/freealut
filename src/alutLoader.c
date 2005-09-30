@@ -110,7 +110,7 @@ _alutPrivateLoadMemoryFromFile (const char *fileName, ALenum *format,
   stream = _alutStreamFromFile (fileName);
   if (stream == NULL)
     {
-      return AL_NONE;
+      return NULL;
     }
 
   if (!_alutLoadFile (stream, &bufferData))
