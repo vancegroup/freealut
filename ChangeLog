@@ -2,10 +2,10 @@
 
 	* test_suite/test_errorstuff.c, test_suite/test_fileloader.c,
 	test_suite/test_memoryloader.c, test_suite/test_retrostuff.c,
-	test_suite/test_version.c: Cleaned up and fixed the test suite
-	(always call alutExit before exiting, test for AL_NONE instead of
-	0, no repetitions, more error checks, return EXIT_FAILURE on
-	failure).
+	test_suite/test_version.c, test_suite/test_waveforms.c: Cleaned up
+	and fixed the test suite (always call alutExit before exiting,
+	test for AL_NONE instead of 0, no repetitions, more error checks,
+	return EXIT_FAILURE on failure).
 
 	* src/alutBufferData.c, src/alutInputStream.c: Forgot to re-indent
 	these...
