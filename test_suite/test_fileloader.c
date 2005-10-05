@@ -3,62 +3,73 @@
 #include <AL/alut.h>
 
 /*
-  This program loads and plays a variety of files.
-*/
+ * This program loads and plays a variety of files, basically an automated
+ * version of examples/playfile.c.
+ */
+
+static void
+playFile (const char *fileName)
+{
+  ALuint buffer;
+  ALuint source;
+  ALenum error;
+  ALint status;
+
+  /* Create an AL buffer from the given sound file. */
+  buffer = alutCreateBufferFromFile (fileName);
+  if (buffer == AL_NONE)
+    {
+      error = alutGetError ();
+      fprintf (stderr, "Error loading file: '%s'\n",
+               alutGetErrorString (error));
+      alutExit ();
+      exit (EXIT_FAILURE);
+    }
+
+  /* Generate a single source, attach the buffer to it and start playing. */
+  alGenSources (1, &source);
+  alSourcei (source, AL_BUFFER, buffer);
+  alSourcePlay (source);
+
+  /* Normally nothing should go wrong above, but one never knows... */
+  error = alGetError ();
+  if (error != ALUT_ERROR_NO_ERROR)
+    {
+      fprintf (stderr, "%s\n", alGetString (error));
+      alutExit ();
+      exit (EXIT_FAILURE);
+    }
+
+  /* Check every 0.1 seconds if the sound is still playing. */
+  do
+    {
+      alutMicroSleep (100000);
+      alGetSourcei (source, AL_SOURCE_STATE, &status);
+    }
+  while (status == AL_PLAYING);
+}
 
 int
 main (int argc, char **argv)
 {
-  ALuint file1Buffer, file1Source;
-  ALuint file2Buffer, file2Source;
-  ALuint file3Buffer, file3Source;
-  int i;
-
-  alutInit (&argc, argv);
-
-  file1Buffer = alutCreateBufferFromFile ("file1.wav");
-  if (file1Buffer == 0)
+  /* Initialise ALUT and eat any ALUT-specific commandline flags. */
+  if (!alutInit (&argc, argv))
     {
-      fprintf (stderr, "Error loading .wav file: '%s'\n",
-               alutGetErrorString (alutGetError ()));
+      ALenum error = alutGetError ();
+      fprintf (stderr, "%s\n", alutGetErrorString (error));
       exit (EXIT_FAILURE);
     }
 
-  alGenSources (1, &file1Source);
-  alSourcei (file1Source, AL_BUFFER, file1Buffer);
+  /* If everything is OK, play the sound files and exit when finished. */
+  playFile ("file1.wav");
+  playFile ("file2.au");
+  playFile ("file3.raw");
 
-  file2Buffer = alutCreateBufferFromFile ("file2.au");
-  if (file2Buffer == 0)
+  if (!alutExit ())
     {
-      fprintf (stderr, "Error loading .au file: '%s'\n",
-               alutGetErrorString (alutGetError ()));
+      ALenum error = alutGetError ();
+      fprintf (stderr, "%s\n", alutGetErrorString (error));
       exit (EXIT_FAILURE);
     }
-
-  alGenSources (1, &file2Source);
-  alSourcei (file2Source, AL_BUFFER, file2Buffer);
-
-  file3Buffer = alutCreateBufferFromFile ("file3.raw");
-  if (file3Buffer == 0)
-    {
-      fprintf (stderr, "Error loading .raw file: '%s'\n",
-               alutGetErrorString (alutGetError ()));
-      exit (EXIT_FAILURE);
-    }
-
-  alGenSources (1, &file3Source);
-  alSourcei (file3Source, AL_BUFFER, file3Buffer);
-
-  for (i = 0; i < 3; i++)
-    {
-      alSourcePlay (file1Source);
-      alutMicroSleep (1000000);
-      alSourcePlay (file2Source);
-      alutMicroSleep (1000000);
-      alSourcePlay (file3Source);
-      alutMicroSleep (1000000);
-    }
-
-  alutExit ();
   return EXIT_SUCCESS;
 }

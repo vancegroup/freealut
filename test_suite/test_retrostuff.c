@@ -3,74 +3,76 @@
 #include <AL/alut.h>
 
 /*
-  This program loads and plays a file the ALUT 0.x.x way.
-*/
+ * This program loads and plays a file the deprecated ALUT 0.x.x way.
+ */
 
-int
-main (int argc, char **argv)
+static void
+playFile (const char *fileName)
 {
   ALenum format;
+  void *data;
   ALsizei size;
-  ALsizei freq;
+  ALsizei frequency;
 #if !defined(__APPLE__)
   ALboolean loop;
 #endif
-  ALvoid *data;
   ALuint buffer;
-  ALuint handle;
-  FILE *fd;
-  ALbyte filebuffer[100000];
+  ALuint source;
+  ALenum error;
+  ALint status;
 
-  alutInit (&argc, argv);
-
-  /*
-     WARNING!!
-     This is only a test program.
-     It's testing a nasty, old fashioned way to load sounds.
-     Whatever you do, don't pick this as an example of how to
-     write ALUT programs!!
-   */
-
-  alutLoadWAVFile ((ALbyte *) "file1.wav", &format, &data, &size, &freq
+  /* Create an AL buffer from the given sound file. */
+  alutLoadWAVFile ((ALbyte *) "file1.wav", &format, &data, &size, &frequency
 #if !defined(__APPLE__)
                    , &loop
 #endif
     );
   alGenBuffers (1, &buffer);
-  alBufferData (buffer, format, data, size, freq);
+  alBufferData (buffer, format, data, size, frequency);
   free (data);
-  alGenSources (1, &handle);
-  alSourcei (handle, AL_BUFFER, buffer);
-  alSourcePlay (handle);
-  alutMicroSleep (2000000);
 
-  fd = fopen ("file1.wav", "rb");
-  if (fd == NULL)
+  /* Generate a single source, attach the buffer to it and start playing. */
+  alGenSources (1, &source);
+  alSourcei (source, AL_BUFFER, buffer);
+  alSourcePlay (source);
+
+  /* Normally nothing should go wrong above, but one never knows... */
+  error = alGetError ();
+  if (error != ALUT_ERROR_NO_ERROR)
     {
-      fprintf (stderr, "Error opening .wav file\n");
+      fprintf (stderr, "%s\n", alGetString (error));
+      alutExit ();
       exit (EXIT_FAILURE);
     }
-  fread (filebuffer, 1, 10000, fd);
-  if (ferror (fd))
+
+  /* Check every 0.1 seconds if the sound is still playing. */
+  do
     {
-      fprintf (stderr, "Error reading .wav file\n");
+      alutMicroSleep (100000);
+      alGetSourcei (source, AL_SOURCE_STATE, &status);
+    }
+  while (status == AL_PLAYING);
+}
+
+int
+main (int argc, char **argv)
+{
+  /* Initialise ALUT and eat any ALUT-specific commandline flags. */
+  if (!alutInit (&argc, argv))
+    {
+      ALenum error = alutGetError ();
+      fprintf (stderr, "%s\n", alutGetErrorString (error));
       exit (EXIT_FAILURE);
     }
-  fclose (fd);
 
-  alutLoadWAVMemory (filebuffer, &format, &data, &size, &freq
-#if !defined(__APPLE__)
-                     , &loop
-#endif
-    );
-  alGenBuffers (1, &buffer);
-  alBufferData (buffer, format, data, size, freq);
-  free (data);
-  alGenSources (1, &handle);
-  alSourcei (handle, AL_BUFFER, buffer);
-  alSourcePlay (handle);
-  alutMicroSleep (2000000);
+  /* If everything is OK, play the sound files and exit when finished. */
+  playFile ("file1.wav");
 
-  alutExit ();
+  if (!alutExit ())
+    {
+      ALenum error = alutGetError ();
+      fprintf (stderr, "%s\n", alutGetErrorString (error));
+      exit (EXIT_FAILURE);
+    }
   return EXIT_SUCCESS;
 }
