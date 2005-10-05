@@ -1,5 +1,11 @@
 2005-10-05  Sven Panne  <sven.panne@aedion.de>
 
+	* src/Makefile.am, src/alutInputStream.c, src/alutInternal.h,
+	src/alutLoader.c: Factored out codecs. Simplified stream
+	interface.
+
+	* src/alutCodec.c: Added.
+
 	* src/alutBufferData.c, src/alutInputStream.c, src/alutInternal.h,
 	src/alutLoader.c, src/alutUtil.c, src/alutWaveform.c: More heavy
 	refactoring, mainly making the buffer data an abstract data type.

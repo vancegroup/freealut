@@ -37,6 +37,15 @@ typedef uint32_t UInt32LittleEndian;
 
 #include <AL/alut.h>
 
+/* in alutCodec.c */
+typedef ALvoid *Codec (ALvoid *data, ALsizei length, ALint numChannels,
+                       ALint bitsPerSample, ALfloat sampleFrequency);
+extern Codec _alutCodecLinear;
+extern Codec _alutCodecPCM8s;
+extern Codec _alutCodecPCM16;
+extern Codec _alutCodecULaw;
+extern Codec _alutCodecALaw;
+
 /* in alutError.c */
 extern void _alutSetError (ALenum err);
 
@@ -45,22 +54,22 @@ extern ALboolean _alutSanityCheck (void);
 
 /* in alutInputStream.c */
 typedef struct InputStream_struct InputStream;
-extern InputStream *_alutStreamConstructFromFile (const char *fileName);
-extern InputStream *_alutStreamConstructFromMemory (const ALvoid *data,
-                                                    ALsizei length);
-extern const char *_alutStreamGetFileName (const InputStream *stream);
-extern size_t _alutStreamGetRemainingLength (const InputStream *stream);
-extern ALboolean _alutStreamDestroy (InputStream *stream);
-extern ALboolean _alutStreamEOF (InputStream *stream);
-extern ALboolean _alutStreamRead (InputStream *stream, void *ptr,
-                                  size_t numBytesToRead);
-extern ALboolean _alutStreamSkip (InputStream *stream, size_t numBytesToSkip);
-extern ALboolean _alutStreamReadUInt16LE (InputStream *stream,
-                                          UInt16LittleEndian *value);
-extern ALboolean _alutStreamReadInt32BE (InputStream *stream,
-                                         Int32BigEndian *value);
-extern ALboolean _alutStreamReadUInt32LE (InputStream *stream,
-                                          UInt32LittleEndian *value);
+extern InputStream *_alutInputStreamConstructFromFile (const char *fileName);
+extern InputStream *_alutInputStreamConstructFromMemory (const ALvoid *data,
+                                                         ALsizei length);
+extern const char *_alutInputStreamGetFileName (const InputStream *stream);
+extern size_t _alutInputStreamGetRemainingLength (const InputStream *stream);
+extern ALboolean _alutInputStreamDestroy (InputStream *stream);
+extern ALboolean _alutInputStreamEOF (InputStream *stream);
+extern ALvoid *_alutInputStreamRead (InputStream *stream, ALsizei length);
+extern ALboolean _alutInputStreamSkip (InputStream *stream,
+                                       size_t numBytesToSkip);
+extern ALboolean _alutInputStreamReadUInt16LE (InputStream *stream,
+                                               UInt16LittleEndian *value);
+extern ALboolean _alutInputStreamReadInt32BE (InputStream *stream,
+                                              Int32BigEndian *value);
+extern ALboolean _alutInputStreamReadUInt32LE (InputStream *stream,
+                                               UInt32LittleEndian *value);
 
 /* in alutUtil.c */
 extern ALvoid *_alutMalloc (size_t size);

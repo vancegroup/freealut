@@ -8,6 +8,7 @@ lib_LTLIBRARIES = libalut.la
 # libalut consists of the followin sources and internal headers:
 libalut_la_SOURCES =		\
 	alutBufferData.c	\
+	alutCodec.c		\
 	alutError.c		\
 	alutInit.c		\
 	alutInputStream.c	\

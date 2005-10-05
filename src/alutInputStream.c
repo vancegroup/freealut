@@ -33,7 +33,7 @@ struct InputStream_struct
  ****************************************************************************/
 
 InputStream *
-_alutStreamConstructFromFile (const char *fileName)
+_alutInputStreamConstructFromFile (const char *fileName)
 {
   InputStream *stream;
   structStat statBuf;
@@ -76,7 +76,7 @@ _alutStreamConstructFromFile (const char *fileName)
 }
 
 InputStream *
-_alutStreamConstructFromMemory (const ALvoid *data, ALsizei length)
+_alutInputStreamConstructFromMemory (const ALvoid *data, ALsizei length)
 {
   InputStream *stream = (InputStream *) _alutMalloc (sizeof (InputStream));
   if (stream == NULL)
@@ -92,7 +92,7 @@ _alutStreamConstructFromMemory (const ALvoid *data, ALsizei length)
 }
 
 ALboolean
-_alutStreamDestroy (InputStream *stream)
+_alutInputStreamDestroy (InputStream *stream)
 {
   ALboolean status =
     (stream->isFileStream && fclose (stream->u.fileDescriptor)) ?
@@ -106,19 +106,19 @@ _alutStreamDestroy (InputStream *stream)
 }
 
 const char *
-_alutStreamGetFileName (const InputStream *stream)
+_alutInputStreamGetFileName (const InputStream *stream)
 {
   return stream->fileName;
 }
 
 size_t
-_alutStreamGetRemainingLength (const InputStream *stream)
+_alutInputStreamGetRemainingLength (const InputStream *stream)
 {
   return stream->remainingLength;
 }
 
 ALboolean
-_alutStreamEOF (InputStream *stream)
+_alutInputStreamEOF (InputStream *stream)
 {
   if (stream->isFileStream)
     {
@@ -135,8 +135,8 @@ _alutStreamEOF (InputStream *stream)
     }
 }
 
-ALboolean
-_alutStreamRead (InputStream *stream, void *ptr, size_t numBytesToRead)
+static ALboolean
+streamRead (InputStream *stream, void *ptr, size_t numBytesToRead)
 {
   if (stream->isFileStream)
     {
@@ -169,8 +169,26 @@ _alutStreamRead (InputStream *stream, void *ptr, size_t numBytesToRead)
  * representation.
  ****************************************************************************/
 
+ALvoid *
+_alutInputStreamRead (InputStream *stream, ALsizei length)
+{
+  ALvoid *data = _alutMalloc (length);
+  if (data == NULL)
+    {
+      return NULL;
+    }
+
+  if (!streamRead (stream, data, length))
+    {
+      free (data);
+      return NULL;
+    }
+
+  return data;
+}
+
 ALboolean
-_alutStreamSkip (InputStream *stream, size_t numBytesToSkip)
+_alutInputStreamSkip (InputStream *stream, size_t numBytesToSkip)
 {
   ALboolean status;
   char *buf;
@@ -183,16 +201,16 @@ _alutStreamSkip (InputStream *stream, size_t numBytesToSkip)
     {
       return AL_FALSE;
     }
-  status = _alutStreamRead (stream, buf, numBytesToSkip);
+  status = streamRead (stream, buf, numBytesToSkip);
   free (buf);
   return status;
 }
 
 ALboolean
-_alutStreamReadUInt16LE (InputStream *stream, UInt16LittleEndian *value)
+_alutInputStreamReadUInt16LE (InputStream *stream, UInt16LittleEndian *value)
 {
   unsigned char buf[2];
-  if (!_alutStreamRead (stream, buf, sizeof (buf)))
+  if (!streamRead (stream, buf, sizeof (buf)))
     {
       return AL_FALSE;
     }
@@ -201,10 +219,10 @@ _alutStreamReadUInt16LE (InputStream *stream, UInt16LittleEndian *value)
 }
 
 ALboolean
-_alutStreamReadInt32BE (InputStream *stream, Int32BigEndian *value)
+_alutInputStreamReadInt32BE (InputStream *stream, Int32BigEndian *value)
 {
   unsigned char buf[4];
-  if (!_alutStreamRead (stream, buf, sizeof (buf)))
+  if (!streamRead (stream, buf, sizeof (buf)))
     {
       return AL_FALSE;
     }
@@ -216,10 +234,10 @@ _alutStreamReadInt32BE (InputStream *stream, Int32BigEndian *value)
 }
 
 ALboolean
-_alutStreamReadUInt32LE (InputStream *stream, UInt32LittleEndian *value)
+_alutInputStreamReadUInt32LE (InputStream *stream, UInt32LittleEndian *value)
 {
   unsigned char buf[4];
-  if (!_alutStreamRead (stream, buf, sizeof (buf)))
+  if (!streamRead (stream, buf, sizeof (buf)))
     {
       return AL_FALSE;
     }
