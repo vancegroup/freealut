@@ -43,25 +43,11 @@ extern void _alutSetError (ALenum err);
 /* in alutInit.c */
 extern ALboolean _alutSanityCheck (void);
 
-/* in alutWaveform.c */
-typedef struct
-{
-  ALvoid *data;
-  ALsizei length;
-  ALint numChannels;
-  ALint bitsPerSample;
-  ALfloat sampleFrequency;
-} BufferData;
-
-extern ALboolean _alutGetFormat (const BufferData *bufferData,
-                                 ALenum *format);
-extern ALuint _alutPassBufferData (const BufferData *bufferData);
-
 /* in alutInputStream.c */
 typedef struct InputStream_struct InputStream;
-extern InputStream *_alutStreamFromFile (const char *fileName);
-extern InputStream *_alutStreamFromMemory (const ALvoid *data,
-                                           ALsizei length);
+extern InputStream *_alutStreamConstructFromFile (const char *fileName);
+extern InputStream *_alutStreamConstructFromMemory (const ALvoid *data,
+                                                    ALsizei length);
 extern const char *_alutStreamGetFileName (const InputStream *stream);
 extern size_t _alutStreamGetRemainingLength (const InputStream *stream);
 extern ALboolean _alutStreamDestroy (InputStream *stream);
@@ -69,11 +55,30 @@ extern ALboolean _alutStreamEOF (InputStream *stream);
 extern ALboolean _alutStreamRead (InputStream *stream, void *ptr,
                                   size_t numBytesToRead);
 extern ALboolean _alutStreamSkip (InputStream *stream, size_t numBytesToSkip);
-extern ALboolean _alutReadUInt16LittleEndian (InputStream *stream,
-                                              UInt16LittleEndian *value);
-extern ALboolean _alutReadInt32BigEndian (InputStream *stream,
-                                          Int32BigEndian *value);
-extern ALboolean _alutReadUInt32LittleEndian (InputStream *stream,
-                                              UInt32LittleEndian *value);
+extern ALboolean _alutStreamReadUInt16LE (InputStream *stream,
+                                          UInt16LittleEndian *value);
+extern ALboolean _alutStreamReadInt32BE (InputStream *stream,
+                                         Int32BigEndian *value);
+extern ALboolean _alutStreamReadUInt32LE (InputStream *stream,
+                                          UInt32LittleEndian *value);
+
+/* in alutUtil.c */
+extern ALvoid *_alutMalloc (size_t size);
+
+/* in alutWaveform.c */
+typedef struct BufferData_struct BufferData;
+extern BufferData *_alutBufferDataConstruct (ALvoid *data, ALsizei length,
+                                             ALint numChannels,
+                                             ALint bitsPerSample,
+                                             ALfloat sampleFrequency);
+extern ALboolean _alutBufferDataDestroy (BufferData *bufferData);
+extern void _alutBufferDataDetachData (BufferData *bufferData);
+extern ALvoid *_alutBufferDataGetData (const BufferData *bufferData);
+extern ALsizei _alutBufferDataGetLength (const BufferData *bufferData);
+extern ALfloat _alutBufferDataGetSampleFrequency (const BufferData
+                                                  *bufferData);
+extern ALboolean _alutGetFormat (const BufferData *bufferData,
+                                 ALenum *format);
+extern ALuint _alutPassBufferData (BufferData *bufferData);
 
 #endif /* not ALUT_INTERNAL_H */

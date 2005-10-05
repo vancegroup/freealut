@@ -27,3 +27,14 @@ alutMicroSleep (ALuint microSeconds)
 #endif
   return AL_TRUE;
 }
+
+ALvoid *
+_alutMalloc (size_t size)
+{
+  ALvoid *ptr = malloc (size == 0 ? 1 : size);
+  if (ptr == NULL)
+    {
+      _alutSetError (ALUT_ERROR_OUT_OF_MEMORY);
+    }
+  return ptr;
+}

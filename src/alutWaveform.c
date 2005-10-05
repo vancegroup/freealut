@@ -56,7 +56,7 @@ alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
   size_t numSamples, i;
   int16_t *data;
   ALuint buffer;
-  BufferData bufferData;
+  BufferData *bufferData;
 
   /* error checks */
   if (!_alutSanityCheck ())
@@ -96,19 +96,11 @@ alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
   /* allocate buffer to hold sample data */
   sampleDuration = floor ((frequency * duration) + 0.5) / frequency;
   numSamples = (size_t) floor (sampleDuration * sampleFrequency);
-
-  bufferData.numChannels = 1;
-  bufferData.bitsPerSample = 16;
-  bufferData.sampleFrequency = sampleFrequency;
-  bufferData.length = numSamples * sizeof (int16_t);
-  bufferData.data = malloc (bufferData.length);
-  if (bufferData.data == NULL)
+  data = (int16_t *) _alutMalloc (numSamples * sizeof (int16_t));
+  if (data == NULL)
     {
-      _alutSetError (ALUT_ERROR_OUT_OF_MEMORY);
       return AL_NONE;
     }
-
-  data = (int16_t *) bufferData.data;
 
   /* normalize phase from degrees */
   phase /= 180;
@@ -128,8 +120,17 @@ alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
     }
 
   /* pass sample data to OpenAL */
-  buffer = _alutPassBufferData (&bufferData);
-  free (bufferData.data);
+  bufferData =
+    _alutBufferDataConstruct (data, numSamples * sizeof (int16_t), 1, 16,
+                              sampleFrequency);
+  if (bufferData == NULL)
+    {
+      free (data);
+      return AL_NONE;
+    }
+  buffer = _alutPassBufferData (bufferData);
+  _alutBufferDataDestroy (bufferData);
+
   return buffer;
 }
 

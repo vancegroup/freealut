@@ -1,5 +1,9 @@
 2005-10-05  Sven Panne  <sven.panne@aedion.de>
 
+	* src/alutBufferData.c, src/alutInputStream.c, src/alutInternal.h,
+	src/alutLoader.c, src/alutUtil.c, src/alutWaveform.c: More heavy
+	refactoring, mainly making the buffer data an abstract data type.
+
 	* test_suite/test_errorstuff.c, test_suite/test_fileloader.c,
 	test_suite/test_memoryloader.c, test_suite/test_retrostuff.c,
 	test_suite/test_version.c, test_suite/test_waveforms.c: Cleaned up
