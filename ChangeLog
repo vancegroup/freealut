@@ -1,3 +1,8 @@
+2005-10-05  Sven Panne  <sven.panne@aedion.de>
+
+	* src/alutBufferData.c, src/alutInputStream.c: Forgot to re-indent
+	these...
+
 2005-09-30  Sven Panne  <sven.panne@aedion.de>
 
 	* admin/.indent.pro,examples/playfile.c, include/AL/alut.h,

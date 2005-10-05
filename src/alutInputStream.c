@@ -28,7 +28,6 @@ struct InputStream_struct
   } u;
 };
 
-
 /****************************************************************************
  * The functions below know the internal InputStream representation.
  ****************************************************************************/
@@ -78,7 +77,6 @@ _alutStreamFromFile (const char *fileName)
   return stream;
 }
 
-
 InputStream *
 _alutStreamFromMemory (const ALvoid *data, ALsizei length)
 {
@@ -96,7 +94,6 @@ _alutStreamFromMemory (const ALvoid *data, ALsizei length)
   return stream;
 }
 
-
 ALboolean
 _alutStreamDestroy (InputStream *stream)
 {
@@ -111,7 +108,6 @@ _alutStreamDestroy (InputStream *stream)
   return status;
 }
 
-
 const char *
 _alutStreamGetFileName (const InputStream *stream)
 {
@@ -123,7 +119,6 @@ _alutStreamGetRemainingLength (const InputStream *stream)
 {
   return stream->remainingLength;
 }
-
 
 ALboolean
 _alutStreamEOF (InputStream *stream)
@@ -142,7 +137,6 @@ _alutStreamEOF (InputStream *stream)
       return (stream->remainingLength == 0) ? AL_TRUE : AL_FALSE;
     }
 }
-
 
 ALboolean
 _alutStreamRead (InputStream *stream, void *ptr, size_t numBytesToRead)
@@ -172,7 +166,6 @@ _alutStreamRead (InputStream *stream, void *ptr, size_t numBytesToRead)
       return AL_TRUE;
     }
 }
-
 
 /****************************************************************************
  * The utility functions below do not know the internal InputStream

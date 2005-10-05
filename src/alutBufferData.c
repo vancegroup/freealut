@@ -13,7 +13,6 @@ generateBuffer (void)
   return buffer;
 }
 
-
 ALboolean
 _alutGetFormat (const BufferData *bufferData, ALenum *format)
 {
@@ -46,7 +45,6 @@ _alutGetFormat (const BufferData *bufferData, ALenum *format)
   return AL_FALSE;
 }
 
-
 static ALboolean
 passBufferData (ALuint bid, const BufferData *bufferData)
 {
@@ -64,7 +62,6 @@ passBufferData (ALuint bid, const BufferData *bufferData)
     }
   return AL_TRUE;
 }
-
 
 ALuint
 _alutPassBufferData (const BufferData *bufferData)
