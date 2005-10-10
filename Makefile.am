@@ -11,7 +11,9 @@ EXTRA_DIST =				\
 	admin/alut.vcproj		\
 	admin/hello_world.vcproj	\
 	admin/playfile.vcproj		\
-	autogen.sh
+	autogen.sh			\
+	doc/alut.css			\
+	doc/alut.html
 
 # Automatically rebuild libtool if it becomes out-of-date.
 libtool: $(LIBTOOL_DEPS)

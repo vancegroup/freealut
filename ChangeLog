@@ -1,6 +1,6 @@
 2005-10-10  Sven Panne  <sven.panne@aedion.de>
 
-	* Makefile.am: Unbreak "make dist".
+	* Makefile.am: Unbreak "make dist". Added documentation.
 
 2005-10-05  Sven Panne  <sven.panne@aedion.de>
 
