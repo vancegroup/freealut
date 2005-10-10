@@ -1,3 +1,7 @@
+2005-10-10  Sven Panne  <sven.panne@aedion.de>
+
+	* Makefile.am: Unbreak "make dist".
+
 2005-10-05  Sven Panne  <sven.panne@aedion.de>
 
 	* src/Makefile.am, src/alutInputStream.c, src/alutInternal.h,

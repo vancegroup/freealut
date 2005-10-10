@@ -6,10 +6,11 @@ ACLOCAL_AMFLAGS = -I admin/m4
 
 # The following files should be in our source distribution in addition to the
 # standard ones included by automake itself:
-EXTRA_DIST =			\
-	admin/alut.dsp		\
-	admin/alut.dsw		\
-	admin/hello_world.dsp	\
+EXTRA_DIST =				\
+	admin/alut.sln			\
+	admin/alut.vcproj		\
+	admin/hello_world.vcproj	\
+	admin/playfile.vcproj		\
 	autogen.sh
 
 # Automatically rebuild libtool if it becomes out-of-date.
