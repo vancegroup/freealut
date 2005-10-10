@@ -1,5 +1,9 @@
 2005-10-10  Sven Panne  <sven.panne@aedion.de>
 
+	* admin/freealut.spec: Added. Note that the neededforbuild and
+	BuildRequires info is not yet correct, need to figure out how to
+	compute those.
+
 	* Makefile.am: Unbreak "make dist". Added documentation.
 
 2005-10-05  Sven Panne  <sven.panne@aedion.de>
