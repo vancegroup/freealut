@@ -23,6 +23,7 @@ playFile (const char *fileName)
       error = alutGetError ();
       fprintf (stderr, "Error loading file: '%s'\n",
                alutGetErrorString (error));
+      alutExit ();
       exit (EXIT_FAILURE);
     }
 

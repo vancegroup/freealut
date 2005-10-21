@@ -1,5 +1,9 @@
 2005-10-10  Sven Panne  <sven.panne@aedion.de>
 
+	* examples/playfile.c: Added missing alutExit call.
+
+2005-10-21  Sven Panne  <sven.panne@aedion.de>
+
 	* admin/freealut.spec: Added. Note that the neededforbuild and
 	BuildRequires info is not yet correct, need to figure out how to
 	compute those.
