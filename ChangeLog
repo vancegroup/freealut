@@ -1,5 +1,9 @@
 2005-10-24  Sven Panne  <sven.panne@aedion.de>
 
+	* src/alutLoader.c, src/alutWaveform.c: Added a few harmless casts
+	where Visual Studio was complaining about a possible loss of
+	precision.
+
 	* admin/alut.vcproj: Added the recently introduced source files.
 
 2005-10-10  Sven Panne  <sven.panne@aedion.de>

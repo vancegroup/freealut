@@ -160,7 +160,7 @@ loadWavFile (InputStream *stream)
               return NULL;
             }
           return codec (data, chunkLength, numChannels, bitsPerSample,
-                        sampleFrequency);
+                        (ALfloat) sampleFrequency);
         }
       else
         {
@@ -260,7 +260,7 @@ loadAUFile (InputStream *stream)
     {
       return NULL;
     }
-  return codec (data, length, numChannels, bitsPerSample, sampleFrequency);
+  return codec (data, length, numChannels, bitsPerSample, (ALfloat) sampleFrequency);
 }
 
 static BufferData *
