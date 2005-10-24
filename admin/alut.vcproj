@@ -146,10 +146,19 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
+				RelativePath="..\src\alutBufferData.c">
+			</File>
+			<File
+				RelativePath="..\src\alutCodec.c">
+			</File>
+			<File
 				RelativePath="..\src\alutError.c">
 			</File>
 			<File
 				RelativePath="..\src\alutInit.c">
+			</File>
+			<File
+				RelativePath="..\src\alutInputStream.c">
 			</File>
 			<File
 				RelativePath="..\src\alutLoader.c">

@@ -1,3 +1,7 @@
+2005-10-24  Sven Panne  <sven.panne@aedion.de>
+
+	* admin/alut.vcproj: Added the recently introduced source files.
+
 2005-10-10  Sven Panne  <sven.panne@aedion.de>
 
 	* examples/playfile.c: Added missing alutExit call.
