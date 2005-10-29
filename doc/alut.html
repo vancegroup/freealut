@@ -75,7 +75,7 @@
           <li>
             <a href="#Sleeping">Sleeping</a>
             <ul>
-              <li><a href="#alutMicroSleep">alutMicroSleep</a></li>
+              <li><a href="#alutSleep">alutSleep</a></li>
             </ul>
           </li>
         </ul>
@@ -94,6 +94,7 @@
       <li>2005-09-10: Version 1.0.2 by Sven Panne</li>
       <li>2005-09-26: Version 1.0.3 by Sven Panne</li>
       <li>2005-09-28: Version 1.0.4 by Sven Panne</li>
+      <li>2005-10-29: Version 1.0.5 by Sven Panne</li>
     </ul>
 
     <h1><a name="Introduction"></a>Introduction</h1>
@@ -167,7 +168,7 @@ main (int argc, char **argv)
   alGenSources (1, &amp;helloSource);
   alSourcei (helloSource, AL_BUFFER, helloBuffer);
   alSourcePlay (helloSource);
-  alutMicroSleep (3000000);
+  alutSleep (1);
   alutExit ();
   return EXIT_SUCCESS;
 }
@@ -404,7 +405,7 @@ main (int argc, char **argv)
     consequence of these checks the AL/ALC error states for the current
     context/device are cleared after calling any of these functions.</p>
 
-    <p><tt>alutMicroSleep</tt> can be called in every state.</p>
+    <p><tt>alutSleep</tt> can be called in every state.</p>
 
     <p>The following functions never fail and can be called in any state:
     <tt>alutGetError</tt>, <tt>alutGetErrorString</tt>,
@@ -1172,29 +1173,29 @@ if (alutGetMajorVersion () != ALUT_API_MAJOR_VERSION ||
     of audio demos and it can't be done portably without cluttering the source
     code with <tt>#ifdefs</tt>.</p>
 
-    <h3 class="manpage"><a name="alutMicroSleep"></a>alutMicroSleep</h3>
+    <h3 class="manpage"><a name="alutSleep"></a>alutSleep</h3>
 
     <h4>Name</h4>
 
-    <p><tt>alutMicroSleep</tt> - sleep for a given number of microseconds</p>
+    <p><tt>alutSleep</tt> - sleep for a given number of seconds</p>
 
     <h4>Synopsis</h4>
 
 <pre class="programlisting">
-ALboolean alutMicroSleep (ALuint microSeconds);
+ALboolean alutSleep (ALfloat duration);
 </pre>
 
     <h4>Description</h4>
 
-    <p><tt>alutMicroSleep</tt> will delay the execution of the current thread
-    for at least the given amount of microseconds. It will only return earlier
-    if a signal has been delivered to the thread, but this does not count as an
-    error. Note that sleeping for zero microseconds will give other runnable
-    threads a chance to run.</p>
+    <p><tt>alutSleep</tt> will delay the execution of the current thread for at
+    least the given amount of seconds. It will only return earlier if a signal
+    has been delivered to the thread, but this does not count as an error. Note
+    that sleeping for zero seconds will give other runnable threads a chance to
+    run.</p>
 
     <h4>Return Value</h4>
 
-    <p><tt>alutMicroSleep</tt> returns <tt>AL_TRUE</tt> on success or
+    <p><tt>alutSleep</tt> returns <tt>AL_TRUE</tt> on success or
     <tt>AL_FALSE</tt> on failure. Note that current implementations will always
     succeed, but this might change in the future.</p>
 
@@ -1204,3 +1205,8 @@ ALboolean alutMicroSleep (ALuint microSeconds);
 
   </body>
 </html>
+<!-- Emacs stuff:
+     ;;; Local Variables: ***
+     ;;; mode: xml ***
+     ;;; End: ***
+ -->

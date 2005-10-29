@@ -13,7 +13,7 @@ playTone (ALenum waveshape)
   alGenSources (1, &source);
   alSourcei (source, AL_BUFFER, buffer);
   alSourcePlay (source);
-  alutMicroSleep (1000000);
+  alutSleep (1);
 }
 
 int

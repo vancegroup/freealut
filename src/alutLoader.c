@@ -260,7 +260,8 @@ loadAUFile (InputStream *stream)
     {
       return NULL;
     }
-  return codec (data, length, numChannels, bitsPerSample, (ALfloat) sampleFrequency);
+  return codec (data, length, numChannels, bitsPerSample,
+                (ALfloat) sampleFrequency);
 }
 
 static BufferData *

@@ -1,3 +1,17 @@
+2005-10-29  Sven Panne  <sven.panne@aedion.de>
+
+	* examples/hello_world.c, examples/playfile.c ,include/AL/alut.h,
+	src/alutUtil.c, test_suite/test_fileloader.c,
+	test_suite/test_memoryloader.c, test_suite/test_retrostuff.c,
+	test_suite/test_waveforms.c: Synched implementation with latest
+	spec changes.
+
+	* doc/alut.html: As discussed on the mailing list, sleeping is now
+	done via an ALfloat. This is more consinstent with physical
+	reality and alutCreateBufferWaveform.
+
+	* src/alutLoader.c: Re-indented.
+
 2005-10-24  Sven Panne  <sven.panne@aedion.de>
 
 	* src/alutLoader.c, src/alutWaveform.c: Added a few harmless casts

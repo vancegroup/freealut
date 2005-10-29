@@ -11,11 +11,12 @@
 #endif
 
 ALboolean
-alutMicroSleep (ALuint microSeconds)
+alutSleep (ALfloat duration)
 {
+  ALuint seconds = (ALuint) duration;
+  ALfloat rest = duration - (ALfloat) seconds;
 #if HAVE_NANOSLEEP && HAVE_TIME_H
-  ALuint seconds = microSeconds / 1000000;
-  ALuint microSecs = microSeconds - (seconds * 1000000);
+  ALuint microSecs = (ALuint) (rest * 1000000);
   struct timespec t;
   t.tv_sec = (time_t) seconds;
   t.tv_nsec = ((long) microSecs) * 1000;

@@ -88,7 +88,7 @@ ALUT_API ALuint ALUT_APIENTRY alutCreateBufferWaveform (ALenum waveshape, ALfloa
 ALUT_API ALint ALUT_APIENTRY alutGetMajorVersion (void);
 ALUT_API ALint ALUT_APIENTRY alutGetMinorVersion (void);
 
-ALUT_API ALboolean ALUT_APIENTRY alutMicroSleep (ALuint microSeconds);
+ALUT_API ALboolean ALUT_APIENTRY alutSleep (ALfloat duration);
 
 /* Nasty Compatibility stuff, WARNING: THESE FUNCTIONS ARE STRONGLY DEPRECATED */
 #if defined(__APPLE__)

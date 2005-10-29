@@ -17,7 +17,7 @@ main (int argc, char **argv)
   alGenSources (1, &helloSource);
   alSourcei (helloSource, AL_BUFFER, helloBuffer);
   alSourcePlay (helloSource);
-  alutMicroSleep (3000000);
+  alutSleep (1);
   alutExit ();
   return EXIT_SUCCESS;
 }
