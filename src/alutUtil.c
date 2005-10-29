@@ -13,19 +13,37 @@
 ALboolean
 alutSleep (ALfloat duration)
 {
-  ALuint seconds = (ALuint) duration;
-  ALfloat rest = duration - (ALfloat) seconds;
+  if (duration < 0)
+    {
+      _alutSetError (ALUT_ERROR_INVALID_VALUE);
+      return AL_FALSE;
+    }
+
+  {
+    ALuint seconds = (ALuint) duration;
+    ALfloat rest = duration - (ALfloat) seconds;
 #if HAVE_NANOSLEEP && HAVE_TIME_H
-  ALuint microSecs = (ALuint) (rest * 1000000);
-  struct timespec t;
-  t.tv_sec = (time_t) seconds;
-  t.tv_nsec = ((long) microSecs) * 1000;
-  nanosleep (&t, NULL);
+    ALuint microSecs = (ALuint) (rest * 1000000);
+    struct timespec t;
+    t.tv_sec = (time_t) seconds;
+    t.tv_nsec = ((long) microSecs) * 1000;
+    nanosleep (&t, NULL);
 #elif HAVE_USLEEP && HAVE_UNISTD_H
-  usleep (microSeconds);
+    while (seconds > 0)
+      {
+        usleep (1000000);
+        seconds--;
+      }
+    usleep ((unsigned int) (rest * 1000000));
 #elif HAVE_SLEEP && HAVE_WINDOWS_H
-  Sleep (microSeconds / 1000);
+    while (seconds > 0)
+      {
+        Sleep (1000);
+        seconds--;
+      }
+    Sleep ((DWORD) (rest * 1000));
 #endif
+  }
   return AL_TRUE;
 }
 

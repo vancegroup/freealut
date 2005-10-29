@@ -8,7 +8,9 @@
 
 	* doc/alut.html: As discussed on the mailing list, sleeping is now
 	done via an ALfloat. This is more consinstent with physical
-	reality and alutCreateBufferWaveform.
+	reality and alutCreateBufferWaveform. Note that alutSleep can
+	actually fail now, something which the former alutMicroSleep never
+	did.
 
 	* src/alutLoader.c: Re-indented.
 

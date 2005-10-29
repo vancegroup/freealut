@@ -1197,11 +1197,15 @@ ALboolean alutSleep (ALfloat duration);
 
     <p><tt>alutSleep</tt> returns <tt>AL_TRUE</tt> on success or
     <tt>AL_FALSE</tt> on failure. Note that current implementations will always
-    succeed, but this might change in the future.</p>
+    succeed if the duration is non-negative, but this might change in the
+    future.</p>
 
     <h4>Errors</h4>
 
-    <p>None so far.</p>
+    <dl>
+      <dt><tt>ALUT_ERROR_INVALID_VALUE</tt></dt>
+      <dd><tt>alutSleep</tt> was given a negative duration.</dd>
+    </dl>
 
   </body>
 </html>
