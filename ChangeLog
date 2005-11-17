@@ -1,3 +1,8 @@
+2005-11-17  Sven Panne  <sven.panne@aedion.de>
+
+	* src/alutInit.c: Fixed alutInitWithoutContext initialisation
+	state check.
+
 2005-10-29  Sven Panne  <sven.panne@aedion.de>
 
 	* examples/hello_world.c, examples/playfile.c ,include/AL/alut.h,

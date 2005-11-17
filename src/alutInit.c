@@ -95,7 +95,7 @@ alutInit (int *argcp, char **argv)
 ALboolean
 alutInitWithoutContext (int *argcp, char **argv)
 {
-  if (initialisationState == Unintialized)
+  if (initialisationState != Unintialized)
     {
       _alutSetError (ALUT_ERROR_INVALID_OPERATION);
       return AL_FALSE;
