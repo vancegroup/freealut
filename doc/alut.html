@@ -95,6 +95,7 @@
       <li>2005-09-26: Version 1.0.3 by Sven Panne</li>
       <li>2005-09-28: Version 1.0.4 by Sven Panne</li>
       <li>2005-10-29: Version 1.0.5 by Sven Panne</li>
+      <li>2005-11-19: Version 1.0.6 by Sven Panne</li>
     </ul>
 
     <h1><a name="Introduction"></a>Introduction</h1>
@@ -140,6 +141,33 @@
     decision was made to break binary compatibility in this respect and cleanly
     split the libraries into an OpenAL (i.e. AL and ALC) part and an ALUT
     one.</p>
+
+    <p>If you have a program which needs such an old, deprecated &quot;combined
+    OpenAL/ALUT&quot; and you are not able to recompile it for some reason
+    (e.g. it is available in binary format only), then temporarily setting the
+    environment variable <tt>LD_PRELOAD</tt> to the full path of your installed
+    ALUT dynamic library can help. If this really works depends on the platform,
+    but e.g. Linux, FreeBSD, NetBSD, Solaris etc. support this mechanism. On Mac
+    OS X there is a similar environment variable called
+    <tt>DYLD_INSERT_LIBRARIES</tt>, but this has not been tested yet.</p>
+
+    <div class="example">
+      <h4>Example: Using a legacy program with the new ALUT</h4>
+
+      <p>Let's assume that your ALUT dynamic library is at the usual location
+      <tt>/usr/lib/libalut.so</tt> and you have an old program called
+      <tt>myOldProg</tt>, then the following commandline in Bash syntax does the
+      trick:</p>
+
+<pre class="programlisting">
+LD_PRELOAD="/usr/lib/libalut.so" myOldProg
+</pre>
+
+    <p>Note that setting <tt>LD_PRELOAD</tt> globally might not be a good idea,
+    because in that case the new ALUT would be loaded before <em>every</em>
+    dynamically linked executable.</p>
+
+    </div>
 
     <h2><a name="OpenGLGLUT"></a>OpenGL, GLUT and using what you already know</h2>
 

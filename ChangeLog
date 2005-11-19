@@ -1,3 +1,8 @@
+2005-11-19  Sven Panne  <sven.panne@aedion.de>
+
+	* doc/alut.html: Added a remark about LD_PRELOAD to use old
+	binaries with the new ALUT.
+
 2005-11-17  Sven Panne  <sven.panne@aedion.de>
 
 	* src/alutInit.c: Fixed alutInitWithoutContext initialisation
