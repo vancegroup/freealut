@@ -1,3 +1,7 @@
+2005-11-21  Sven Panne  <sven.panne@aedion.de>
+
+	* configure.ac: Removed --enable-debug option, it was unused.
+
 2005-11-19  Sven Panne  <sven.panne@aedion.de>
 
 	* doc/alut.html: Added a remark about LD_PRELOAD to use old

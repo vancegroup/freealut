@@ -66,18 +66,11 @@ if test "x$enable_warnings" != xno -a "x$GCC" = xyes; then
   CFLAGS="$CFLAGS -Wall -pedantic -Werror"
 fi
 
-AC_ARG_ENABLE([debug],
-[AS_HELP_STRING([--enable-debug],
-                [enable debugging code (for developers) @<:@default=no@:>@])])
-if test "x$enable_debug" = xyes; then
-  AC_DEFINE([_DEBUG], [1], [Define to 1 if you want to include debugging code.])
-fi
-
 # Generate output.
 AC_CONFIG_FILES([Makefile
-                 src/Makefile
+                 examples/Makefile
                  include/Makefile
-                 test_suite/Makefile
-                 examples/Makefile])
+                 src/Makefile
+                 test_suite/Makefile])
 AC_OUTPUT
 
