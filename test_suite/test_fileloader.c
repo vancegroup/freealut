@@ -43,7 +43,7 @@ playFile (const char *fileName)
   /* Check every 0.1 seconds if the sound is still playing. */
   do
     {
-      alutSleep (0.1);
+      alutSleep (0.1f);
       alGetSourcei (source, AL_SOURCE_STATE, &status);
     }
   while (status == AL_PLAYING);

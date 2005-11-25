@@ -1,5 +1,9 @@
 2005-11-25  Sven Panne  <sven.panne@aedion.de>
 
+	* examples/playfile.c, test_suite/test_fileloader.c,
+	test_suite/test_memoryloader.c, test_suite/test_retrostuff.c: Changed
+	literal ALfloat constants from 0.1 to 0.1f, silencing Visual C.
+
 	* configure.ac: Tell the system headers that we might use POSIX/XPG
 	entitites like struct timespec or random(), which are not in the ANSI
 	standard. Do not define any user variables like CFLAGS. Split the old
