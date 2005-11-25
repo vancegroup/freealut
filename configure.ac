@@ -33,6 +33,11 @@ AC_SEARCH_LIBS([pthread_self], [pthread])
 AC_SEARCH_LIBS([alGetError], [openal32 openal])
 
 # Checks for header files.
+
+# We could possibly need struct timespec and random(), which are not ANSI.
+AM_CFLAGS="-D_XOPEN_SOURCE=500"
+AC_SUBST([AM_CFLAGS])
+
 AC_HEADER_STDC
 AC_CHECK_HEADERS([AL/alc.h AL/al.h basetsd.h ctype.h math.h stdio.h time.h windows.h])
 
@@ -59,11 +64,28 @@ AC_CHECK_LIBM
 AC_SUBST([LIBM])
 
 # Build time configuration.
+
 AC_ARG_ENABLE([warnings],
 [AS_HELP_STRING([--enable-warnings],
-                [use all gcc compiler warnings @<:@default=yes@:>@])])
-if test "x$enable_warnings" != xno -a "x$GCC" = xyes; then
-  CFLAGS="$CFLAGS -Wall -pedantic -Werror"
+                [enable pedantic compiler warnings @<:@default=yes@:>@])])
+
+if test "x$enable_warnings" != xno; then
+  AX_CFLAGS_WARN_ALL_ANSI([flags])
+  AM_CFLAGS="$AM_CFLAGS $flags"
+fi
+
+AC_ARG_ENABLE([werror],
+[AS_HELP_STRING([--enable-werror],
+                [enable failure on all warnings @<:@default=no@:>@])])
+
+if test "x$enable_werror" = xyes; then
+  if test "x$enable_warnings" = xno; then
+    AC_MSG_WARN([--enable-werror ignored because of --disable-warnings])
+  elif test "x$GCC" != xyes; then
+    AC_MSG_WARN([--enable-werror ignored because no GCC was detected])
+  else
+    AM_CFLAGS="$AM_CFLAGS -Werror"
+  fi
 fi
 
 # Generate output.
@@ -73,4 +95,3 @@ AC_CONFIG_FILES([Makefile
                  src/Makefile
                  test_suite/Makefile])
 AC_OUTPUT
-
