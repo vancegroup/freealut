@@ -1,5 +1,10 @@
 2005-11-27  Sven Panne  <sven.panne@aedion.de>
 
+	* src/alutBufferData.c, src/alutCodec.c, src/alutInputStream.c,
+	src/alutInternal.h, src/alutLoader.c, src/alutWaveform.c: Consistently
+	use size_t for sizes internally, because ALsizei is signed and we don't
+	want to lose a bit (2GB vs. 4GB limits).
+
 	* admin/VisualStudioDotNET/.cvsignore,
 	admin/VisualStudioDotNET/alut.sln,
 	admin/VisualStudioDotNET/alut/.cvsignore,

@@ -3,14 +3,14 @@
 struct BufferData_struct
 {
   ALvoid *data;
-  ALsizei length;
+  size_t length;
   ALint numChannels;
   ALint bitsPerSample;
   ALfloat sampleFrequency;
 };
 
 BufferData *
-_alutBufferDataConstruct (ALvoid *data, ALsizei length, ALint numChannels,
+_alutBufferDataConstruct (ALvoid *data, size_t length, ALint numChannels,
                           ALint bitsPerSample, ALfloat sampleFrequency)
 {
   BufferData *bufferData = (BufferData *) _alutMalloc (sizeof (BufferData));
@@ -51,7 +51,7 @@ _alutBufferDataDetachData (BufferData *bufferData)
   bufferData->data = NULL;
 }
 
-ALsizei
+size_t
 _alutBufferDataGetLength (const BufferData *bufferData)
 {
   return bufferData->length;
@@ -134,7 +134,7 @@ passBufferData (BufferData *bufferData, ALuint bid)
       return AL_FALSE;
     }
   alBufferData (bid, format, _alutBufferDataGetData (bufferData),
-                _alutBufferDataGetLength (bufferData),
+                (ALsizei) _alutBufferDataGetLength (bufferData),
                 (ALsizei) _alutBufferDataGetSampleFrequency (bufferData));
   if (alGetError () != AL_NO_ERROR)
     {

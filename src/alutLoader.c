@@ -196,16 +196,17 @@ static BufferData *
 loadAUFile (InputStream *stream)
 {
   Int32BigEndian dataOffset;    /* byte offset to data part, minimum 24 */
-  Int32BigEndian length;        /* number of bytes in the data part, -1 = not known */
+  Int32BigEndian len;           /* number of bytes in the data part, -1 = not known */
   Int32BigEndian encoding;      /* encoding of the data part, see AUEncoding */
   Int32BigEndian sampleFrequency;       /* number of samples per second */
   Int32BigEndian numChannels;   /* number of interleaved channels */
+  size_t length;
   Codec *codec;
   char *data;
   ALint bitsPerSample;
 
   if (!_alutInputStreamReadInt32BE (stream, &dataOffset) ||
-      !_alutInputStreamReadInt32BE (stream, &length) ||
+      !_alutInputStreamReadInt32BE (stream, &len) ||
       !_alutInputStreamReadInt32BE (stream, &encoding) ||
       !_alutInputStreamReadInt32BE (stream, &sampleFrequency) ||
       !_alutInputStreamReadInt32BE (stream, &numChannels))
@@ -213,10 +214,9 @@ loadAUFile (InputStream *stream)
       return AL_FALSE;
     }
 
-  if (length == -1)
-    {
-      length = _alutInputStreamGetRemainingLength (stream) - 24 - dataOffset;
-    }
+  length = (len == -1) ?
+	  (_alutInputStreamGetRemainingLength (stream) - 24 - dataOffset) :
+      len;
 
   if (!
       (dataOffset >= 24 && length > 0 && sampleFrequency >= 1
@@ -386,7 +386,7 @@ loadMemory (InputStream *stream, ALenum *format, ALsizei *size,
 
   if (size != NULL)
     {
-      *size = _alutBufferDataGetLength (bufferData);
+      *size = (ALsizei) _alutBufferDataGetLength (bufferData);
     }
 
   if (format != NULL)

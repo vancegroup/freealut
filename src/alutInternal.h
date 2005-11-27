@@ -45,7 +45,7 @@ typedef uint32_t UInt32LittleEndian;
 #include <AL/alut.h>
 
 /* in alutCodec.c */
-typedef ALvoid *Codec (ALvoid *data, ALsizei length, ALint numChannels,
+typedef ALvoid *Codec (ALvoid *data, size_t length, ALint numChannels,
                        ALint bitsPerSample, ALfloat sampleFrequency);
 extern Codec _alutCodecLinear;
 extern Codec _alutCodecPCM8s;
@@ -63,12 +63,12 @@ extern ALboolean _alutSanityCheck (void);
 typedef struct InputStream_struct InputStream;
 extern InputStream *_alutInputStreamConstructFromFile (const char *fileName);
 extern InputStream *_alutInputStreamConstructFromMemory (const ALvoid *data,
-                                                         ALsizei length);
+                                                         size_t length);
 extern const char *_alutInputStreamGetFileName (const InputStream *stream);
 extern size_t _alutInputStreamGetRemainingLength (const InputStream *stream);
 extern ALboolean _alutInputStreamDestroy (InputStream *stream);
 extern ALboolean _alutInputStreamEOF (InputStream *stream);
-extern ALvoid *_alutInputStreamRead (InputStream *stream, ALsizei length);
+extern ALvoid *_alutInputStreamRead (InputStream *stream, size_t length);
 extern ALboolean _alutInputStreamSkip (InputStream *stream,
                                        size_t numBytesToSkip);
 extern ALboolean _alutInputStreamReadUInt16LE (InputStream *stream,
@@ -83,14 +83,14 @@ extern ALvoid *_alutMalloc (size_t size);
 
 /* in alutWaveform.c */
 typedef struct BufferData_struct BufferData;
-extern BufferData *_alutBufferDataConstruct (ALvoid *data, ALsizei length,
+extern BufferData *_alutBufferDataConstruct (ALvoid *data, size_t length,
                                              ALint numChannels,
                                              ALint bitsPerSample,
                                              ALfloat sampleFrequency);
 extern ALboolean _alutBufferDataDestroy (BufferData *bufferData);
 extern void _alutBufferDataDetachData (BufferData *bufferData);
 extern ALvoid *_alutBufferDataGetData (const BufferData *bufferData);
-extern ALsizei _alutBufferDataGetLength (const BufferData *bufferData);
+extern size_t _alutBufferDataGetLength (const BufferData *bufferData);
 extern ALfloat _alutBufferDataGetSampleFrequency (const BufferData
                                                   *bufferData);
 extern ALboolean _alutGetFormat (const BufferData *bufferData,

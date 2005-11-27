@@ -76,7 +76,7 @@ _alutInputStreamConstructFromFile (const char *fileName)
 }
 
 InputStream *
-_alutInputStreamConstructFromMemory (const ALvoid *data, ALsizei length)
+_alutInputStreamConstructFromMemory (const ALvoid *data, size_t length)
 {
   InputStream *stream = (InputStream *) _alutMalloc (sizeof (InputStream));
   if (stream == NULL)
@@ -170,7 +170,7 @@ streamRead (InputStream *stream, void *ptr, size_t numBytesToRead)
  ****************************************************************************/
 
 ALvoid *
-_alutInputStreamRead (InputStream *stream, ALsizei length)
+_alutInputStreamRead (InputStream *stream, size_t length)
 {
   ALvoid *data = _alutMalloc (length);
   if (data == NULL)

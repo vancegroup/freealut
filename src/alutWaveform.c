@@ -122,7 +122,7 @@ alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
   /* pass sample data to OpenAL */
   bufferData =
     _alutBufferDataConstruct (data, numSamples * sizeof (int16_t), 1, 16,
-                              (ALfloat) sampleFrequency);
+                             (ALfloat) sampleFrequency);
   if (bufferData == NULL)
     {
       free (data);

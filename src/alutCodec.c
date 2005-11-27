@@ -1,7 +1,7 @@
 #include "alutInternal.h"
 
 ALvoid *
-_alutCodecLinear (ALvoid *data, ALsizei length, ALint numChannels,
+_alutCodecLinear (ALvoid *data, size_t length, ALint numChannels,
                   ALint bitsPerSample, ALfloat sampleFrequency)
 {
   return _alutBufferDataConstruct (data, length, numChannels, bitsPerSample,
@@ -9,11 +9,11 @@ _alutCodecLinear (ALvoid *data, ALsizei length, ALint numChannels,
 }
 
 ALvoid *
-_alutCodecPCM8s (ALvoid *data, ALsizei length, ALint numChannels,
+_alutCodecPCM8s (ALvoid *data, size_t length, ALint numChannels,
                  ALint bitsPerSample, ALfloat sampleFrequency)
 {
   int8_t *d = (int8_t *) data;
-  ALsizei i;
+  size_t i;
   for (i = 0; i < length; i++)
     {
       d[i] += (int8_t)128;
@@ -23,11 +23,11 @@ _alutCodecPCM8s (ALvoid *data, ALsizei length, ALint numChannels,
 }
 
 ALvoid *
-_alutCodecPCM16 (ALvoid *data, ALsizei length, ALint numChannels,
+_alutCodecPCM16 (ALvoid *data, size_t length, ALint numChannels,
                  ALint bitsPerSample, ALfloat sampleFrequency)
 {
   int16_t *d = (int16_t *) data;
-  ALsizei i, l = length / 2;
+  size_t i, l = length / 2;
   for (i = 0; i < l; i++)
     {
       int16_t x = d[i];
@@ -60,12 +60,12 @@ mulaw2linear (uint8_t mulawbyte)
 }
 
 ALvoid *
-_alutCodecULaw (ALvoid *data, ALsizei length, ALint numChannels,
+_alutCodecULaw (ALvoid *data, size_t length, ALint numChannels,
                 ALint bitsPerSample, ALfloat sampleFrequency)
 {
   uint8_t *d = (uint8_t *) data;
   int16_t *buf = (int16_t *) _alutMalloc (length * 2);
-  ALsizei i;
+  size_t i;
   if (buf == NULL)
     {
       return NULL;
@@ -109,12 +109,12 @@ alaw2linear (uint8_t a_val)
 }
 
 ALvoid *
-_alutCodecALaw (ALvoid *data, ALsizei length, ALint numChannels,
+_alutCodecALaw (ALvoid *data, size_t length, ALint numChannels,
                 ALint bitsPerSample, ALfloat sampleFrequency)
 {
   uint8_t *d = (uint8_t *) data;
   int16_t *buf = (int16_t *) _alutMalloc (length * 2);
-  ALsizei i;
+  size_t i;
   if (buf == NULL)
     {
       return NULL;
