@@ -1,5 +1,20 @@
 2005-11-27  Sven Panne  <sven.panne@aedion.de>
 
+	* admin/VisualStudioDotNET/.cvsignore,
+	admin/VisualStudioDotNET/alut.sln,
+	admin/VisualStudioDotNET/alut/.cvsignore,
+	admin/VisualStudioDotNET/alut/alut.vcproj,
+	admin/VisualStudioDotNET/hello_world/.cvsignore,
+	admin/VisualStudioDotNET/hello_world/hello_world.vcproj,
+	admin/VisualStudioDotNET/playfile/.cvsignore,
+	admin/VisualStudioDotNET/playfile/playfile.vcproj: Added. The structure
+	is now similar to the Visual Studio 6 directory and the
+	solution/projects are now usable with older versions of Visual Studio
+	.NET.
+
+	* admin/alut.sln, admin/alut.vcproj, admin/hello_world.vcproj,
+	admin/playfile.vcproj: Removed.
+
 	* admin/VisualStudio6/.cvsignore, admin/VisualStudio6/alut.dsw,
 	admin/VisualStudio6/alut/.cvsignore, admin/VisualStudio6/alut/alut.dsp,
 	admin/VisualStudio6/hello_world/.cvsignore,
