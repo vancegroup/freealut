@@ -16,7 +16,7 @@ _alutCodecPCM8s (ALvoid *data, ALsizei length, ALint numChannels,
   ALsizei i;
   for (i = 0; i < length; i++)
     {
-      d[i] += 128;
+      d[i] += (int8_t)128;
     }
   return _alutBufferDataConstruct (data, length, numChannels, bitsPerSample,
                                    sampleFrequency);

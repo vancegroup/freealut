@@ -1,5 +1,7 @@
 2005-11-27  Sven Panne  <sven.panne@aedion.de>
 
+	* src/alutCodec.c: Silence a useless Visual C 6 warning.
+
 	* src/alutInternal.h: Visual C 6's basetsd.h has no definitions for
 	sized integral types, so let's define them by hand.
 
