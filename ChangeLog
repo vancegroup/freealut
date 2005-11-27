@@ -1,5 +1,21 @@
 2005-11-27  Sven Panne  <sven.panne@aedion.de>
 
+	* Makefile.am, README, configure.ac: Rearranged the admin subdirectory a
+	little bit, making it hopefully clearer which files belong to which
+	build system.
+
+	* admin/RPM/freealut.spec, admin/autotools/.cvsignore,
+	admin/autotools/.indent.pro, admin/autotools/m4/alut_c__attribute.m4,
+	admin/autotools/m4/alut_check_cflags_wall.m4,
+	admin/autotools/m4/alut_check_flag.m4,
+	admin/autotools/m4/alut_check_func.m4,
+	admin/autotools/m4/alut_eval_stderr.m4: Added.
+
+	* admin/.cvsignore, admin/.indent.pro, admin/freealut.spec,
+	admin/m4/alut_c__attribute.m4, admin/m4/alut_check_cflags_wall.m4,
+	admin/m4/alut_check_flag.m4, admin/m4/alut_check_func.m4,
+	admin/m4/alut_eval_stderr.m4: Removed.
+
 	* src/alutBufferData.c, src/alutCodec.c, src/alutInputStream.c,
 	src/alutInternal.h, src/alutLoader.c, src/alutWaveform.c: Consistently
 	use size_t for sizes internally, because ALsizei is signed and we don't

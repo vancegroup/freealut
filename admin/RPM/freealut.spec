@@ -54,7 +54,7 @@ Authors:
 %setup -q
 
 %build
-%{?suse_update_config:%{suse_update_config -f admin}}
+%{?suse_update_config:%{suse_update_config -f admin/autotools}}
 test -f configure || ./autogen.sh
 export CFLAGS="$RPM_OPT_FLAGS"
 ./configure --prefix=%{_prefix}
