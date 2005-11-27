@@ -1,5 +1,7 @@
 2005-11-27  Sven Panne  <sven.panne@aedion.de>
 
+	* src/alutCodec.c, src/alutLoader.c, src/alutWaveform.c: Re-indented.
+
 	* Makefile.am, README, configure.ac: Rearranged the admin subdirectory a
 	little bit, making it hopefully clearer which files belong to which
 	build system.

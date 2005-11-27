@@ -215,8 +215,7 @@ loadAUFile (InputStream *stream)
     }
 
   length = (len == -1) ?
-	  (_alutInputStreamGetRemainingLength (stream) - 24 - dataOffset) :
-      len;
+    (_alutInputStreamGetRemainingLength (stream) - 24 - dataOffset) : len;
 
   if (!
       (dataOffset >= 24 && length > 0 && sampleFrequency >= 1
