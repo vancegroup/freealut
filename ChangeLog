@@ -1,3 +1,8 @@
+2005-11-27  Sven Panne  <sven.panne@aedion.de>
+
+	* src/alutInternal.h: Visual C 6's basetsd.h has no definitions for
+	sized integral types, so let's define them by hand.
+
 2005-11-25  Sven Panne  <sven.panne@aedion.de>
 
 	* admin/alut.vcproj: Use "Multi-threaded DLL (/MD)" and "Multi-threaded

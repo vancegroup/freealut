@@ -13,6 +13,13 @@
 
 #if HAVE_STDINT_H
 #include <stdint.h>
+#elif _MSC_VER < 1300
+typedef char int8_t;
+typedef unsigned char uint8_t;
+typedef short int16_t;
+typedef unsigned short uint16_t;
+typedef int int32_t;
+typedef unsigned int uint32_t;
 #elif HAVE_BASETSD_H
 #include <basetsd.h>
 typedef INT8 int8_t;
