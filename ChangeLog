@@ -1,5 +1,13 @@
 2005-11-27  Sven Panne  <sven.panne@aedion.de>
 
+	* admin/VisualStudio6/.cvsignore, admin/VisualStudio6/alut.dsw,
+	admin/VisualStudio6/alut/.cvsignore, admin/VisualStudio6/alut/alut.dsp,
+	admin/VisualStudio6/hello_world/.cvsignore,
+	admin/VisualStudio6/hello_world/hello_world.dsp,
+	admin/VisualStudio6/playfile/.cvsignore,
+	admin/VisualStudio6/playfile/playfile.dsp: Added Visual Studio 6
+	workspace and projects.
+
 	* src/alutCodec.c: Silence a useless Visual C 6 warning.
 
 	* src/alutInternal.h: Visual C 6's basetsd.h has no definitions for
