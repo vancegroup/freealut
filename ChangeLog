@@ -1,3 +1,9 @@
+2005-12-02  Prakash Punnoor <prakash@punnoor.de>
+
+	* src/alutCodec.c, src/alutLoader.c: fix warnings
+	
+	* CMakeLists: added; doesn't build examples/tests yet
+
 2005-11-28  Sven Panne  <sven.panne@aedion.de>
 
 	* test_suite\Makefile.am: Distribute example sounds, too.
