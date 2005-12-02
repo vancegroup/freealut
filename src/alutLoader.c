@@ -215,7 +215,7 @@ loadAUFile (InputStream *stream)
     }
 
   length = (len == -1) ?
-    (_alutInputStreamGetRemainingLength (stream) - 24 - dataOffset) : len;
+    (_alutInputStreamGetRemainingLength (stream) - 24 - dataOffset) : (size_t)len;
 
   if (!
       (dataOffset >= 24 && length > 0 && sampleFrequency >= 1
@@ -501,7 +501,7 @@ alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size,
 }
 
 void
-alutUnloadWAV (ALenum format, ALvoid *data, ALsizei size, ALsizei frequency)
+alutUnloadWAV (ALenum UNUSED (format), ALvoid *data, ALsizei UNUSED (size), ALsizei UNUSED (frequency))
 {
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 

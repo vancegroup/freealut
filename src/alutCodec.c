@@ -43,7 +43,7 @@ _alutCodecPCM16 (ALvoid *data, size_t length, ALint numChannels,
 static int16_t
 mulaw2linear (uint8_t mulawbyte)
 {
-  const static int16_t exp_lut[8] = {
+  static const int16_t exp_lut[8] = {
     0, 132, 396, 924, 1980, 4092, 8316, 16764
   };
   int16_t sign, exponent, mantissa, sample;
