@@ -1,5 +1,7 @@
 2005-11-28  Sven Panne  <sven.panne@aedion.de>
 
+	* test_suite\Makefile.am: Distribute example sounds, too.
+
 	* admin/RPM/freealut.spec: Updated build dependencies.
 
 2005-11-27  Sven Panne  <sven.panne@aedion.de>

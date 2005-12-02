@@ -1,3 +1,10 @@
+# The following files should be in our source distribution in addition to the
+# standard ones included by automake itself:
+EXTRA_DIST =			\
+	file1.wav		\
+	file2.au		\
+	file3.raw
+
 # Build, but do not install the following test programs:
 noinst_PROGRAMS =		\
 	test_errorstuff		\
