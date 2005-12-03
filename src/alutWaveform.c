@@ -52,7 +52,7 @@ alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
                           ALfloat duration)
 {
   waveformFunction func;
-  double sampleDuration, lastPhase;
+  double sampleDuration, lastPhase, numSamplesD;
   size_t numSamples, i;
   int16_t *data;
   ALuint buffer;
@@ -95,7 +95,10 @@ alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
 
   /* allocate buffer to hold sample data */
   sampleDuration = floor ((frequency * duration) + 0.5) / frequency;
-  numSamples = (size_t) floor (sampleDuration * sampleFrequency);
+  /* GCC is a bit picky about casting function calls, so we do it in two
+     steps... */
+  numSamplesD = floor (sampleDuration * sampleFrequency);
+  numSamples = (size_t) numSamplesD;
   data = (int16_t *) _alutMalloc (numSamples * sizeof (int16_t));
   if (data == NULL)
     {

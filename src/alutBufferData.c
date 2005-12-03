@@ -129,13 +129,18 @@ static ALboolean
 passBufferData (BufferData *bufferData, ALuint bid)
 {
   ALenum format;
+  size_t size;
+  ALfloat frequency;
   if (!_alutGetFormat (bufferData, &format))
     {
       return AL_FALSE;
     }
+  /* GCC is a bit picky about casting function calls, so we do it in two
+     steps... */
+  size = _alutBufferDataGetLength (bufferData);
+  frequency = _alutBufferDataGetSampleFrequency (bufferData);
   alBufferData (bid, format, _alutBufferDataGetData (bufferData),
-                (ALsizei) _alutBufferDataGetLength (bufferData),
-                (ALsizei) _alutBufferDataGetSampleFrequency (bufferData));
+                (ALsizei) size, (ALsizei) frequency);
   if (alGetError () != AL_NO_ERROR)
     {
       _alutSetError (ALUT_ERROR_BUFFER_DATA);

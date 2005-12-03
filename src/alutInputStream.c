@@ -159,7 +159,7 @@ streamRead (InputStream *stream, void *ptr, size_t numBytesToRead)
           return AL_FALSE;
         }
       memcpy (ptr, stream->u.data, numBytesToRead);
-      stream->u.data = ((char *) (stream->u.data) + numBytesToRead);
+      stream->u.data = ((const char *) (stream->u.data) + numBytesToRead);
       return AL_TRUE;
     }
 }

@@ -1,3 +1,10 @@
+2005-12-03  Sven Panne  <sven.panne@aedion.de>
+
+	* configure.ac, include/AL/alut.h, src/alutBufferData.c,
+	src/alutInputStream.c, src/alutLoader.c src/alutWaveform.c: Avoid
+	generating a depedency on GLIBC 2.3. Added --enable-more-warnings
+	configure flag and fixed the resulting warnings.
+
 2005-12-03  Prakash Punnoor <prakash@punnoor.de>
 
 	* CMakeLists: made pretty feature-complete

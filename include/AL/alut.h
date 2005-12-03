@@ -29,9 +29,9 @@ extern "C" {
 #endif
 
 /* Flag deprecated functions if possible (VisualC++ .NET and GCC >= 3.1.1). */
-#if _MSC_VER >= 1300 && !defined(MIDL_PASS)
+#if defined(_MSC_VER) && _MSC_VER >= 1300 && !defined(MIDL_PASS)
 #define ALUT_ATTRIBUTE_DEPRECATED __declspec(deprecated)
-#elif  __GNUC__ > 3 || (__GNUC__ == 3 && (__GNUC_MINOR__ > 1 || (__GNUC_MINOR__ == 1 && __GNUC_PATCHLEVEL__ >= 1)))
+#elif defined(__GNUC__) &&  (__GNUC__ > 3 || (__GNUC__ == 3 && (__GNUC_MINOR__ > 1 || (__GNUC_MINOR__ == 1 && __GNUC_PATCHLEVEL__ >= 1))))
 #define ALUT_ATTRIBUTE_DEPRECATED __attribute__((deprecated))
 #else
 #define ALUT_ATTRIBUTE_DEPRECATED
