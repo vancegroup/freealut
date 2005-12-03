@@ -1,3 +1,7 @@
+2005-12-03  Prakash Punnoor <prakash@punnoor.de>
+
+	* CMakeLists: made pretty feature-complete
+
 2005-12-02  Prakash Punnoor <prakash@punnoor.de>
 
 	* src/alutCodec.c, src/alutLoader.c: fix warnings

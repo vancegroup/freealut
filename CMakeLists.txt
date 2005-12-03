@@ -5,7 +5,7 @@ PROJECT(Alut C)
 SET(PACKAGE "freealut")
 SET(PACKAGE_TARNAME "freealut")
 SET(PACKAGE_NAME "freealut library")
-SET(PACKAGE_MAJOR_VERSION "1")
+SET(PACKAGE_MAJOR_VERSION "0")
 SET(PACKAGE_MINOR_VERSION "0")
 SET(PACKAGE_BUILD_VERSION "0")
 SET(PACKAGE_VERSION "${PACKAGE_MAJOR_VERSION}.${PACKAGE_MINOR_VERSION}.${PACKAGE_BUILD_VERSION}")
@@ -15,6 +15,7 @@ SET(PACKAGE_BUGREPORT "openal-devel@opensource.creative.com")
 SET(OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
 
 INCLUDE(${CMAKE_ROOT}/Modules/CheckIncludeFile.cmake)
+INCLUDE(${CMAKE_ROOT}/Modules/CheckIncludeFiles.cmake)
 INCLUDE(${CMAKE_ROOT}/Modules/CheckCSourceCompiles.cmake)
 
 # config.h magic
@@ -78,19 +79,27 @@ IF(WARNINGS)
   OPTION(USE_WERROR    "enable fail on all warning" OFF)
 ENDIF(WARNINGS)
 
+#want test-suit?
+OPTION(BUILD_TESTS "build the test-suite" OFF)
+
+
 ADD_DEFINE(ALUT_BUILD_LIBRARY)
 ADD_DEFINITIONS(-D_XOPEN_SOURCE=500)
 ADD_DEFINITIONS(-DHAVE_CONFIG_H)
 
 FIND_LIBRARY(OPENAL_LIB NAMES openal openal32 PATHS /usr/lib /usr/local/lib)
 IF(OPENAL_LIB MATCHES "NOTFOUND")
-  MESSAGE(FATAL_ERROR "OpenAL not installed, cannot build alut")
+  MESSAGE(FATAL_ERROR "OpenAL not installed, cannot build alut - aborting.")
 ENDIF(OPENAL_LIB MATCHES "NOTFOUND")
 
 IF(UNIX)
  SET(ADD_LIBS ${ADD_LIBS} m)
 ENDIF(UNIX)
 
+CHECK_INCLUDE_FILES("AL/alc.h;AL/al.h" AL_HEADERS)
+IF(NOT AL_HEADERS)
+  MESSAGE(FATAL_ERROR "OpenAL header files not found - aborting.")
+ENDIF(NOT AL_HEADERS)
 
 CHECK_INCLUDE_FILE_DEFINE(unistd.h HAVE_UNISTD_H)
 CHECK_INCLUDE_FILE_DEFINE(stdint.h HAVE_STDINT_H)
@@ -200,3 +209,35 @@ TARGET_LINK_LIBRARIES(alut ${OPENAL_LIB} ${ADD_LIBS})
 INSTALL_TARGETS(/lib alut)
 INSTALL_FILES(/include/AL FILES include/AL/alut.h)
 
+# test-suite
+IF(BUILD_TESTS)
+    # examples
+    ADD_EXECUTABLE(hello_world examples/hello_world.c)
+    TARGET_LINK_LIBRARIES(hello_world ${OPENAL_LIB} ${ADD_LIBS} alut)
+
+    ADD_EXECUTABLE(playfile examples/playfile.c)
+    TARGET_LINK_LIBRARIES(playfile ${OPENAL_LIB} ${ADD_LIBS} alut)
+
+
+    SET(TESTS errorstuff
+              fileloader
+              memoryloader
+              version
+              waveforms)
+
+    FOREACH(TEST ${TESTS})
+      SET(TEST_SRC test_suite/test_${TEST}.c)
+      SET_SOURCE_FILES_PROPERTIES(${TEST_SRC} PROPERTIES COMPILE_FLAGS "-Wno-deprecated-declarations")
+      ADD_EXECUTABLE(test_${TEST} ${TEST_SRC})
+      TARGET_LINK_LIBRARIES(test_${TEST} ${OPENAL_LIB} ${ADD_LIBS} alut)
+    ENDFOREACH(TEST)
+
+    #copy over testdata, so test-suite can be used in binary dir
+    SET(TESTDATA file1.wav
+                 file2.au
+                 file3.raw)
+
+    FOREACH(TESTDATUM ${TESTDATA})
+      CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/test_suite/${TESTDATUM} ${CMAKE_BINARY_DIR}/${TESTDATUM} COPYONLY)
+    ENDFOREACH(TESTDATUM)
+ENDIF(BUILD_TESTS)
