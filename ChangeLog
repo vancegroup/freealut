@@ -1,3 +1,9 @@
+2005-12-03  Prakash Punnoor <prakash@punnoor.de>
+
+	* CMakeLists: add -DNDEBUG
+	
+	* AUTHORS: add myself
+
 2005-12-03  Sven Panne  <sven.panne@aedion.de>
 
 	* configure.ac, include/AL/alut.h, src/alutBufferData.c,
