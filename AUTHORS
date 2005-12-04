@@ -9,3 +9,6 @@ Sven Panne <sven.panne@aedion.de>
 Erik Hofman <erik@ehofman.com>
   Fixes and additions to the sound file loaders
   playfile demo
+
+Prakash Punnoor <prakash@punnoor.de>
+  CMake build system
