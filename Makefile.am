@@ -19,7 +19,8 @@ EXTRA_DIST =							\
 	admin/VisualStudioDotNET/playfile/playfile.vcproj	\
 	autogen.sh						\
 	doc/alut.css						\
-	doc/alut.html
+	doc/alut.html						\
+	CMakeLists.txt
 
 # Automatically rebuild libtool if it becomes out-of-date.
 libtool: $(LIBTOOL_DEPS)
