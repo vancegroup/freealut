@@ -5,8 +5,8 @@ freealut is a free implementation of OpenAL's ALUT standard. See the file
 AUTHORS for the people involved.
 
 
-Building and installing on *nix-alikes
-======================================
+Building and installing on *nix-alikes using autotools
+======================================================
 
 To build and run ALUT, you need an OpenAL somewhere (and a sound card, of course
 :-). If OpenAL is not installed in a standard place (let's say ${OPENAL_PREFIX})
@@ -48,6 +48,79 @@ this either directly with a text editor in the project files (the only way for
 *real* men ;-) or via the project settings within Visual Studio. When everything
 is OK, just build e.g. the hello_world project and you should get the ALUT
 library itself and a demo with Steve Baker saying an immortal phrase.
+
+
+Building with CMake
+===================
+
+The CMake build files are maintained by prakash@punnoor.de, so
+if you have troubles building Alut using CMake, please contact
+me and not the Alut devs, as the official build system is still
+the one using autotools. The CMake build files are currenty
+meant as an additional possibility to build Alut.
+
+The aim of using CMake is making portable development easier, as
+CMake containg generators for various build systems. On eg. Unix
+Makefiles will be built, and on Windows MS VC++ project files, if
+you wish. You can get CMake at cmake.org.
+
+Current status:
+The build system is feature complete, so it (should) build every-
+thing as the default one does.
+
+
+This document explains briefly how to build with CMake on Linux via out-
+of-tree build:
+
+- Change to the alut dir.
+- Create a dir, eg "default", and change into it.
+- Now (eg.) run:
+
+cmake .. -DCMAKE_INSTALL_PREFIX:STRING="/usr" -DCMAKE_C_FLAGS:STRING="-march=athlon-xp -O2"
+make
+make install
+
+  If you exported your CFLAGS, there is no need to specify them
+  explicitly, as CMake will pick them up.
+
+- OpenAL should get installed as you got used to it.
+
+
+I really would like to get CMake building Alut on every
+supported platform. So please contact me if it doesn't build
+on yours. I'll try to fix this with your help.
+
+
+Some Tips:
+
+- You can use a console GUI named ccmake for configuring cmake.
+  This also comes in handy, to find out about available options.
+  You can also set options via command-line:
+
+ccmake .. -DCMAKE_INSTALL_PREFIX:STRING="/usr" -DCMAKE_C_FLAGS:STRING="-march=athlon-xp -O2"
+
+  sets the two variables defined on command line and then starts
+  the GUI. Press 'c' the first time and every time you want to commit
+  changes in the config. Finally press 'g' to run the generator.
+  Btw, to set boolean vars from the command line, use -DVAR:BOOL=X,
+  where X is eg. ON or OFF.
+
+- If you want more output at compile time, use
+
+make VERBOSE=1
+
+- If you want to install to a different directory (using same prefix):, use
+
+make install DESTDIR=/foo/bar
+
+- CMake doesn't has a distclean target by default, so you better
+  really do an out-of-tree build, then you can simply delete its
+  content when you want a distclean... Furthermore it is easier
+  to have different builds using different parameters via out-of-
+  tree builds.
+
+- If you are interested in variables to set, take a look into
+  CMakeCache.txt after having run the configuring stage.
 
 
 Support

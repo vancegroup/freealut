@@ -1,6 +1,12 @@
-2005-12-03  Prakash Punnoor <prakash@punnoor.de>
+2005-12-045  Prakash Punnoor <prakash@punnoor.de>
 
-	* CMakeLists: add -DNDEBUG
+	* Makefile.am: add CMakeLists.txt to EXTRA_DIST
+	
+	* README: add CMake use instructions
+
+2005-12-04  Prakash Punnoor <prakash@punnoor.de>
+
+	* CMakeLists.txt: add -DNDEBUG
 	
 	* AUTHORS: add myself
 
@@ -13,13 +19,13 @@
 
 2005-12-03  Prakash Punnoor <prakash@punnoor.de>
 
-	* CMakeLists: made pretty feature-complete
+	* CMakeLists.txt: made pretty feature-complete
 
 2005-12-02  Prakash Punnoor <prakash@punnoor.de>
 
 	* src/alutCodec.c, src/alutLoader.c: fix warnings
 	
-	* CMakeLists: added; doesn't build examples/tests yet
+	* CMakeLists.txt: added; doesn't build examples/tests yet
 
 2005-11-28  Sven Panne  <sven.panne@aedion.de>
 
