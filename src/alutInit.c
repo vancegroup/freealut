@@ -116,8 +116,9 @@ alutExit (void)
 {
   ALCdevice *device;
 
-  if (!_alutSanityCheck ())
+  if (initialisationState == Unintialized)
     {
+      _alutSetError (ALUT_ERROR_INVALID_OPERATION);
       return AL_FALSE;
     }
 
@@ -125,6 +126,11 @@ alutExit (void)
     {
       initialisationState = Unintialized;
       return AL_TRUE;
+    }
+
+  if (!_alutSanityCheck ())
+    {
+      return AL_FALSE;
     }
 
   if (!alcMakeContextCurrent (NULL))

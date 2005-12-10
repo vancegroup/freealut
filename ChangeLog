@@ -1,4 +1,10 @@
-2005-12-045  Prakash Punnoor <prakash@punnoor.de>
+2005-12-10  Sven Panne  <sven.panne@aedion.de>
+
+	* src/alutInit.c (alutExit): Do a full sanity check only when ALUT
+	itself owns the context, an external context might have been destroyed
+	before alutExit is called.
+
+2005-12-05  Prakash Punnoor <prakash@punnoor.de>
 
 	* Makefile.am: add CMakeLists.txt to EXTRA_DIST
 	
