@@ -115,12 +115,17 @@ make install DESTDIR=/foo/bar
 
 - CMake doesn't has a distclean target by default, so you better
   really do an out-of-tree build, then you can simply delete its
-  content when you want a distclean... Furthermore it is easier
-  to have different builds using different parameters via out-of-
-  tree builds.
+  content when you want a distclean... Furthermore it is easier to
+  have different builds using different parameters via out-of-tree
+  builds.
 
 - If you are interested in variables to set, take a look into
   CMakeCache.txt after having run the configuring stage.
+
+- If you update your source tree via cvs and want to rebuild an pre-
+  viously built lib without cleaning, you better at least clear the 
+  CMake cache (remove CMakeChache.txt or press 'c' in ccmake) otherwise
+  a modified CMake project file could result to unwanted behaviour.
 
 
 Support
