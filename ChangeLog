@@ -1,3 +1,7 @@
+2005-12-15  Prakash Punnoor <prakash@punnoor.de>
+
+	* README: CMake cache clearing typos
+
 2005-12-12  Prakash Punnoor <prakash@punnoor.de>
 
 	* README: CMake cache clearing

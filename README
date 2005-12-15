@@ -109,7 +109,8 @@ ccmake .. -DCMAKE_INSTALL_PREFIX:STRING="/usr" -DCMAKE_C_FLAGS:STRING="-march=at
 
 make VERBOSE=1
 
-- If you want to install to a different directory (using same prefix):, use
+- If you want to install to a different directory (using same prefix),
+  use
 
 make install DESTDIR=/foo/bar
 
@@ -124,8 +125,8 @@ make install DESTDIR=/foo/bar
 
 - If you update your source tree via cvs and want to rebuild an pre-
   viously built lib without cleaning, you better at least clear the 
-  CMake cache (remove CMakeChache.txt or press 'c' in ccmake) otherwise
-  a modified CMake project file could result to unwanted behaviour.
+  CMake cache (remove CMakeCache.txt) otherwise a modified CMake project
+  file could result to unwanted behaviour.
 
 
 Support
