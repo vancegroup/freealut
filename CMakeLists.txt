@@ -5,11 +5,14 @@ PROJECT(Alut C)
 SET(PACKAGE "freealut")
 SET(PACKAGE_TARNAME "freealut")
 SET(PACKAGE_NAME "freealut library")
-SET(PACKAGE_MAJOR_VERSION "0")
+SET(PACKAGE_MAJOR_VERSION "1")
 SET(PACKAGE_MINOR_VERSION "0")
 SET(PACKAGE_BUILD_VERSION "0")
 SET(PACKAGE_VERSION "${PACKAGE_MAJOR_VERSION}.${PACKAGE_MINOR_VERSION}.${PACKAGE_BUILD_VERSION}")
-SET(VERSION "${PACKAGE_VERSION}")
+SET(MAJOR_VERSION "0")
+SET(MINOR_VERSION "0")
+SET(BUILD_VERSION "0")
+SET(VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${BUILD_VERSION}")
 SET(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
 SET(PACKAGE_BUGREPORT "openal-devel@opensource.creative.com")
 SET(OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
@@ -204,11 +207,29 @@ ENDIF(BUILD_STATIC)
 
 
 ADD_LIBRARY(alut SHARED ${ALUT_SOURCES})
-SET_TARGET_PROPERTIES(alut PROPERTIES VERSION ${PACKAGE_VERSION} SOVERSION ${PACKAGE_MAJOR_VERSION})
+SET_TARGET_PROPERTIES(alut PROPERTIES VERSION ${VERSION} SOVERSION ${MAJOR_VERSION})
 TARGET_LINK_LIBRARIES(alut ${OPENAL_LIB} ${ADD_LIBS})
 
 INSTALL_TARGETS(/lib alut)
 INSTALL_FILES(/include/AL FILES include/AL/alut.h)
+
+# needed for openal.pc.in and openal-config.in
+SET(prefix ${CMAKE_INSTALL_PREFIX})
+SET(exec_prefix "\${prefix}")
+SET(libdir "\${exec_prefix}/lib")
+SET(bindir "\${exec_prefix}/bin")
+SET(includedir "\${prefix}/include")
+SET(requirements "")
+# static linking dependecies are broken, so pthread isn't needed currently
+SET(PTHREAD_LIBS ${CMAKE_THREAD_LIBS_INIT})
+
+CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/admin/pkgconfig/freealut.pc.in
+               ${CMAKE_BINARY_DIR}/admin/pkgconfig/freealut.pc @ONLY)
+CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/admin/pkgconfig/freealut-config.in
+               ${CMAKE_BINARY_DIR}/admin/pkgconfig/freealut-config @ONLY)
+INSTALL_PROGRAMS(/bin FILES admin/pkgconfig/freealut-config)
+INSTALL_FILES(/lib/pkgconfig FILES admin/pkgconfig/freealut.pc)
+
 
 # test-suite
 IF(BUILD_TESTS)

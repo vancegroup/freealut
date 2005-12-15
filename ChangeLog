@@ -10,6 +10,9 @@
 2005-12-15  Prakash Punnoor <prakash@punnoor.de>
 
 	* README: CMake cache clearing typos
+	
+	* CMakeLists.txt: also make freealut-config and freealut.pc; sync VERSION
+	to configure.ac
 
 2005-12-12  Prakash Punnoor <prakash@punnoor.de>
 
