@@ -146,6 +146,10 @@ fi
 ################################################################################
 
 AC_CONFIG_FILES([Makefile
+                 admin/Makefile
+                 admin/pkgconfig/Makefile
+                 admin/pkgconfig/freealut-config
+                 admin/pkgconfig/freealut.pc
                  examples/Makefile
                  include/Makefile
                  src/Makefile

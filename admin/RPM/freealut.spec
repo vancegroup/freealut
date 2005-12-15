@@ -3,7 +3,7 @@
 #
 
 # norootforbuild
-# neededforbuild SDL SDL-devel aalib aalib-devel alsa alsa-devel arts audiofile esound esound-devel glib2 glib2-devel libogg libogg-devel libstdc++-devel libvorbis libvorbis-devel openal openal-devel resmgr slang slang-devel smpeg smpeg-devel xorg-x11-devel xorg-x11-libs
+# neededforbuild SDL SDL-devel aalib aalib-devel alsa alsa-devel arts audiofile esound esound-devel glib2 glib2-devel libogg libogg-devel libstdc++-devel libvorbis libvorbis-devel openal openal-devel pkgconfig resmgr slang slang-devel smpeg smpeg-devel xorg-x11-devel xorg-x11-libs
 
 BuildRequires: aaa_base acl attr bash bind-utils bison bzip2 coreutils cpio cpp cracklib cvs cyrus-sasl db devs diffutils e2fsprogs file filesystem fillup findutils flex gawk gdbm-devel glibc glibc-devel glibc-locale gpm grep groff gzip info insserv klogd less libacl libattr libgcc libnscd libselinux libstdc++ libxcrypt libzio m4 make man mktemp module-init-tools ncurses ncurses-devel net-tools netcfg openldap2-client openssl pam pam-modules patch permissions popt procinfo procps psmisc pwdutils rcs readline sed strace syslogd sysvinit tar tcpd texinfo timezone unzip util-linux vim zlib zlib-devel autoconf automake binutils gcc gdbm gettext libtool perl rpm SDL SDL-devel aalib aalib-devel alsa alsa-devel arts audiofile esound esound-devel glib2 glib2-devel libogg libogg-devel libstdc++-devel libvorbis libvorbis-devel openal openal-devel resmgr slang slang-devel smpeg smpeg-devel xorg-x11-devel xorg-x11-libs dialog expat fontconfig fontconfig-devel freetype2 freetype2-devel gnome-filesystem jack liblcms libjpeg libmng libpng libsndfile libtiff pciutils pkgconfig qt3 aaa_skel ash bind-libs gpg libgcj logrotate openslp suse-build-key suse-release tcsh
 
@@ -85,12 +85,16 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc %{_defaultdocdir}/%{name}/alut.html
 %doc %{_defaultdocdir}/%{name}/alut.css
+%{_prefix}/bin/freealut-config
 %{_includedir}/AL/alut.h
 %{_libdir}/libalut.a
 %{_libdir}/libalut.la
 %{_libdir}/libalut.so
+%{_libdir}/pkgconfig/freealut.pc
 
 %changelog -n freealut
+* Thu Dec 15 2005 - sven.panne@aedion.de
+- Added freealut-config and freealut.pc
 * Mon Nov 28 2005 - sven.panne@aedion.de
 - Fixed build dependencies
 * Mon Oct 10 2005 - sven.panne@aedion.de

@@ -1,3 +1,12 @@
+2005-12-15  Sven Panne  <sven.panne@aedion.de>
+
+	* Makefile.am, admin/RPM/freealut.spec, configure.ac: Build and install
+	freealut-config and a pkg-config description.
+
+	* admin/.cvsignore, admin/Makefile.am, admin/pkgconfig/.cvsignore,
+	admin/pkgconfig/Makefile.am, admin/pkgconfig/freealut-config.in,
+	admin/pkgconfig/freealut.pc.in: Added.
+
 2005-12-15  Prakash Punnoor <prakash@punnoor.de>
 
 	* README: CMake cache clearing typos

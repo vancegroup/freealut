@@ -1,5 +1,5 @@
 # Build, install and distribute the following subdirectories:
-SUBDIRS = src include examples test_suite
+SUBDIRS = admin src include examples test_suite
 
 # We keep our local autoconf macros in a separate 'm4'subdirectory.
 ACLOCAL_AMFLAGS = -I admin/autotools/m4
