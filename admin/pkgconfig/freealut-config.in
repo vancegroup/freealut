@@ -6,8 +6,6 @@ bindir="@bindir@"
 includedir="@includedir@"
 libdir="@libdir@"
 PACKAGE_VERSION="@PACKAGE_VERSION@"
-PTHREAD_CFLAGS="@PTHREAD_CFLAGS@"
-PTHREAD_LIBS="@PTHREAD_LIBS@"
 
 freealut_dynamic_ldflags="-lalut"
 # TODO: configure should provide the following...
@@ -158,7 +156,7 @@ if test "$echo_cflags" = "yes"; then
   else
     incpath="-I${includedir}"
   fi
-  echo "${PTHREAD_CFLAGS} ${incpath}"
+  echo "${incpath}"
 fi
 
 if test "$echo_libs" = "yes"; then
@@ -172,5 +170,5 @@ if test "$echo_libs" = "yes"; then
   else
      ldflags="${freealut_dynamic_ldflags}"
   fi
-  echo "${libpathflag} ${ldflags} ${PTHREAD_LIBS}"
+  echo "${libpathflag} ${ldflags}"
 fi
