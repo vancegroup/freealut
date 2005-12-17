@@ -57,6 +57,21 @@ IF(${VAR})
 ENDIF(${VAR})
 ENDMACRO(CHECK_FUNCTION_DEFINE HEADERS FUNC PARAM VAR)
 
+MACRO(CHECK_COMPILER_VISIBILITY VAR)
+SET(CMAKE_REQUIRED_FLAGS_BACK "${CMAKE_REQUIRED_FLAGS}")
+SET(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fvisibility=hidden")
+CHECK_C_SOURCE_COMPILES(
+"void __attribute__((visibility(\"default\"))) test() {}
+int main(){}
+" ${VAR})
+SET(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS_BACK}")
+IF(${VAR})
+  ADD_DEFINITIONS(-fvisibility=hidden)
+  ADD_DEFINITIONS(-DHAVE_GCC_VISIBILITY)
+ENDIF(${VAR})
+ENDMACRO(CHECK_COMPILER_VISIBILITY VAR)
+
+
 SET(ALUT_SOURCES src/alutBufferData.c
                  src/alutCodec.c
                  src/alutError.c
@@ -152,7 +167,9 @@ IF(HAVE_WINDOWS_H)
 ENDIF(HAVE_WINDOWS_H)
 
 
-#compiler specific settings
+# compiler specific settings
+
+CHECK_COMPILER_VISIBILITY(HAVE_VISIBILITY)
 IF(CMAKE_COMPILER_IS_GNUCC)
   IF(WARNINGS)
     SET(ADD_WFLAGS "${ADD_WFLAGS} -Wall -ansi -pedantic -W")

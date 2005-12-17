@@ -1,3 +1,8 @@
+2005-12-17  Prakash Punnoor <prakash@punnoor.de>
+
+	* CMakeLists.txt, include/AL/alut.h: gcc visibility support
+
+
 2005-12-16  Sven Panne  <sven.panne@aedion.de>
 
 	* Released Version 1.0.0, CVS tag is "freealut_1_0_0".
