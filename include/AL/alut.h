@@ -15,7 +15,7 @@ extern "C" {
   #define ALUT_API __declspec(dllimport)
  #endif
 #else
- #if defined(HAVE_GCC_VISIBILITY)
+ #if defined(ALUT_BUILD_LIBRARY) && defined(HAVE_GCC_VISIBILITY)
   #define ALUT_API __attribute__((visibility("default")))
  #else
   #define ALUT_API extern

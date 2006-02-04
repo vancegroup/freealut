@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 ################################################################################
 
-AC_INIT([freealut library], [1.0.0], [openal-devel@opensource.creative.com], [freealut])
+AC_INIT([freealut library], [1.0.1], [openal-devel@opensource.creative.com], [freealut])
 AC_CONFIG_AUX_DIR([admin/autotools])
 AM_INIT_AUTOMAKE
 AC_PREREQ([2.56])
@@ -145,13 +145,8 @@ fi
 # Generate output.
 ################################################################################
 
-AC_CONFIG_FILES([Makefile
-                 admin/Makefile
-                 admin/pkgconfig/Makefile
-                 admin/pkgconfig/freealut-config
-                 admin/pkgconfig/freealut.pc
-                 examples/Makefile
-                 include/Makefile
-                 src/Makefile
-                 test_suite/Makefile])
+# NOTE: Do not break the following line, otherwise we are into CR/LF vs. LF
+# trouble! This is a buglet in autoconf IMHO, but easy to work around.
+AC_CONFIG_FILES([Makefile admin/Makefile admin/pkgconfig/Makefile admin/pkgconfig/freealut-config admin/pkgconfig/freealut.pc examples/Makefile include/Makefile src/Makefile test_suite/Makefile])
+
 AC_OUTPUT

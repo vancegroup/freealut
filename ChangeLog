@@ -1,7 +1,14 @@
+2006-02-04  Sven Panne  <sven.panne@aedion.de>
+
+	* include/AL/alut.h: Use visibility attribute only when building ALUT
+	library.
+
+	* configure.ac: Fixed CR/LF vs. LF issue in configure on Windows. Bumped
+	version to 1.0.1.
+
 2005-12-17  Prakash Punnoor <prakash@punnoor.de>
 
-	* CMakeLists.txt, include/AL/alut.h: gcc visibility support
-
+	* CMakeLists.txt, include/AL/alut.h: GCC visibility support.
 
 2005-12-16  Sven Panne  <sven.panne@aedion.de>
 
@@ -23,8 +30,8 @@
 
 	* README: CMake cache clearing typos
 	
-	* CMakeLists.txt: also make freealut-config and freealut.pc; sync VERSION
-	to configure.ac
+	* CMakeLists.txt: also make freealut-config and freealut.pc; sync
+	VERSION to configure.ac
 
 2005-12-12  Prakash Punnoor <prakash@punnoor.de>
 
