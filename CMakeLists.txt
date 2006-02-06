@@ -1,13 +1,14 @@
 # cmake project file by Prakash Punnoor
 CMAKE_MINIMUM_REQUIRED(VERSION 2.0)
 
+SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/admin/CMakeModules")
 PROJECT(Alut C)
 SET(PACKAGE "freealut")
 SET(PACKAGE_TARNAME "freealut")
 SET(PACKAGE_NAME "freealut library")
 SET(PACKAGE_MAJOR_VERSION "1")
 SET(PACKAGE_MINOR_VERSION "0")
-SET(PACKAGE_BUILD_VERSION "0")
+SET(PACKAGE_BUILD_VERSION "1")
 SET(PACKAGE_VERSION "${PACKAGE_MAJOR_VERSION}.${PACKAGE_MINOR_VERSION}.${PACKAGE_BUILD_VERSION}")
 SET(MAJOR_VERSION "0")
 SET(MINOR_VERSION "0")
@@ -21,20 +22,7 @@ INCLUDE(${CMAKE_ROOT}/Modules/CheckIncludeFile.cmake)
 INCLUDE(${CMAKE_ROOT}/Modules/CheckIncludeFiles.cmake)
 INCLUDE(${CMAKE_ROOT}/Modules/CheckCSourceCompiles.cmake)
 
-# config.h magic
-SET(CONFIG_H_VALS_OLD "${CONFIG_H_VALS}")
-SET(CONFIG_H_VALS "" CACHE INTERNAL "")
-SET(CONFIG_H_FILE ${CMAKE_BINARY_DIR}/config.h)
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
-
-
-MACRO(ADD_DEFINE ARG)
-SET(CONFIG_H_CONTENT "${CONFIG_H_CONTENT}#define ${ARG}
-
-")
-#can't cache mulitline values
-SET(CONFIG_H_VALS "${CONFIG_H_VALS}${ARG}" CACHE INTERNAL "")
-ENDMACRO(ADD_DEFINE ARG)
+FIND_PACKAGE(ConfigHelper)
 
 MACRO(CHECK_INCLUDE_FILE_DEFINE HEADER VAR)
   CHECK_INCLUDE_FILE(${HEADER} HAVE_INCLUDE_FILE)
@@ -91,6 +79,8 @@ SET(ADD_LDFLAGS "")
 SET(ADD_LIBS "")
 
 OPTION(BUILD_STATIC    "build static library too"   ON)
+OPTION(PROFILE         "enable profile"            OFF)
+OPTION(OPTIMIZATION    "enable optimization"        ON)
 OPTION(WARNINGS        "enable warnings"            ON)
 IF(WARNINGS)
   OPTION(MORE_WARNINGS "enable more warnings"       OFF)
@@ -128,19 +118,6 @@ IF(WIN32)
   CHECK_INCLUDE_FILE_DEFINE(windows.h HAVE_WINDOWS_H)
 ENDIF(WIN32)
 
-# check for __attribut__
-CHECK_C_SOURCE_COMPILES(
-"
-void  foo (int bar __attribute__((unused)) ) { }
-static void baz (void) __attribute__((unused));
-static void baz (void) { }
-int main(){}
-" HAVE___ATTRIBUTE__)
-
-IF(HAVE___ATTRIBUTE__)
-  ADD_DEFINE("HAVE___ATTRIBUTE__ 1")
-ENDIF(HAVE___ATTRIBUTE__)
-
 
 IF(HAVE_TIME_H)
   CHECK_FUNCTION_DEFINE("#include <time.h>" nanosleep "((struct timespec*)0, (struct timespec*)0)" HAVE_NANOSLEEP)
@@ -168,39 +145,11 @@ ENDIF(HAVE_WINDOWS_H)
 
 
 # compiler specific settings
+FIND_PACKAGE(CompilerAttribute)
+FIND_PACKAGE(CompilerVisibility)
+FIND_PACKAGE(CompilerFlagsSet)
 
-CHECK_COMPILER_VISIBILITY(HAVE_VISIBILITY)
-IF(CMAKE_COMPILER_IS_GNUCC)
-  IF(WARNINGS)
-    SET(ADD_WFLAGS "${ADD_WFLAGS} -Wall -ansi -pedantic -W")
-
-    IF(MORE_WARNINGS)
-      SET(ADD_WFLAGS "${ADD_WFLAGS} -Waggregate-return -Wbad-function-cast -Wcast-align -Wcast-qual -Wconversion -Wdisabled-optimization -Wendif-labels -Winline -Wlong-long -Wmissing-declarations -Wmissing-noreturn -Wmissing-prototypes -Wnested-externs -Wpacked -Wpointer-arith -Wredundant-decls -Wshadow -Wsign-compare -Wstrict-prototypes -Wwrite-strings")
-    ENDIF(MORE_WARNINGS)
-
-    # Should we use turn warnings into errors?
-    IF(USE_WERROR)
-      SET(ADD_WFLAGS "${ADD_WFLAGS} -Werror -pedantic-errors")
-    ENDIF(USE_WERROR)
-  ENDIF(WARNINGS)
-
-  IF(${CMAKE_C_FLAGS} MATCHES "^ $")
-    IF(NOT ${ADD_CFLAGS} MATCHES "O")
-      SET(ADD_CFLAGS "-g -O2 ${ADD_CFLAGS}")
-      MESSAGE("No CFLAGS found; setting default ones.")
-    ENDIF(NOT ${ADD_CFLAGS} MATCHES "O")
-  ENDIF(${CMAKE_C_FLAGS} MATCHES "^ $")
-ELSE(CMAKE_COMPILER_IS_GNUCC)
-
-  MESSAGE("Your compiler isn't fully supported yet - no flags set.")
-ENDIF(CMAKE_COMPILER_IS_GNUCC)
-
-
-#Generate config.h only if values differ
-IF(NOT CONFIG_H_VALS_OLD STREQUAL CONFIG_H_VALS OR NOT EXISTS ${CONFIG_H_FILE})
-  MESSAGE(STATUS "Writing config.h")
-  FILE(WRITE ${CONFIG_H_FILE} "${CONFIG_H_CONTENT}")
-ENDIF(NOT CONFIG_H_VALS_OLD STREQUAL CONFIG_H_VALS OR NOT EXISTS ${CONFIG_H_FILE})
+GENERATE_CONFIG_H()
 
 SET(CMAKE_C_FLAGS "${ADD_WFLAGS} ${ADD_CFLAGS} ${CMAKE_C_FLAGS}")
 SET(CMAKE_CXX_FLAGS "${ADD_CFLAGS} ${CMAKE_CXX_FLAGS}")
