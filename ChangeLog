@@ -1,3 +1,9 @@
+2005-02-06  Prakash Punnoor <prakash@punnoor.de>
+
+	* CMakeLists.txt: Use modules written for OpenAL; version bump
+	
+	* configure.ac: Add symbol visibility support
+
 2006-02-06  Sven Panne  <sven.panne@aedion.de>
 
 	* admin/pkgconfig/Makefile.am: Use a more portable way of defining
