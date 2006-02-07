@@ -27,7 +27,8 @@ ALUT_CHECK_FLAG([-fvisibility=hidden],
                  AC_DEFINE([HAVE_GCC_VISIBILITY], [1],
                            [Define to 1 if we are using a GCC with symbol visibility support.])])
 
-
+# test_suite/test_retrostuff tests deprecated functions, but we don't want to
+# get compiler warnings because of that.
 ALUT_CHECK_FLAG([-Wno-deprecated-declarations],
                 [alut_wno_deprecated_declarations=yes],
                 [alut_wno_deprecated_declarations=no])
@@ -50,11 +51,13 @@ AC_SEARCH_LIBS([alGetError], [openal32 openal])
 ################################################################################
 
 # We could possibly need struct timespec and random(), which are not ANSI.
-# Furthermore, without __NO_CTYPE tolower and friends are macros which introduce
-# a GLIBC 2.3 dependency. By defining this identifier we are currently backwards
-# compatible to GLIBC 2.1.3, which is a good thing. In addition, the macros lead
-# to code which triggers warnings with -Wunreachable-code.
-AM_CFLAGS="$AM_CFLAGS -D_XOPEN_SOURCE=500 -D__NO_CTYPE"
+AC_DEFINE([_XOPEN_SOURCE], [500], [Define to 500 if Single Unix conformance is wanted, 600 for sixth revision.])
+
+# Without __NO_CTYPE tolower and friends are macros which introduce a GLIBC 2.3
+# dependency. By defining this identifier we are currently backwards compatible
+# to GLIBC 2.1.3, which is a good thing. In addition, the macros lead to code
+# which triggers warnings with -Wunreachable-code.
+AC_DEFINE([__NO_CTYPE], [1], [Define to 1 if tolower and friends should not be macros.])
 
 AC_HEADER_STDC
 AC_CHECK_HEADERS([AL/alc.h AL/al.h basetsd.h ctype.h math.h stdio.h time.h windows.h])

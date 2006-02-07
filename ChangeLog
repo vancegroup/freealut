@@ -1,8 +1,13 @@
+2006-02-07  Sven Panne  <sven.panne@aedion.de>
+
+	* configure.ac: Use AC_DEFINE instead of specifying preprocessor defines
+	by hand. Added a tiny comment.
+
 2005-02-06  Prakash Punnoor <prakash@punnoor.de>
 
-	* CMakeLists.txt: Use modules written for OpenAL; version bump
+	* CMakeLists.txt: Use modules written for OpenAL. Bumped version.
 	
-	* configure.ac: Add symbol visibility support
+	* configure.ac: Added symbol visibility support.
 
 2006-02-06  Sven Panne  <sven.panne@aedion.de>
 
