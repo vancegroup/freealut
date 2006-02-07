@@ -1,3 +1,7 @@
+2005-02-07  Prakash Punnoor <prakash@punnoor.de>
+
+	* CMakeLists.txt: Define __NO_CTYPE
+
 2006-02-07  Sven Panne  <sven.panne@aedion.de>
 
 	* admin/RPM/freealut.spec: Bumped to 1.0.1, too. We should really
@@ -13,7 +17,8 @@
 
 2005-02-06  Prakash Punnoor <prakash@punnoor.de>
 
-	* CMakeLists.txt: Use modules written for OpenAL. Bumped version.
+	* CMakeLists.txt: Use modules written for OpenAL, fixing various issues;
+	bumped version.
 	
 	* configure.ac: Added symbol visibility support.
 
