@@ -1,5 +1,8 @@
 2006-02-07  Sven Panne  <sven.panne@aedion.de>
 
+	* admin/RPM/freealut.spec: Bumped to 1.0.1, too. We should really
+	automate this.
+
 	* NEWS, src/alutUtil.c: When nanosleep returns early due to a signal,
 	continue sleeping, otherwise return AL_FALSE from alutSleep.
 

@@ -1,5 +1,5 @@
 #
-# spec file for package alut (Version 1.0.0)
+# spec file for package alut (Version 1.0.1)
 #
 
 # norootforbuild
@@ -11,7 +11,7 @@ Name:         freealut
 License:      LGPL
 Group:        System/Libraries
 Autoreqprov:  on
-Version:      1.0.0
+Version:      1.0.1
 Release:      1
 URL:          http://www.openal.org/
 Summary:      Open Audio Library Utility Toolkit
