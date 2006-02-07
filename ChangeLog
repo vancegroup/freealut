@@ -1,5 +1,8 @@
 2006-02-07  Sven Panne  <sven.panne@aedion.de>
 
+	* NEWS, src/alutUtil.c: When nanosleep returns early due to a signal,
+	continue sleeping, otherwise return AL_FALSE from alutSleep.
+
 	* NEWS: Prepared for 1.0.1 release, probably more to come.
 
 	* configure.ac: Use AC_DEFINE instead of specifying preprocessor defines
