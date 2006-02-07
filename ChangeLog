@@ -1,5 +1,7 @@
 2006-02-07  Sven Panne  <sven.panne@aedion.de>
 
+	* NEWS: Prepared for 1.0.1 release, probably more to come.
+
 	* configure.ac: Use AC_DEFINE instead of specifying preprocessor defines
 	by hand. Added a tiny comment.
 
