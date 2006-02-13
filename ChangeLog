@@ -1,3 +1,9 @@
+2005-02-13  Prakash Punnoor <prakash@punnoor.de>
+
+	* CMakeLists.txt: forgot to delete old visibility macro; use OpenAL
+	module for sleep function detection; define _POSIX_C_SOURCE and add
+	comments from configure.ac
+
 2006-02-13  Sven Panne  <sven.panne@aedion.de>
 
 	* configure.ac: We might need nanosleep, which is a POSIX IEEE Std

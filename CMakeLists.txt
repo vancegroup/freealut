@@ -24,42 +24,6 @@ INCLUDE(${CMAKE_ROOT}/Modules/CheckCSourceCompiles.cmake)
 
 FIND_PACKAGE(ConfigHelper)
 
-MACRO(CHECK_INCLUDE_FILE_DEFINE HEADER VAR)
-  CHECK_INCLUDE_FILE(${HEADER} HAVE_INCLUDE_FILE)
-  IF(HAVE_INCLUDE_FILE)
-    ADD_DEFINE("${VAR} 1")
-    SET(${VAR} ON CACHE INTERNAL "")
-  ENDIF(HAVE_INCLUDE_FILE)
-ENDMACRO(CHECK_INCLUDE_FILE_DEFINE ARG)
-
-MACRO(CHECK_FUNCTION_DEFINE HEADERS FUNC PARAM VAR)
-CHECK_C_SOURCE_COMPILES(
-"
-${HEADERS}
-int main(){
-${FUNC} ${PARAM};
-}
-" ${VAR})
-IF(${VAR})
-  ADD_DEFINE("${VAR} 1")
-ENDIF(${VAR})
-ENDMACRO(CHECK_FUNCTION_DEFINE HEADERS FUNC PARAM VAR)
-
-MACRO(CHECK_COMPILER_VISIBILITY VAR)
-SET(CMAKE_REQUIRED_FLAGS_BACK "${CMAKE_REQUIRED_FLAGS}")
-SET(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fvisibility=hidden")
-CHECK_C_SOURCE_COMPILES(
-"void __attribute__((visibility(\"default\"))) test() {}
-int main(){}
-" ${VAR})
-SET(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS_BACK}")
-IF(${VAR})
-  ADD_DEFINITIONS(-fvisibility=hidden)
-  ADD_DEFINITIONS(-DHAVE_GCC_VISIBILITY)
-ENDIF(${VAR})
-ENDMACRO(CHECK_COMPILER_VISIBILITY VAR)
-
-
 SET(ALUT_SOURCES src/alutBufferData.c
                  src/alutCodec.c
                  src/alutError.c
@@ -92,8 +56,18 @@ OPTION(BUILD_TESTS "build the test-suite" OFF)
 
 
 ADD_DEFINE(ALUT_BUILD_LIBRARY)
-ADD_DEFINITIONS(-D_XOPEN_SOURCE=500)
-ADD_DEFINITIONS(-D__NO_CTYPE)
+# We could possibly need struct timespec and random(), which are not ANSI.
+# Define to 500 if Single Unix conformance is wanted, 600 for sixth revision.
+ADD_DEFINE("_XOPEN_SOURCE 500")
+# We might need nanosleep, which is a POSIX IEEE Std 1003.1b-1993 feature.
+# Define to the POSIX version that should be used.
+ADD_DEFINE("_POSIX_C_SOURCE 199309")
+# Without __NO_CTYPE tolower and friends are macros which introduce a GLIBC 2.3
+# dependency. By defining this identifier we are currently backwards compatible
+# to GLIBC 2.1.3, which is a good thing. In addition, the macros lead to code
+# which triggers warnings with -Wunreachable-code.
+ADD_DEFINE("__NO_CTYPE 1")
+
 ADD_DEFINITIONS(-DHAVE_CONFIG_H)
 ADD_DEFINITIONS(-DNDEBUG)
 
@@ -111,21 +85,16 @@ IF(NOT AL_HEADERS)
   MESSAGE(FATAL_ERROR "OpenAL header files not found - aborting.")
 ENDIF(NOT AL_HEADERS)
 
-CHECK_INCLUDE_FILE_DEFINE(unistd.h HAVE_UNISTD_H)
+FIND_PACKAGE(SleepFunction)
+
 CHECK_INCLUDE_FILE_DEFINE(stdint.h HAVE_STDINT_H)
-CHECK_INCLUDE_FILE_DEFINE(time.h HAVE_TIME_H)
+
 IF(WIN32)
   CHECK_INCLUDE_FILE_DEFINE(basetsd.h HAVE_BASETSD_H)
-  CHECK_INCLUDE_FILE_DEFINE(windows.h HAVE_WINDOWS_H)
 ENDIF(WIN32)
 
-
-IF(HAVE_TIME_H)
-  CHECK_FUNCTION_DEFINE("#include <time.h>" nanosleep "((struct timespec*)0, (struct timespec*)0)" HAVE_NANOSLEEP)
-ENDIF(HAVE_TIME_H)
-
+CHECK_INCLUDE_FILE_DEFINE(unistd.h HAVE_UNISTD_H)
 IF(HAVE_UNISTD_H)
-  CHECK_FUNCTION_DEFINE("#include <unistd.h>" usleep "(0)" HAVE_USLEEP)
   CHECK_FUNCTION_DEFINE("
   #include <sys/types.h>
   #include <sys/stat.h>
@@ -139,11 +108,6 @@ IF(NOT HAVE_STAT)
   #include <sys/stat.h>
   " _stat "(\"\", (struct _stat*)0)" HAVE__STAT)
 ENDIF(NOT HAVE_STAT)
-
-IF(HAVE_WINDOWS_H)
-  CHECK_FUNCTION_DEFINE("#include <windows.h>" Seep "(0)" HAVE_SLEEP)
-ENDIF(HAVE_WINDOWS_H)
-
 
 # compiler specific settings
 FIND_PACKAGE(CompilerAttribute)
