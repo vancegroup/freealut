@@ -1,5 +1,9 @@
 2006-02-13  Sven Panne  <sven.panne@aedion.de>
 
+	* configure.ac: We might need nanosleep, which is a POSIX IEEE Std
+	1003.1b-1993 feature, so tell our system headers about that. Fixes the
+	build e.g. on an old SuSE 8.2 distro.
+
 	* NEWS: Fixed release date.
 
 	* doc/alut.html: Fixed broken link.

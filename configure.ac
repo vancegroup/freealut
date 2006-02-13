@@ -53,6 +53,9 @@ AC_SEARCH_LIBS([alGetError], [openal32 openal])
 # We could possibly need struct timespec and random(), which are not ANSI.
 AC_DEFINE([_XOPEN_SOURCE], [500], [Define to 500 if Single Unix conformance is wanted, 600 for sixth revision.])
 
+# We might need nanosleep, which is a POSIX IEEE Std 1003.1b-1993 feature.
+AC_DEFINE([_POSIX_C_SOURCE], [199309], [Define to the POSIX version that should be used.])
+
 # Without __NO_CTYPE tolower and friends are macros which introduce a GLIBC 2.3
 # dependency. By defining this identifier we are currently backwards compatible
 # to GLIBC 2.1.3, which is a good thing. In addition, the macros lead to code
