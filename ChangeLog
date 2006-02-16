@@ -1,3 +1,7 @@
+2005-02-16  Prakash Punnoor <prakash@punnoor.de>
+
+	* CMakeLists.txt: don't check to unistd.h twice
+
 2005-02-13  Prakash Punnoor <prakash@punnoor.de>
 
 	* CMakeLists.txt: forgot to delete old visibility macro; use OpenAL

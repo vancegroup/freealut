@@ -93,7 +93,11 @@ IF(WIN32)
   CHECK_INCLUDE_FILE_DEFINE(basetsd.h HAVE_BASETSD_H)
 ENDIF(WIN32)
 
-CHECK_INCLUDE_FILE_DEFINE(unistd.h HAVE_UNISTD_H)
+# FindSleepFunktion will check for unistd.h if time.h wasn't found
+IF(HAVE_TIME_H)
+  CHECK_INCLUDE_FILE_DEFINE(unistd.h HAVE_UNISTD_H)
+ENDIF(HAVE_TIME_H)
+
 IF(HAVE_UNISTD_H)
   CHECK_FUNCTION_DEFINE("
   #include <sys/types.h>
