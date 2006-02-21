@@ -24,5 +24,8 @@ libalut_la_LIBADD = $(LIBM)
 # The following libtool flag is neccessary for building DLLs on Windows.
 libalut_la_LDFLAGS = -no-undefined
 
+# Append -version-info for correct library versioning with libtool.
+libalut_la_LDFLAGS += -version-info @VERSIONINFO@
+
 # Specifying the following path is needed to find <AL/alut.h>.
 libalut_la_CPPFLAGS = -I$(top_srcdir)/include

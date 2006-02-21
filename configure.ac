@@ -13,6 +13,45 @@ AC_CONFIG_HEADERS([config.h])
 m4_ifdef([AS_HELP_STRING], [], [AC_DEFUN([AS_HELP_STRING], [AC_HELP_STRING($][@)])])
 
 ################################################################################
+## libtool shared library version.
+################################################################################
+
+# Some information from the libtool info pages and the autobook regarding how to
+# handle the library version info:
+#
+# 1. Start with version information of `0:0:0' for each libtool library.
+#
+# 2. Update the version information only immediately before a public release of
+#    your software. More frequent updates are unnecessary, and only guarantee
+#    that the current interface number gets larger faster.
+#
+# 3. If the library source code has changed at all since the last update, then
+#    increment REVISION (`C:R:A' becomes `C:r+1:A'). This is a new revision of
+#    the current interface.
+#
+# 4. If any interfaces have been added, removed, or changed since the last
+#    update, increment CURRENT, and set REVISION to 0. This is the first
+#    revision of a new interface.
+#
+# 5. If any interfaces have been added since the last public release, then
+#    increment AGE. This release is backwards compatible with the previous
+#    release.
+#
+# 6. If any interfaces have been removed since the last public release, then set
+#    AGE to 0. This release has a new, but backwards incompatible interface.
+#
+# NEVER try to set the interface numbers so that they correspond to the release
+# number of your package. This is an abuse that only fosters misunderstanding of
+# the purpose of library versions. Furthermore, do not confuse those versions
+# with the version of the specification which is implemented.
+
+CURRENT=0
+REVISION=0
+AGE=0
+
+AC_SUBST([VERSIONINFO], ["$CURRENT:$REVISION:$AGE"])
+
+################################################################################
 # Checks for programs.
 ################################################################################
 
