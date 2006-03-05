@@ -17,6 +17,11 @@ EXTRA_DIST =							\
 	admin/VisualStudioDotNET/alut.sln			\
 	admin/VisualStudioDotNET/hello_world/hello_world.vcproj	\
 	admin/VisualStudioDotNET/playfile/playfile.vcproj	\
+	admin/CMakeModules/FindCompilerAttribute.cmake		\
+	admin/CMakeModules/FindCompilerFlagsSet.cmake		\
+	admin/CMakeModules/FindCompilerVisibility.cmake		\
+	admin/CMakeModules/FindConfigHelper.cmake		\
+	admin/CMakeModules/FindSleepFunction.cmake		\
 	autogen.sh						\
 	doc/alut.css						\
 	doc/alut.html						\
