@@ -93,7 +93,7 @@ IF(WIN32)
   CHECK_INCLUDE_FILE_DEFINE(basetsd.h HAVE_BASETSD_H)
 ENDIF(WIN32)
 
-# FindSleepFunktion will check for unistd.h if time.h wasn't found
+# FindSleepFunction will check for unistd.h if time.h wasn't found
 IF(HAVE_TIME_H)
   CHECK_INCLUDE_FILE_DEFINE(unistd.h HAVE_UNISTD_H)
 ENDIF(HAVE_TIME_H)
@@ -126,18 +126,20 @@ SET(CMAKE_SHARED_LINKER_FLAGS "${ADD_LDFLAGS} ${CMAKE_SHARED_LINKER_FLAGS}")
 SET(CMAKE_MODULE_LINKER_FLAGS "${ADD_LDFLAGS} ${CMAKE_MODULE_LINKER_FLAGS}")
 
 IF(BUILD_STATIC)
-  #we can't create a static library with the same name
-  #as the shared one, so we copy it over after creation
-  ADD_LIBRARY(alut-static STATIC ${ALUT_SOURCES})
-  TARGET_LINK_LIBRARIES(alut-static ${OPENAL_LIB} ${ADD_LIBS})
-  ADD_CUSTOM_COMMAND(
-    TARGET alut-static
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND}
-    ARGS -E copy
-      ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}alut-static${CMAKE_STATIC_LIBRARY_SUFFIX}
-      ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}alut${CMAKE_STATIC_LIBRARY_SUFFIX})
-  INSTALL_FILES(/lib FILES ${CMAKE_STATIC_LIBRARY_PREFIX}alut${CMAKE_STATIC_LIBRARY_SUFFIX})
+  # we can't create a static library with the same name
+  # as the shared one, so we copy it over after creation
+  ADD_LIBRARY(alut_static STATIC ${ALUT_SOURCES})
+  TARGET_LINK_LIBRARIES(alut_static ${OPENAL_LIB} ${ADD_LIBS})
+  IF(NOT WIN32)
+    ADD_CUSTOM_COMMAND(
+      TARGET alut_static
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND}
+      ARGS -E copy
+        ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}alut_static${CMAKE_STATIC_LIBRARY_SUFFIX}
+        ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}alut${CMAKE_STATIC_LIBRARY_SUFFIX})
+    INSTALL_FILES(/lib FILES ${CMAKE_STATIC_LIBRARY_PREFIX}alut${CMAKE_STATIC_LIBRARY_SUFFIX})
+  ENDIF(NOT WIN32)
 ENDIF(BUILD_STATIC)
 
 
