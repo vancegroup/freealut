@@ -1,10 +1,19 @@
+2006-03-05  Prakash Punnoor <prakash@punnoor.de>
+
+	* admin/CMakeModules/FindSleepFunction.cmake: sync to OpenAL version
+
+	* Makefile.am: add CMake Modules to EXTRA_DIST
+
+	* CMakeLists.txt: make more windows friendly; variables
+	OPENAL_INCLUDE_DIR and OPENAL_LIB_DIR introduced
+
 2006-02-13  Sven Panne  <sven.panne@aedion.de>
 
 	* configure.ac, src/Makefile.am: Added version info.
 
 2006-02-16  Prakash Punnoor <prakash@punnoor.de>
 
-	* CMakeLists.txt: don't check to unistd.h twice
+	* CMakeLists.txt: don't check for unistd.h twice
 
 2006-02-13  Prakash Punnoor <prakash@punnoor.de>
 
@@ -47,7 +56,13 @@
 
 	* CMakeLists.txt: Use modules written for OpenAL, fixing various issues;
 	bumped version.
-	
+
+	* admin/CMakeModules/FindCompilerAttribute.cmake,
+	admin/CMakeModules/FindCompilerFlagsSet.cmake,
+	admin/CMakeModules/FindCompilerVisibility.cmake,
+	admin/CMakeModules/admin/CMakeModules/FindConfigHelper.cmake,
+	admin/CMakeModules/FindSleepFunction.cmake: added
+
 	* configure.ac: Added symbol visibility support.
 
 2006-02-06  Sven Panne  <sven.panne@aedion.de>
