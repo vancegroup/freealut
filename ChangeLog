@@ -1,3 +1,7 @@
+2006-04-10  Sven Panne  <sven.panne@aedion.de>
+
+	* doc/alut.html: Fixed foo-config documentation. Minor cleanup.
+
 2006-03-05  Prakash Punnoor <prakash@punnoor.de>
 
 	* admin/CMakeModules/FindSleepFunction.cmake: sync to OpenAL version

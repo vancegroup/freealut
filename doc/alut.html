@@ -96,12 +96,13 @@
       <li>2005-09-28: Version 1.0.4 by Sven Panne</li>
       <li>2005-10-29: Version 1.0.5 by Sven Panne</li>
       <li>2005-11-19: Version 1.0.6 by Sven Panne</li>
+      <li>2006-04-10: Version 1.0.7 by Sven Panne</li>
     </ul>
 
     <h1><a name="Introduction"></a>Introduction</h1>
 
-    <p>This is a draft of the <a href="http://www.openal.org/">OpenAL</a>
-    Utility Toolkit (ALUT) Reference Manual.</p>
+    <p>This is the <a href="http://www.openal.org/">OpenAL</a> Utility Toolkit
+    (ALUT) Reference Manual.</p>
 
     <h2><a name="Licensing"></a>Licensing</h2>
 
@@ -110,15 +111,15 @@
 
     <h2><a name="History"></a>Some History</h2>
 
-    <p>At time of writing (August 2005), ALUT was a set of undocumented
-    semi-portable functions that were mixed up in the OpenAL library
-    distribution. The intent had always been that ALUT would be a cleanly
-    separated library that would be portable between systems. It was hoped that
-    it would be well suited to producing succinct demo programs and to help new
-    developers to get started with OpenAL. It was to do this by removing the
-    annoying details of getting an audio application started - allowing
-    developers to learn OpenAL without distractions such as loading sound
-    samples from disk.</p>
+    <p>At the time of the first writing of this document (August 2005), ALUT was
+    a set of undocumented semi-portable functions that were mixed up in the
+    OpenAL library distribution. The intent had always been that ALUT would be a
+    cleanly separated library that would be portable between systems. It was
+    hoped that it would be well suited to producing succinct demo programs and
+    to help new developers to get started with OpenAL. It was to do this by
+    removing the annoying details of getting an audio application started -
+    allowing developers to learn OpenAL without distractions such as loading
+    sound samples from disk.</p>
 
     <p>In order to move from this initial implementation to a clean API that
     would meet the original goals of ALUT, it was necessary to break from the
@@ -223,23 +224,25 @@ main (int argc, char **argv)
     rely on any macro starting with &quot;<tt>ALUT_</tt>&quot; not mentioned in
     this specification.</p>
 
-    <p>To find out the necessary compilation flags, use one of the following
+    <p>If you are using the freealut implementation of ALUT, which is available
+    via the <a href="http://www.openal.org/">OpenAL homepage</a>, you can find
+    out the necessary compilation flags by using one of the following
     commands:</p>
 
 <pre class="screen">
-pkg-config --cflags openal
-openal-config --cflags
+pkg-config --cflags freealut
+freealut-config --cflags
 </pre>
 
     <p>To find out the necessary flags for linking, use one of the following
     commands:</p>
 
 <pre class="screen">
-pkg-config --libs openal
-openal-config --libs
+pkg-config --libs freealut
+freealut-config --libs
 </pre>
 
-    <p>On Windows, link with alut.dll and openal32.dll</p>
+    <p>On Windows, link with <tt>alut.dll</tt> and <tt>openal32.dll</tt>.</p>
 
     <p>ALUT reserves the &quot;<tt>alut</tt>&quot; prefix for globally visible
     functions and variables, so you should never define such a function or
