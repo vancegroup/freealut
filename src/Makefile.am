@@ -14,6 +14,7 @@ libalut_la_SOURCES =		\
 	alutInputStream.c	\
 	alutInternal.h		\
 	alutLoader.c		\
+	alutOutputStream.c	\
 	alutUtil.c		\
 	alutVersion.c		\
 	alutWaveform.c

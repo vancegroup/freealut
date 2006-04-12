@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 ################################################################################
 
-AC_INIT([freealut library], [1.0.1], [openal-devel@opensource.creative.com], [freealut])
+AC_INIT([freealut library], [1.1.0], [openal-devel@opensource.creative.com], [freealut])
 AC_CONFIG_AUX_DIR([admin/autotools])
 AM_INIT_AUTOMAKE
 AC_PREREQ([2.56])
@@ -45,9 +45,9 @@ m4_ifdef([AS_HELP_STRING], [], [AC_DEFUN([AS_HELP_STRING], [AC_HELP_STRING($][@)
 # the purpose of library versions. Furthermore, do not confuse those versions
 # with the version of the specification which is implemented.
 
-CURRENT=0
+CURRENT=1
 REVISION=0
-AGE=0
+AGE=1
 
 AC_SUBST([VERSIONINFO], ["$CURRENT:$REVISION:$AGE"])
 
@@ -191,6 +191,19 @@ if test "x$enable_werror" = xyes; then
   else
     AM_CFLAGS="$AM_CFLAGS -Werror"
   fi
+fi
+
+AC_ARG_ENABLE([efence],
+[AS_HELP_STRING([--enable-efence],
+                [enable Electric Fence support @<:@default=no@:>@])])
+
+if test "x$enable_efence" = xyes; then
+  alut_saved_LIBS=$LIBS
+  LIBS="-lefence $LIBS"
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([extern int EF_ALIGNMENT;], [EF_ALIGNMENT = 8;])],
+    [:],
+    [AC_MSG_WARN([--enable-efence ignored because the Electric Fence library was not found.])
+     LIBS=$alut_saved_LIBS])
 fi
 
 ################################################################################

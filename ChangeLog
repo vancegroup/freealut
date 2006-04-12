@@ -1,3 +1,27 @@
+2006-04-12  Sven Panne  <sven.panne@aedion.de>
+
+	* CMakeLists.txt, admin/VisualStudio6/alut/alut.dsp,
+	admin/VisualStudioDotNET/alut/alut.vcproj, admin/autotools/.indent.pro,
+	configure.ac, include/AL/alut.h, src/Makefile.am, src/alutBufferData.c,
+	src/alutInternal.h, src/alutLoader.c, src/alutUtil.c,
+	src/alutWaveform.c: Implemented alutLoadMemoryHelloWorld and
+	alutLoadMemoryWaveform. Refactored things internally a bit, mainly by
+	making an InputStream the central kind of sound data source. Introduced
+	the OutputStream type for generating built-in sounds. Bumped the package
+	version to 1.1.0 and the library version to 1:0:1 (i.e. a backwards
+	compatible version, only with new features). Added --enable-efence
+	configure option.
+
+	* src/alutOutputStream.c: Added.
+
+	* doc/alut.html: Added a few missing ALUT_ERROR_OUT_OF_MEMORY error
+	conditions in the descriptions of the loaders. Added
+	alutLoadMemoryHelloWorld and alutLoadMemoryWaveform. Bumped spec version
+	to 1.1.0.
+
+	* doc/alut.css: Added a remark how to make the headers stand out a
+	little bit more.
+
 2006-04-10  Sven Panne  <sven.panne@aedion.de>
 
 	* doc/alut.html: Fixed foo-config documentation. Minor cleanup.

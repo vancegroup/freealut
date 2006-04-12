@@ -32,6 +32,7 @@ typedef UINT32 uint32_t;
 #error Do not know sized types on this platform
 #endif
 
+typedef int16_t Int16BigEndian;
 typedef uint16_t UInt16LittleEndian;
 typedef int32_t Int32BigEndian;
 typedef uint32_t UInt32LittleEndian;
@@ -43,6 +44,21 @@ typedef uint32_t UInt32LittleEndian;
 #endif
 
 #include <AL/alut.h>
+
+#define AU_HEADER_SIZE 24
+
+/* see: http://en.wikipedia.org/wiki/Au_file_format, G.72x are missing */
+enum AUEncoding
+{
+  AU_ULAW_8 = 1,                /* 8-bit ISDN u-law */
+  AU_PCM_8 = 2,                 /* 8-bit linear PCM (signed) */
+  AU_PCM_16 = 3,                /* 16-bit linear PCM (signed, big-endian) */
+  AU_PCM_24 = 4,                /* 24-bit linear PCM */
+  AU_PCM_32 = 5,                /* 32-bit linear PCM */
+  AU_FLOAT_32 = 6,              /* 32-bit IEEE floating point */
+  AU_FLOAT_64 = 7,              /* 64-bit IEEE floating point */
+  AU_ALAW_8 = 27                /* 8-bit ISDN a-law */
+};
 
 /* in alutCodec.c */
 typedef ALvoid *Codec (ALvoid *data, size_t length, ALint numChannels,
@@ -78,8 +94,31 @@ extern ALboolean _alutInputStreamReadInt32BE (InputStream *stream,
 extern ALboolean _alutInputStreamReadUInt32LE (InputStream *stream,
                                                UInt32LittleEndian *value);
 
+/* in alutLoader.c */
+extern ALuint _alutCreateBufferFromInputStream (InputStream *stream);
+extern void *_alutLoadMemoryFromInputStream (InputStream *stream,
+                                             ALenum *format, ALsizei *size,
+                                             ALfloat *frequency);
+
+/* in alutOutputStream.c */
+typedef struct OutputStream_struct OutputStream;
+extern OutputStream *_alutOutputStreamConstruct (size_t maximumLength);
+extern ALboolean _alutOutputStreamDestroy (OutputStream *stream);
+extern void *_alutOutputStreamGetData (OutputStream *stream);
+extern size_t _alutOutputStreamGetLength (OutputStream *stream);
+extern ALboolean _alutOutputStreamWriteInt16BE (OutputStream *stream,
+                                                Int16BigEndian value);
+extern ALboolean _alutOutputStreamWriteInt32BE (OutputStream *stream,
+                                                Int32BigEndian value);
+
 /* in alutUtil.c */
 extern ALvoid *_alutMalloc (size_t size);
+extern ALboolean _alutFormatConstruct (ALint numChannels, ALint bitsPerSample,
+                                       ALenum *format);
+extern ALboolean _alutFormatGetNumChannels (ALenum format,
+                                            ALint *numChannels);
+extern ALboolean _alutFormatGetBitsPerSample (ALenum format,
+                                              ALint *bitsPerSample);
 
 /* in alutWaveform.c */
 typedef struct BufferData_struct BufferData;

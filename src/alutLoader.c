@@ -178,20 +178,6 @@ loadWavFile (InputStream *stream)
     }
 }
 
-/* see: http://en.wikipedia.org/wiki/Au_file_format, G.72x are missing */
-
-enum AUEncoding
-{
-  AU_ULAW_8 = 1,                /* 8-bit ISDN u-law */
-  AU_PCM_8 = 2,                 /* 8-bit linear PCM (signed) */
-  AU_PCM_16 = 3,                /* 16-bit linear PCM (signed, big-endian) */
-  AU_PCM_24 = 4,                /* 24-bit linear PCM */
-  AU_PCM_32 = 5,                /* 32-bit linear PCM */
-  AU_FLOAT_32 = 6,              /* 32-bit IEEE floating point */
-  AU_FLOAT_64 = 7,              /* 64-bit IEEE floating point */
-  AU_ALAW_8 = 27                /* 8-bit ISDN a-law */
-};
-
 static BufferData *
 loadAUFile (InputStream *stream)
 {
@@ -215,18 +201,18 @@ loadAUFile (InputStream *stream)
     }
 
   length = (len == -1) ?
-    (_alutInputStreamGetRemainingLength (stream) - 24 -
+    (_alutInputStreamGetRemainingLength (stream) - AU_HEADER_SIZE -
      dataOffset) : (size_t) len;
 
   if (!
-      (dataOffset >= 24 && length > 0 && sampleFrequency >= 1
+      (dataOffset >= AU_HEADER_SIZE && length > 0 && sampleFrequency >= 1
        && numChannels >= 1))
     {
       _alutSetError (ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA);
       return AL_FALSE;
     }
 
-  if (!_alutInputStreamSkip (stream, dataOffset - 24))
+  if (!_alutInputStreamSkip (stream, dataOffset - AU_HEADER_SIZE))
     {
       return AL_FALSE;
     }
@@ -313,8 +299,8 @@ loadFile (InputStream *stream)
   return AL_FALSE;
 }
 
-static ALuint
-createBuffer (InputStream *stream)
+ALuint
+_alutCreateBufferFromInputStream (InputStream *stream)
 {
   BufferData *bufferData;
   ALuint buffer;
@@ -340,26 +326,30 @@ createBuffer (InputStream *stream)
 ALuint
 alutCreateBufferFromFile (const char *fileName)
 {
+  InputStream *stream;
   if (!_alutSanityCheck ())
     {
       return AL_NONE;
     }
-  return createBuffer (_alutInputStreamConstructFromFile (fileName));
+  stream = _alutInputStreamConstructFromFile (fileName);
+  return _alutCreateBufferFromInputStream (stream);
 }
 
 ALuint
 alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length)
 {
+  InputStream *stream;
   if (!_alutSanityCheck ())
     {
       return AL_NONE;
     }
-  return createBuffer (_alutInputStreamConstructFromMemory (data, length));
+  stream = _alutInputStreamConstructFromMemory (data, length);
+  return _alutCreateBufferFromInputStream (stream);
 }
 
-static void *
-loadMemory (InputStream *stream, ALenum *format, ALsizei *size,
-            ALfloat *frequency)
+void *
+_alutLoadMemoryFromInputStream (InputStream *stream, ALenum *format,
+                                ALsizei *size, ALfloat *frequency)
 {
   BufferData *bufferData;
   ALenum fmt;
@@ -409,12 +399,13 @@ ALvoid *
 alutLoadMemoryFromFile (const char *fileName, ALenum *format,
                         ALsizei *size, ALfloat *frequency)
 {
+  InputStream *stream;
   if (!_alutSanityCheck ())
     {
       return NULL;
     }
-  return loadMemory (_alutInputStreamConstructFromFile (fileName), format,
-                     size, frequency);
+  stream = _alutInputStreamConstructFromFile (fileName);
+  return _alutLoadMemoryFromInputStream (stream, format, size, frequency);
 }
 
 ALvoid *
@@ -422,13 +413,13 @@ alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
                              ALenum *format, ALsizei *size,
                              ALfloat *frequency)
 {
+  InputStream *stream;
   if (!_alutSanityCheck ())
     {
       return NULL;
     }
-
-  return loadMemory (_alutInputStreamConstructFromMemory (data, length),
-                     format, size, frequency);
+  stream = _alutInputStreamConstructFromMemory (data, length);
+  return _alutLoadMemoryFromInputStream (stream, format, size, frequency);
 }
 
 /*
@@ -443,13 +434,13 @@ alutLoadWAVFile (ALbyte *fileName, ALenum *format, void **data, ALsizei *size,
 #endif
   )
 {
+  InputStream *stream;
   ALfloat freq;
 
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 
-  *data =
-    loadMemory (_alutInputStreamConstructFromFile (fileName), format, size,
-                &freq);
+  stream = _alutInputStreamConstructFromFile (fileName);
+  *data = _alutLoadMemoryFromInputStream (stream, format, size, &freq);
   if (*data == NULL)
     {
       return;
@@ -476,13 +467,14 @@ alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size,
 #endif
   )
 {
+  InputStream *stream;
   ALfloat freq;
 
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 
   /* ToDo: Can we do something less insane than passing 0x7FFFFFFF? */
-  loadMemory (_alutInputStreamConstructFromMemory (buffer, 0x7FFFFFFF),
-              format, size, &freq);
+  stream = _alutInputStreamConstructFromMemory (buffer, 0x7FFFFFFF);
+  _alutLoadMemoryFromInputStream (stream, format, size, &freq);
   if (*data == NULL)
     {
       return;

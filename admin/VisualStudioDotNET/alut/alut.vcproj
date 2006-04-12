@@ -129,6 +129,9 @@
 				RelativePath="..\..\..\src\alutLoader.c">
 			</File>
 			<File
+				RelativePath="..\..\..\src\alutOutputStream.c">
+			</File>
+			<File
 				RelativePath="..\..\..\src\alutUtil.c">
 			</File>
 			<File

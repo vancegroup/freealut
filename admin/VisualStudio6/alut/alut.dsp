@@ -115,6 +115,10 @@ SOURCE=..\..\..\src\alutLoader.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\src\alutOutputStream.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\..\src\alutUtil.c
 # End Source File
 # Begin Source File

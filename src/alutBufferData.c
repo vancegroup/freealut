@@ -83,33 +83,13 @@ _alutBufferDataGetSampleFrequency (const BufferData *bufferData)
 ALboolean
 _alutGetFormat (const BufferData *bufferData, ALenum *format)
 {
-  switch (getNumChannels (bufferData))
+  if (!_alutFormatConstruct
+      (getNumChannels (bufferData), getBitsPerSample (bufferData), format))
     {
-    case 1:
-      switch (getBitsPerSample (bufferData))
-        {
-        case 8:
-          *format = AL_FORMAT_MONO8;
-          return AL_TRUE;
-        case 16:
-          *format = AL_FORMAT_MONO16;
-          return AL_TRUE;
-        }
-      break;
-    case 2:
-      switch (getBitsPerSample (bufferData))
-        {
-        case 8:
-          *format = AL_FORMAT_STEREO8;
-          return AL_TRUE;
-        case 16:
-          *format = AL_FORMAT_STEREO16;
-          return AL_TRUE;
-        }
-      break;
+      _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
+      return AL_FALSE;
     }
-  _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
-  return AL_FALSE;
+  return AL_TRUE;
 }
 
 static ALuint

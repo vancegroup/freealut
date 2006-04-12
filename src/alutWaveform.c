@@ -1,5 +1,6 @@
 #include "alutInternal.h"
 #include <math.h>
+#include <string.h>
 
 #if defined(_WIN32)
 #define random() rand()
@@ -37,7 +38,7 @@ waveformSawtooth (double UNUSED (lastPhase), double phase)
 static double
 waveformWhitenoise (double UNUSED (lastPhase), double UNUSED (phase))
 {
-  static long prime = 67867967;
+  static const long prime = 67867967L;
   return 2 * (double) (random () % prime) / prime - 1;
 }
 
@@ -47,62 +48,72 @@ waveformImpulse (double lastPhase, double phase)
   return (lastPhase > phase) ? 1 : 0;
 }
 
-ALuint
-alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
-                          ALfloat duration)
+static waveformFunction
+getWaveformFunction (ALenum waveshape)
 {
-  waveformFunction func;
-  double sampleDuration, lastPhase, numSamplesD;
-  size_t numSamples, i;
-  int16_t *data;
-  ALuint buffer;
-  BufferData *bufferData;
-
-  /* error checks */
-  if (!_alutSanityCheck ())
-    {
-      return AL_NONE;
-    }
-
   switch (waveshape)
     {
     case ALUT_WAVEFORM_SINE:
-      func = waveformSine;
-      break;
+      return waveformSine;
     case ALUT_WAVEFORM_SQUARE:
-      func = waveformSquare;
-      break;
+      return waveformSquare;
     case ALUT_WAVEFORM_SAWTOOTH:
-      func = waveformSawtooth;
-      break;
+      return waveformSawtooth;
     case ALUT_WAVEFORM_WHITENOISE:
-      func = waveformWhitenoise;
-      break;
+      return waveformWhitenoise;
     case ALUT_WAVEFORM_IMPULSE:
-      func = waveformImpulse;
-      break;
-    default:
-      _alutSetError (ALUT_ERROR_INVALID_ENUM);
-      return AL_NONE;
+      return waveformImpulse;
+    }
+  _alutSetError (ALUT_ERROR_INVALID_ENUM);
+  return NULL;
+}
+
+static OutputStream *
+generateWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
+                  ALfloat duration)
+{
+  waveformFunction func;
+  double sampleDuration, lastPhase, numSamplesD;
+  size_t numBytes, numSamples, i;
+  OutputStream *stream;
+
+  func = getWaveformFunction (waveshape);
+  if (func == NULL)
+    {
+      return NULL;
     }
 
   /* ToDo: Shall we test phase for [-180 .. +180]? */
   if (frequency <= 0 || duration < 0)
     {
       _alutSetError (ALUT_ERROR_INVALID_VALUE);
-      return AL_NONE;
+      return NULL;
     }
 
-  /* allocate buffer to hold sample data */
+  /* allocate stream to hold AU header and sample data */
   sampleDuration = floor ((frequency * duration) + 0.5) / frequency;
   /* GCC is a bit picky about casting function calls, so we do it in two
      steps... */
   numSamplesD = floor (sampleDuration * sampleFrequency);
   numSamples = (size_t) numSamplesD;
-  data = (int16_t *) _alutMalloc (numSamples * sizeof (int16_t));
-  if (data == NULL)
+  numBytes = numSamples * sizeof (int16_t);
+  stream = _alutOutputStreamConstruct (AU_HEADER_SIZE + numBytes);
+  if (stream == NULL)
     {
-      return AL_NONE;
+      return NULL;
+    }
+
+  /* write AU header for our 16bit mono data */
+  if (!_alutOutputStreamWriteInt32BE (stream, 0x2e736e64) ||    /* ".snd" */
+      !_alutOutputStreamWriteInt32BE (stream, AU_HEADER_SIZE) ||
+      !_alutOutputStreamWriteInt32BE (stream, (Int32BigEndian) numBytes) ||
+      !_alutOutputStreamWriteInt32BE (stream, AU_PCM_16) ||
+      !_alutOutputStreamWriteInt32BE (stream,
+                                      (Int32BigEndian) sampleFrequency) ||
+      !_alutOutputStreamWriteInt32BE (stream, 1))
+    {
+      _alutOutputStreamDestroy (stream);
+      return NULL;
     }
 
   /* normalize phase from degrees */
@@ -118,22 +129,90 @@ alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
       double p = phase + frequency * (double) i / sampleFrequency;
       double currentPhase = p - floor (p);
       double amplitude = func (lastPhase, currentPhase);
-      data[i] = (int16_t) (amplitude * 32767);
+      if (!_alutOutputStreamWriteInt16BE
+          (stream, (Int16BigEndian) (amplitude * 32767)))
+        {
+          _alutOutputStreamDestroy (stream);
+          return NULL;
+        }
       lastPhase = currentPhase;
     }
 
-  /* pass sample data to OpenAL */
-  bufferData =
-    _alutBufferDataConstruct (data, numSamples * sizeof (int16_t), 1, 16,
-                              (ALfloat) sampleFrequency);
-  if (bufferData == NULL)
+  return stream;
+}
+
+ALvoid *
+alutLoadMemoryWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
+                        ALfloat duration, ALenum *format, ALsizei *size,
+                        ALfloat *freq)
+{
+  OutputStream *outputStream;
+  InputStream *inputStream;
+  ALvoid *data;
+
+  if (!_alutSanityCheck ())
     {
-      free (data);
+      return NULL;
+    }
+
+  outputStream = generateWaveform (waveshape, frequency, phase, duration);
+  if (outputStream == NULL)
+    {
+      return NULL;
+    }
+
+  /* We could do something more efficient here if the internal stream
+     structures were known, but this would break the abstraction. */
+  inputStream =
+    _alutInputStreamConstructFromMemory (_alutOutputStreamGetData
+                                         (outputStream),
+                                         _alutOutputStreamGetLength
+                                         (outputStream));
+  if (inputStream == NULL)
+    {
+      _alutOutputStreamDestroy (outputStream);
+      return NULL;
+    }
+
+  data = _alutLoadMemoryFromInputStream (inputStream, format, size, freq);
+  _alutOutputStreamDestroy (outputStream);
+  return data;
+}
+
+ALuint
+alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
+                          ALfloat duration)
+{
+  OutputStream *outputStream;
+  InputStream *inputStream;
+  ALuint buffer;
+
+  if (!_alutSanityCheck ())
+    {
       return AL_NONE;
     }
-  buffer = _alutPassBufferData (bufferData);
-  _alutBufferDataDestroy (bufferData);
 
+  outputStream = generateWaveform (waveshape, frequency, phase, duration);
+  if (outputStream == NULL)
+    {
+      return AL_NONE;
+    }
+
+  /* We could do something more efficient here if the internal stream
+     structures were known, but this would break the abstraction. */
+  inputStream =
+    _alutInputStreamConstructFromMemory (_alutOutputStreamGetData
+                                         (outputStream),
+                                         _alutOutputStreamGetLength
+                                         (outputStream));
+  if (inputStream == NULL)
+    {
+      _alutOutputStreamDestroy (outputStream);
+      return AL_NONE;
+    }
+
+  buffer = _alutCreateBufferFromInputStream (inputStream);
+  _alutOutputStreamDestroy (outputStream);
   return buffer;
 }
 
@@ -830,10 +909,30 @@ static uint8_t helloWorldSample[] = {
   0x5a, 0x65, 0x6c, 0x64, 0x7d, 0x6f
 };
 
+static InputStream *
+generateHelloWorld (void)
+{
+  return _alutInputStreamConstructFromMemory (helloWorldSample,
+                                              sizeof (helloWorldSample));
+}
+
+ALvoid *
+alutLoadMemoryHelloWorld (ALenum *format, ALsizei *size, ALfloat *frequency)
+{
+  if (!_alutSanityCheck ())
+    {
+      return NULL;
+    }
+  return _alutLoadMemoryFromInputStream (generateHelloWorld (), format, size,
+                                         frequency);
+}
+
 ALuint
 alutCreateBufferHelloWorld (void)
 {
-  return alutCreateBufferFromFileImage (helloWorldSample,
-                                        sizeof (helloWorldSample) /
-                                        sizeof (helloWorldSample[0]));
+  if (!_alutSanityCheck ())
+    {
+      return AL_NONE;
+    }
+  return _alutCreateBufferFromInputStream (generateHelloWorld ());
 }

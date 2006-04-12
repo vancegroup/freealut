@@ -31,6 +31,7 @@ SET(ALUT_SOURCES src/alutBufferData.c
                  src/alutInputStream.c
                  src/alutInternal.h
                  src/alutLoader.c
+                 src/alutOutputStream.c
                  src/alutUtil.c
                  src/alutVersion.c
                  src/alutWaveform.c)
