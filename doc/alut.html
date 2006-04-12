@@ -51,17 +51,14 @@
             <ul>
               <li><a href="#alutCreateBufferFromFile">alutCreateBufferFromFile</a></li>
               <li><a href="#alutCreateBufferFromFileImage"> alutCreateBufferFromFileImage</a></li>
-              <li><a href="#alutLoadMemoryFromFile">alutLoadMemoryFromFile</a></li>
-              <li><a href="#alutLoadMemoryFromFileImage">alutLoadMemoryFromFileImage</a></li>
-              <li><a href="#alutGetMIMETypes">alutGetMIMETypes</a></li>
-              <li><a href="#DeprecatedWAVLoaders">Deprecated WAV loaders</a></li>
-            </ul>
-          </li>
-          <li>
-            <a href="#BuiltinSounds">Built-in Sounds</a>
-            <ul>
              <li><a href="#alutCreateBufferHelloWorld">alutCreateBufferHelloWorld</a></li>
              <li><a href="#alutCreateBufferWaveform">alutCreateBufferWaveform</a></li>
+              <li><a href="#alutLoadMemoryFromFile">alutLoadMemoryFromFile</a></li>
+              <li><a href="#alutLoadMemoryFromFileImage">alutLoadMemoryFromFileImage</a></li>
+             <li><a href="#alutLoadMemoryHelloWorld">alutLoadMemoryHelloWorld</a></li>
+             <li><a href="#alutLoadMemoryWaveform">alutLoadMemoryWaveform</a></li>
+              <li><a href="#alutGetMIMETypes">alutGetMIMETypes</a></li>
+              <li><a href="#DeprecatedWAVLoaders">Deprecated WAV loaders</a></li>
             </ul>
           </li>
           <li>
@@ -97,6 +94,7 @@
       <li>2005-10-29: Version 1.0.5 by Sven Panne</li>
       <li>2005-11-19: Version 1.0.6 by Sven Panne</li>
       <li>2006-04-10: Version 1.0.7 by Sven Panne</li>
+      <li>2006-04-11: Version 1.1.0 by Sven Panne</li>
     </ul>
 
     <h1><a name="Introduction"></a>Introduction</h1>
@@ -617,8 +615,16 @@ ALboolean alutExit (void);
     generic and try to do their best either by using OpenAL extensions if
     possible or by converting the sound data into standard OpenAL formats.</p>
 
-    <p>There are four (= 2 * 2) different loaders, corresponding to the sources
-    and destinations of the sound data:</p>
+    <p>In order to simplify initial startup and to keep test program
+    distributions clean, ALUT provides built-in sounds, too, that do not require
+    disk I/O because they are built into the ALUT library. These functions may
+    be used to write compact ALUT test/example applications with no external
+    file dependancies whatsoever. When sending short application programs to
+    either the ALUT or OpenAL developers as a part of bug reporting, one should
+    endeavor to use these functions instead of loading ones own sound files.</p>
+
+    <p>There are eight (= 4 * 2) different loaders, corresponding to the sources
+    and destinations of the sound data. The possible sources are:</p>
 
     <ul>
       <li>The loaders with a <tt>FromFile</tt> suffix get their sound data from
@@ -628,6 +634,16 @@ ALboolean alutExit (void);
       continuous memory region. This region can be re-used or destroyed
       afterwards.</li>
 
+      <li>The loaders with a <tt>HelloWorld</tt> suffix get their fixed data
+      internally.</li>
+
+      <li>The loaders with a <tt>Waveform</tt> suffix get their data via
+      internal waveform calculation.</li>
+    </ul>
+
+    <p>The possible destinations are:</p>
+
+    <ul>
       <li>The loaders with a <tt>alutCreateBuffer</tt> prefix create a new
       OpenAL buffer and put the sound data into it. If possible, OpenAL
       extensions are used to avoid conversions at the ALUT level and enable the
@@ -669,6 +685,9 @@ ALuint alutCreateBufferFromFile (const char *filename);
     <h4>Errors</h4>
 
     <dl>
+      <dt><tt>ALUT_ERROR_OUT_OF_MEMORY</tt></dt>
+      <dd>ALUT ran out of memory.</dd>
+
       <dt><tt>ALUT_ERROR_INVALID_OPERATION</tt></dt>
       <dd>ALUT has not been initialised.</dd>
 
@@ -728,6 +747,9 @@ ALuint alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length);
     <h4>Errors</h4>
 
     <dl>
+      <dt><tt>ALUT_ERROR_OUT_OF_MEMORY</tt></dt>
+      <dd>ALUT ran out of memory.</dd>
+
       <dt><tt>ALUT_ERROR_INVALID_OPERATION</tt></dt>
       <dd>ALUT has not been initialised.</dd>
 
@@ -758,230 +780,6 @@ ALuint alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length);
       <dd>The sound data was corrupt or truncated.</dd>
     </dl>
 
-    <h3 class="manpage"><a name="alutLoadMemoryFromFile"></a>alutLoadMemoryFromFile</h3>
-
-    <h4>Name</h4>
-
-    <p><tt>alutLoadMemoryFromFile</tt> - load a sound file into OpenAL-like
-    data</p>
-
-    <h4>Synopsis</h4>
-
-<pre class="programlisting">
-ALvoid *alutLoadMemoryFromFile (const char *filename,
-                                ALenum *format,
-                                ALsizei *size,
-                                ALfloat *frequency);
-</pre>
-
-    <p><tt>alutLoadMemoryFromFile</tt> tries to guess the sound data format by
-    looking at the filename and/or the file contents and loads the sound data
-    into a newly <tt>malloc</tt>ed buffer, possibly converting it in the
-    process. The format is guaranteed to be a standard OpenAL format
-    afterwards.</p>
-
-    <h4>Return Value</h4>
-
-    <p>On success, <tt>alutLoadMemoryFromFile</tt> returns a pointer to a newly
-    allocated memory area containing the sound data, which can be <tt>free</tt>d
-    if not needed anymore. It returns <tt>NULL</tt> on failure. If any of the
-    format, size or frequency parameters are non-<tt>NULL</tt>, the respective
-    information about the sound will be passed back.</p>
-
-    <h4>Errors</h4>
-
-    <dl>
-      <dt><tt>ALUT_ERROR_INVALID_OPERATION</tt></dt>
-      <dd>ALUT has not been initialised.</dd>
-
-      <dt><tt>ALUT_ERROR_NO_CURRENT_CONTEXT</tt></dt>
-      <dd>There is no current AL context.</dd>
-
-      <dt><tt>ALUT_ERROR_AL_ERROR_ON_ENTRY</tt></dt>
-      <dd>There was already an AL error on entry to
-      <tt>alutLoadMemoryFromFile</tt>.</dd>
-
-      <dt><tt>ALUT_ERROR_ALC_ERROR_ON_ENTRY</tt></dt>
-      <dd>There was already an ALC error on entry to
-      <tt>alutLoadMemoryFromFile</tt>.</dd>
-
-      <dt><tt>ALUT_ERROR_IO_ERROR</tt></dt>
-      <dd>I/O error, consult <tt>errno</tt> for more details.</dd>
-
-      <dt><tt>ALUT_ERROR_UNSUPPORTED_FILE_TYPE</tt></dt>
-      <dd>Unsupported file type.</dd>
-
-      <dt><tt>ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE</tt></dt>
-      <dd>Unsupported mode within an otherwise usable file type.</dd>
-
-      <dt><tt>ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA</tt></dt>
-      <dd>The sound data was corrupt or truncated.</dd>
-    </dl>
-
-    <h3 class="manpage"><a name="alutLoadMemoryFromFileImage"></a>alutLoadMemoryFromFileImage</h3>
-
-    <h4>Name</h4>
-
-    <p><tt>alutLoadMemoryFromFileImage</tt> - convert in-memory sound data into
-    OpenAL-like data</p>
-
-    <h4>Synopsis</h4>
-
-<pre class="programlisting">
-ALvoid *alutLoadMemoryFromFileImage (const ALvoid *data,
-                                     ALsizei length,
-                                     ALenum *format,
-                                     ALsizei *size,
-                                     ALfloat *frequency);
-</pre>
-
-    <p><tt>alutLoadMemoryFromFileImage</tt> tries to guess the sound data format
-    by looking at the contents of the memory region given as the first two
-    arguments and loads the sound data into a newly <tt>malloc</tt>ed buffer,
-    possibly converting it in the process. The format is guaranteed to be a
-    standard OpenAL format afterwards.</p>
-
-    <h4>Return Value</h4>
-
-    <p>On success, <tt>alutLoadMemoryFromFile</tt> returns a pointer to a newly
-    allocated memory area containing the sound data, which can be <tt>free</tt>d
-    if not needed anymore. It returns <tt>NULL</tt> on failure. If any of the
-    format, size or frequency parameters are non-<tt>NULL</tt>, the respective
-    information about the sound will be passed back.</p>
-
-    <h4>Errors</h4>
-
-    <dl>
-      <dt><tt>ALUT_ERROR_INVALID_OPERATION</tt></dt>
-      <dd>ALUT has not been initialised.</dd>
-
-      <dt><tt>ALUT_ERROR_NO_CURRENT_CONTEXT</tt></dt>
-      <dd>There is no current AL context.</dd>
-
-      <dt><tt>ALUT_ERROR_AL_ERROR_ON_ENTRY</tt></dt>
-      <dd>There was already an AL error on entry to
-      <tt>alutLoadMemoryFromFileImage</tt>.</dd>
-
-      <dt><tt>ALUT_ERROR_ALC_ERROR_ON_ENTRY</tt></dt>
-      <dd>There was already an ALC error on entry to
-      <tt>alutLoadMemoryFromFileImage</tt>.</dd>
-
-      <dt><tt>ALUT_ERROR_UNSUPPORTED_FILE_TYPE</tt></dt>
-      <dd>Unsupported file type.</dd>
-
-      <dt><tt>ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE</tt></dt>
-      <dd>Unsupported mode within an otherwise usable file type.</dd>
-
-      <dt><tt>ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA</tt></dt>
-      <dd>The sound data was corrupt or truncated.</dd>
-    </dl>
-
-    <h3 class="manpage"><a name="alutGetMIMETypes"></a>alutGetMIMETypes</h3>
-
-    <h4>Name</h4>
-
-    <p><tt>alutGetMIMETypes</tt> - get list support supported audio MIME types</p>
-
-    <h4>Synopsis</h4>
-
-<pre class="programlisting">
-const char *alutGetMIMETypes (ALenum loader);
-</pre>
-
-    <h4>Description</h4>
-
-    <p><tt>alutGetMIMETypes</tt> returns a comma-separated list of
-    supported MIME types for the given loader type, e.g. something like
-    &quot;<tt>audio/basic,audio/mpeg,audio/x-wav</tt>&quot;. Allowed loader
-    types are:</p>
-
-    <dl>
-      <dt><tt>ALUT_LOADER_BUFFER</tt></dt>
-
-      <dd>For the loaders returning sound data in an OpenAL buffer,
-      i.e. <tt>alutCreateBufferFromFile</tt> and
-      <tt>alutCreateBufferFromFileImage</tt></dd>
-
-      <dt><tt>ALUT_LOADER_MEMORY</tt></dt>
-
-      <dd>For the loaders returning sound data in a newly allocated memory
-      region, i.e. <tt>alutLoadMemoryFromFile</tt> and
-      <tt>alutLoadMemoryFromFileImage</tt></dd>
-    </dl>
-
-    <p>It is possible that <tt>ALUT_LOADER_MEMORY</tt> loaders will be unable to
-    support some file types that <tt>ALUT_LOADER_BUFFER</tt> loaders can support
-    (although the reverse is never the case). Furthermore, it is possible that
-    for some file types (notably audio/x-wav) the support may be only for a few
-    sub-formats. For example, an implementation may advertise that audio/x-wav
-    is supported when in fact it only supports uncompressed (i.e. PCM) WAV files
-    and not any of the compressed subformats. In this event, the various ALUT
-    loaders may return an error and set
-    <tt>ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE</tt> rather than
-    <tt>ALUT_ERROR_UNSUPPORTED_FILE_TYPE</tt> which would indicate that no files
-    of this type are allowed.</p>
-
-    <h4>Return Value</h4>
-
-    <p>On success, <tt>alutGetMIMETypes</tt> returns a zero-terminated string
-    which contains a comma-separated list of supported MIME types. It returns
-    <tt>NULL</tt> on failure.</p>
-
-    <h4>Errors</h4>
-
-    <dl>
-      <dt><tt>ALUT_ERROR_INVALID_ENUM</tt></dt>
-      <dd><tt>alutGetMIMETypes</tt> was given an invalid loader token.</dd>
-
-      <dt><tt>ALUT_ERROR_INVALID_OPERATION</tt></dt>
-      <dd>ALUT has not been initialised.</dd>
-
-      <dt><tt>ALUT_ERROR_NO_CURRENT_CONTEXT</tt></dt>
-      <dd>There is no current AL context.</dd>
-
-      <dt><tt>ALUT_ERROR_AL_ERROR_ON_ENTRY</tt></dt>
-      <dd>There was already an AL error on entry to
-      <tt>alutGetMIMETypes</tt>.</dd>
-
-      <dt><tt>ALUT_ERROR_ALC_ERROR_ON_ENTRY</tt></dt>
-      <dd>There was already an ALC error on entry to
-      <tt>alutGetMIMETypes</tt>.</dd>
-    </dl>
-
-    <h3><a name="DeprecatedWAVLoaders"></a>Deprecated WAV loaders</h3>
-
-    <p>For backwards-compatibility with ALUT 0.x.x, ALUT still offers the three
-    deprecated functions below. Note that on MacOS 0.x.x version, the
-    '<tt>loop</tt>' parameter is omitted from both loader functions.</p>
-
-<pre class="programlisting">
-void alutLoadWAVFile (ALbyte *filename,
-                      ALenum *format,
-                      void **data,
-                      ALsizei *size,
-                      ALsizei *frequency,
-                      ALboolean *loop);
-
-void alutLoadWAVMemory (ALbyte *buffer,
-                        ALenum *format,
-                        void **data,
-                        ALsizei *size,
-                        ALsizei *frequency,
-                        ALboolean *loop);
-
-void alutUnloadWAV (ALenum format ALvoid *data, ALsizei size, ALsizei frequency);
-</pre>
-
-    <h2><a name="BuiltinSounds"></a>Built-in Sounds</h2>
-
-    <p>In order to simplify initial startup and to keep test program
-    distributions clean, ALUT provides built-in sounds that do not require disk
-    I/O because they are built into the ALUT library. These functions may be
-    used to write compact ALUT test/example applications with no external file
-    dependancies whatsoever. When sending short application programs to either
-    the ALUT or OpenAL developers as a part of bug reporting, one should
-    endeavor to use these functions instead of loading ones own sound files.</p>
-
     <h3 class="manpage"><a name="alutCreateBufferHelloWorld"></a>alutCreateBufferHelloWorld</h3>
 
     <h4>Name</h4>
@@ -1008,6 +806,9 @@ ALuint alutCreateBufferHelloWorld (void);
     <h4>Errors</h4>
 
     <dl>
+      <dt><tt>ALUT_ERROR_OUT_OF_MEMORY</tt></dt>
+      <dd>ALUT ran out of memory.</dd>
+
       <dt><tt>ALUT_ERROR_INVALID_OPERATION</tt></dt>
       <dd>ALUT has not been initialised.</dd>
 
@@ -1103,6 +904,356 @@ ALuint alutCreateBufferWaveform (ALenum waveshape,
       <dd>There was an error passing buffer data to AL.</dd>
     </dl>
 
+    <h3 class="manpage"><a name="alutLoadMemoryFromFile"></a>alutLoadMemoryFromFile</h3>
+
+    <h4>Name</h4>
+
+    <p><tt>alutLoadMemoryFromFile</tt> - load a sound file into OpenAL-like
+    data</p>
+
+    <h4>Synopsis</h4>
+
+<pre class="programlisting">
+ALvoid *alutLoadMemoryFromFile (const char *filename,
+                                ALenum *format,
+                                ALsizei *size,
+                                ALfloat *frequency);
+</pre>
+
+    <p><tt>alutLoadMemoryFromFile</tt> tries to guess the sound data format by
+    looking at the filename and/or the file contents and loads the sound data
+    into a newly <tt>malloc</tt>ed buffer, possibly converting it in the
+    process. The format is guaranteed to be a standard OpenAL format
+    afterwards.</p>
+
+    <h4>Return Value</h4>
+
+    <p>On success, <tt>alutLoadMemoryFromFile</tt> returns a pointer to a newly
+    allocated memory area containing the sound data, which can be <tt>free</tt>d
+    if not needed anymore. It returns <tt>NULL</tt> on failure. If any of the
+    format, size or frequency parameters are non-<tt>NULL</tt>, the respective
+    information about the sound will be passed back.</p>
+
+    <h4>Errors</h4>
+
+    <dl>
+      <dt><tt>ALUT_ERROR_OUT_OF_MEMORY</tt></dt>
+      <dd>ALUT ran out of memory.</dd>
+
+      <dt><tt>ALUT_ERROR_INVALID_OPERATION</tt></dt>
+      <dd>ALUT has not been initialised.</dd>
+
+      <dt><tt>ALUT_ERROR_NO_CURRENT_CONTEXT</tt></dt>
+      <dd>There is no current AL context.</dd>
+
+      <dt><tt>ALUT_ERROR_AL_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an AL error on entry to
+      <tt>alutLoadMemoryFromFile</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_ALC_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an ALC error on entry to
+      <tt>alutLoadMemoryFromFile</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_IO_ERROR</tt></dt>
+      <dd>I/O error, consult <tt>errno</tt> for more details.</dd>
+
+      <dt><tt>ALUT_ERROR_UNSUPPORTED_FILE_TYPE</tt></dt>
+      <dd>Unsupported file type.</dd>
+
+      <dt><tt>ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE</tt></dt>
+      <dd>Unsupported mode within an otherwise usable file type.</dd>
+
+      <dt><tt>ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA</tt></dt>
+      <dd>The sound data was corrupt or truncated.</dd>
+    </dl>
+
+    <h3 class="manpage"><a name="alutLoadMemoryFromFileImage"></a>alutLoadMemoryFromFileImage</h3>
+
+    <h4>Name</h4>
+
+    <p><tt>alutLoadMemoryFromFileImage</tt> - convert in-memory sound data into
+    OpenAL-like data</p>
+
+    <h4>Synopsis</h4>
+
+<pre class="programlisting">
+ALvoid *alutLoadMemoryFromFileImage (const ALvoid *data,
+                                     ALsizei length,
+                                     ALenum *format,
+                                     ALsizei *size,
+                                     ALfloat *frequency);
+</pre>
+
+    <p><tt>alutLoadMemoryFromFileImage</tt> tries to guess the sound data format
+    by looking at the contents of the memory region given as the first two
+    arguments and loads the sound data into a newly <tt>malloc</tt>ed buffer,
+    possibly converting it in the process. The format is guaranteed to be a
+    standard OpenAL format afterwards.</p>
+
+    <h4>Return Value</h4>
+
+    <p>On success, <tt>alutLoadMemoryFromFileImage</tt> returns a pointer to a
+    newly allocated memory area containing the sound data, which can be
+    <tt>free</tt>d if not needed anymore. It returns <tt>NULL</tt> on
+    failure. If any of the format, size or frequency parameters are
+    non-<tt>NULL</tt>, the respective information about the sound will be passed
+    back.</p>
+
+    <h4>Errors</h4>
+
+    <dl>
+      <dt><tt>ALUT_ERROR_OUT_OF_MEMORY</tt></dt>
+      <dd>ALUT ran out of memory.</dd>
+
+      <dt><tt>ALUT_ERROR_INVALID_OPERATION</tt></dt>
+      <dd>ALUT has not been initialised.</dd>
+
+      <dt><tt>ALUT_ERROR_NO_CURRENT_CONTEXT</tt></dt>
+      <dd>There is no current AL context.</dd>
+
+      <dt><tt>ALUT_ERROR_AL_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an AL error on entry to
+      <tt>alutLoadMemoryFromFileImage</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_ALC_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an ALC error on entry to
+      <tt>alutLoadMemoryFromFileImage</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_UNSUPPORTED_FILE_TYPE</tt></dt>
+      <dd>Unsupported file type.</dd>
+
+      <dt><tt>ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE</tt></dt>
+      <dd>Unsupported mode within an otherwise usable file type.</dd>
+
+      <dt><tt>ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA</tt></dt>
+      <dd>The sound data was corrupt or truncated.</dd>
+    </dl>
+
+    <h3 class="manpage"><a name="alutLoadMemoryHelloWorld"></a>alutLoadMemoryHelloWorld</h3>
+
+    <h4>Name</h4>
+
+    <p><tt>alutLoadMemoryHelloWorld</tt> - load a 'Hello, world!' sound into
+    OpenAL-like data</p>
+
+    <h4>Synopsis</h4>
+
+<pre class="programlisting">
+ALvoid *alutLoadMemoryHelloWorld (ALenum *format,
+                                  ALsizei *size,
+                                  ALfloat *frequency);
+
+</pre>
+
+    <h4>Description</h4>
+
+    <p><tt>alutLoadMemoryHelloWorld</tt> loads the sound of someone saying
+    'Hello, world!' into a newly <tt>malloc</tt>ed buffer. The sound data is
+    guaranteed to be in a standard OpenAL format, with a sample frequency chosen
+    by the ALUT implementation.</p>
+
+    <h4>Return Value</h4>
+
+    <p>On success, <tt>alutLoadMemoryHelloWorld</tt> returns a pointer to a
+    newly allocated memory area containing the sound data, which can be
+    <tt>free</tt>d if not needed anymore. It returns <tt>NULL</tt> on
+    failure. If any of the format, size or frequency parameters are
+    non-<tt>NULL</tt>, the respective information about the sound will be passed
+    back.</p>
+
+    <h4>Errors</h4>
+
+    <dl>
+      <dt><tt>ALUT_ERROR_OUT_OF_MEMORY</tt></dt>
+      <dd>ALUT ran out of memory.</dd>
+
+      <dt><tt>ALUT_ERROR_INVALID_OPERATION</tt></dt>
+      <dd>ALUT has not been initialised.</dd>
+
+      <dt><tt>ALUT_ERROR_NO_CURRENT_CONTEXT</tt></dt>
+      <dd>There is no current AL context.</dd>
+
+      <dt><tt>ALUT_ERROR_AL_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an AL error on entry to
+      <tt>alutLoadMemoryHelloWorld</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_ALC_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an ALC error on entry to
+      <tt>alutLoadMemoryHelloWorld</tt>.</dd>
+    </dl>
+
+    <h3 class="manpage"><a name="alutLoadMemoryWaveform"></a>alutLoadMemoryWaveform</h3>
+
+    <h4>Name</h4>
+
+    <p><tt>alutLoadMemoryWaveform</tt> - load a synthesized waveform sound into
+    OpenAL-like data</p>
+
+    <h4>Synopsis</h4>
+
+<pre class="programlisting">
+ALvoid *alutLoadMemoryWaveform (ALenum waveshape,
+                                ALfloat frequency,
+                                ALfloat phase,
+                                ALfloat duration,
+                                ALenum *format,
+                                ALsizei *size,
+                                ALfloat *sampleFrequency);
+</pre>
+
+    <h4>Description</h4>
+
+    <p><tt>alutLoadMemoryWaveform</tt> loads a snippet of audio with the
+    specified waveshape at the specified frequency (in Hertz), phase (in
+    degrees: -180 to +180) and duration (in seconds) into a newly
+    <tt>malloc</tt>ed buffer. The sound data is guaranteed to be in a standard
+    OpenAL format, with a sample frequency chosen by the ALUT
+    implementation. Allowed waveforms are:</p>
+
+    <ul>
+      <li><tt>ALUT_WAVEFORM_SINE</tt></li>
+      <li><tt>ALUT_WAVEFORM_SQUARE</tt></li>
+      <li><tt>ALUT_WAVEFORM_SAWTOOTH</tt></li>
+      <li><tt>ALUT_WAVEFORM_WHITENOISE</tt></li>
+      <li><tt>ALUT_WAVEFORM_IMPULSE</tt></li>
+    </ul>
+
+    <p>The duration will always be rounded up to an exact number of cycles of
+    the sound to avoid a click if you loop the sample. The frequency and phase
+    arguments are ignored for <tt>ALUT_WHITENOISE</tt>.</p>
+
+    <h4>Return Value</h4>
+
+    <p>On success, <tt>alutLoadMemoryWaveform</tt> returns a pointer to a newly
+    allocated memory area containing the sound data, which can be <tt>free</tt>d
+    if not needed anymore. It returns <tt>NULL</tt> on failure. If any of the
+    format, size or sample frequency parameters are non-<tt>NULL</tt>, the
+    respective information about the sound will be passed back.</p>
+
+    <h4>Errors</h4>
+
+    <dl>
+      <dt><tt>ALUT_ERROR_OUT_OF_MEMORY</tt></dt>
+      <dd>ALUT ran out of memory.</dd>
+
+      <dt><tt>ALUT_ERROR_INVALID_ENUM</tt></dt>
+      <dd>An invalid waveform token was given to
+      <tt>alutLoadMemoryWaveform</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_INVALID_VALUE</tt></dt>
+      <dd>The frequency was not positive or the duration was negative.</dd>
+
+      <dt><tt>ALUT_ERROR_INVALID_OPERATION</tt></dt>
+      <dd>ALUT has not been initialised.</dd>
+
+      <dt><tt>ALUT_ERROR_NO_CURRENT_CONTEXT</tt></dt>
+      <dd>There is no current AL context.</dd>
+
+      <dt><tt>ALUT_ERROR_AL_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an AL error on entry to
+      <tt>alutLoadMemoryWaveform</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_ALC_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an ALC error on entry to
+      <tt>alutLoadMemoryWaveform</tt>.</dd>
+    </dl>
+
+    <h3 class="manpage"><a name="alutGetMIMETypes"></a>alutGetMIMETypes</h3>
+
+    <h4>Name</h4>
+
+    <p><tt>alutGetMIMETypes</tt> - get list support supported audio MIME types</p>
+
+    <h4>Synopsis</h4>
+
+<pre class="programlisting">
+const char *alutGetMIMETypes (ALenum loader);
+</pre>
+
+    <h4>Description</h4>
+
+    <p><tt>alutGetMIMETypes</tt> returns a comma-separated list of
+    supported MIME types for the given loader type, e.g. something like
+    &quot;<tt>audio/basic,audio/mpeg,audio/x-wav</tt>&quot;. Allowed loader
+    types are:</p>
+
+    <dl>
+      <dt><tt>ALUT_LOADER_BUFFER</tt></dt>
+
+      <dd>For the loaders returning sound data in an OpenAL buffer,
+      e.g. <tt>alutCreateBufferFromFile</tt> and
+      <tt>alutCreateBufferFromFileImage</tt></dd>
+
+      <dt><tt>ALUT_LOADER_MEMORY</tt></dt>
+
+      <dd>For the loaders returning sound data in a newly allocated memory
+      region, e.g. <tt>alutLoadMemoryFromFile</tt> and
+      <tt>alutLoadMemoryFromFileImage</tt></dd>
+    </dl>
+
+    <p>It is possible that <tt>ALUT_LOADER_MEMORY</tt> loaders will be unable to
+    support some file types that <tt>ALUT_LOADER_BUFFER</tt> loaders can support
+    (although the reverse is never the case). Furthermore, it is possible that
+    for some file types (notably audio/x-wav) the support may be only for a few
+    sub-formats. For example, an implementation may advertise that audio/x-wav
+    is supported when in fact it only supports uncompressed (i.e. PCM) WAV files
+    and not any of the compressed subformats. In this event, the various ALUT
+    loaders may return an error and set
+    <tt>ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE</tt> rather than
+    <tt>ALUT_ERROR_UNSUPPORTED_FILE_TYPE</tt> which would indicate that no files
+    of this type are allowed.</p>
+
+    <h4>Return Value</h4>
+
+    <p>On success, <tt>alutGetMIMETypes</tt> returns a zero-terminated string
+    which contains a comma-separated list of supported MIME types. It returns
+    <tt>NULL</tt> on failure.</p>
+
+    <h4>Errors</h4>
+
+    <dl>
+      <dt><tt>ALUT_ERROR_INVALID_ENUM</tt></dt>
+      <dd><tt>alutGetMIMETypes</tt> was given an invalid loader token.</dd>
+
+      <dt><tt>ALUT_ERROR_INVALID_OPERATION</tt></dt>
+      <dd>ALUT has not been initialised.</dd>
+
+      <dt><tt>ALUT_ERROR_NO_CURRENT_CONTEXT</tt></dt>
+      <dd>There is no current AL context.</dd>
+
+      <dt><tt>ALUT_ERROR_AL_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an AL error on entry to
+      <tt>alutGetMIMETypes</tt>.</dd>
+
+      <dt><tt>ALUT_ERROR_ALC_ERROR_ON_ENTRY</tt></dt>
+      <dd>There was already an ALC error on entry to
+      <tt>alutGetMIMETypes</tt>.</dd>
+    </dl>
+
+    <h3><a name="DeprecatedWAVLoaders"></a>Deprecated WAV loaders</h3>
+
+    <p>For backwards-compatibility with ALUT 0.x.x, ALUT still offers the three
+    deprecated functions below. Note that on MacOS 0.x.x version, the
+    '<tt>loop</tt>' parameter is omitted from both loader functions.</p>
+
+<pre class="programlisting">
+void alutLoadWAVFile (ALbyte *filename,
+                      ALenum *format,
+                      void **data,
+                      ALsizei *size,
+                      ALsizei *frequency,
+                      ALboolean *loop);
+
+void alutLoadWAVMemory (ALbyte *buffer,
+                        ALenum *format,
+                        void **data,
+                        ALsizei *size,
+                        ALsizei *frequency,
+                        ALboolean *loop);
+
+void alutUnloadWAV (ALenum format ALvoid *data, ALsizei size, ALsizei frequency);
+</pre>
+
     <h2><a name="VersionChecking"></a>Version Checking</h2>
 
     <p>ALUT version numbers consist of a major version number, a minor version
@@ -1173,12 +1324,13 @@ ALint alutGetMinorVersion (void);
 <pre class="programlisting">
 #define ALUT_API_MAJOR_VERSION 1
 
-#define ALUT_API_MINOR_VERSION 0
+#define ALUT_API_MINOR_VERSION 1
 </pre>
 
-    <p>In version 1.0.0 and later, the alut.h header file contains the above
-    macro definitions, whose values will be incremented appropriately in future
-    revisions of ALUT.</p>
+    <p>Version 1.0.0 introduced the above preprocessor symbols, whose values
+    will be incremented appropriately in future revisions of ALUT. In version
+    1.1.0, <tt>alutLoadMemoryHelloWorld</tt> and <tt>alutLoadMemoryWaveform</tt>
+    have been added to the ALUT API.</p>
 
     <div class="example">
       <h4>Example: Version consistency check</h4>
