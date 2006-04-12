@@ -6,6 +6,13 @@ body, div {
 
 h1, h2, h3, h4, h5, h6, p.title { color: #005A9C }
 
+/*
+ * We could use the following to make the headers stand out a little bit more:
+ *
+ * h1 { background-color: #b8bec2 }
+ * h2 { background-color: #cfd5da }
+ */
+
 h3.manpage { background-color: #e6edf2 }
 
 h1 { font:            170% sans-serif }
