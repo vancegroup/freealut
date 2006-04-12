@@ -1,5 +1,5 @@
 #
-# spec file for package alut (Version 1.0.1)
+# spec file for package freealut (@PACKAGE_VERSION@)
 #
 
 # norootforbuild
@@ -11,7 +11,7 @@ Name:         freealut
 License:      LGPL
 Group:        System/Libraries
 Autoreqprov:  on
-Version:      1.0.1
+Version:      @PACKAGE_VERSION@
 Release:      1
 URL:          http://www.openal.org/
 Summary:      Open Audio Library Utility Toolkit
@@ -93,6 +93,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/freealut.pc
 
 %changelog -n freealut
+* Wed Apr 12 2006 - sven.panne@aedion.de
+- Handle version via configure
 * Thu Dec 15 2005 - sven.panne@aedion.de
 - Added freealut-config and freealut.pc
 * Mon Nov 28 2005 - sven.panne@aedion.de

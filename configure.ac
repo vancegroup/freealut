@@ -214,6 +214,6 @@ AC_SUBST([AM_CFLAGS])
 
 # NOTE: Do not break the following line, otherwise we are into CR/LF vs. LF
 # trouble! This is a buglet in autoconf IMHO, but easy to work around.
-AC_CONFIG_FILES([Makefile admin/Makefile admin/pkgconfig/Makefile admin/pkgconfig/freealut-config admin/pkgconfig/freealut.pc examples/Makefile include/Makefile src/Makefile test_suite/Makefile])
+AC_CONFIG_FILES([Makefile admin/Makefile admin/pkgconfig/Makefile admin/pkgconfig/freealut-config admin/pkgconfig/freealut.pc admin/RPM/freealut.spec examples/Makefile include/Makefile src/Makefile test_suite/Makefile])
 
 AC_OUTPUT

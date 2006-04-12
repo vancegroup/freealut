@@ -1,5 +1,12 @@
 2006-04-12  Sven Panne  <sven.panne@aedion.de>
 
+	* configure.ac: To guarantee version consistency, generate .spec
+	file via configure.
+
+	* admin/RPM/.cvsignore, admin/RPM/freealut.spec.in: Added.
+
+	* admin/RPM/freealut.spec: Removed.
+
 	* CMakeLists.txt, admin/VisualStudio6/alut/alut.dsp,
 	admin/VisualStudioDotNET/alut/alut.vcproj, admin/autotools/.indent.pro,
 	configure.ac, include/AL/alut.h, src/Makefile.am, src/alutBufferData.c,
