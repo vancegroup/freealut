@@ -1,4 +1,9 @@
-2006-04-12  Sven Panne  <sven.panne@aedion.de>
+2006-05-11  Sven Panne  <sven.panne@aedion.de>
+
+	* include/AL/alut.h: Added some fragile logic to find the right path to
+	the OpenAL headers.
+
+2006-04-12  Sven Panne  <sven.panne@aedion.de>	
 
 	* configure.ac: To guarantee version consistency, generate .spec
 	file via configure.
