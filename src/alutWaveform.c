@@ -54,15 +54,15 @@ getWaveformFunction (ALenum waveshape)
   switch (waveshape)
     {
     case ALUT_WAVEFORM_SINE:
-      return waveformSine;
+      return &waveformSine;
     case ALUT_WAVEFORM_SQUARE:
-      return waveformSquare;
+      return &waveformSquare;
     case ALUT_WAVEFORM_SAWTOOTH:
-      return waveformSawtooth;
+      return &waveformSawtooth;
     case ALUT_WAVEFORM_WHITENOISE:
-      return waveformWhitenoise;
+      return &waveformWhitenoise;
     case ALUT_WAVEFORM_IMPULSE:
-      return waveformImpulse;
+      return &waveformImpulse;
     }
   _alutSetError (ALUT_ERROR_INVALID_ENUM);
   return NULL;

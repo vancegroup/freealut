@@ -1,5 +1,8 @@
 2006-05-11  Sven Panne  <sven.panne@aedion.de>
 
+	* src/alutWaveform.c(getWaveformFunction): To avoid warnings on VC6, add
+	some redundant '&' operators.
+
 	* include/AL/alut.h: Added some fragile logic to find the right path to
 	the OpenAL headers.
 
