@@ -1,5 +1,14 @@
 2006-05-11  Sven Panne  <sven.panne@aedion.de>
 
+	* README, admin/VisualStudio6/alut/alut.dsp,
+	admin/VisualStudio6/hello_world/hello_world.dsp,
+	admin/VisualStudio6/playfile/playfile.dsp,
+	admin/VisualStudioDotNET/alut/alut.vcproj,
+	admin/VisualStudioDotNET/hello_world/hello_world.vcproj,
+	admin/VisualStudioDotNET/playfile/playfile.vcproj: Changed the paths to
+	the headers and the library to conform to the default of the current
+	OpenAL SDK installer from Creative.
+
 	* src/alutWaveform.c(getWaveformFunction): To avoid warnings on VC6, add
 	some redundant '&' operators.
 

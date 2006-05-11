@@ -43,11 +43,12 @@ Building with VisualStudio
 The admin subdirectory contains VisualStudio6 and VisualStudioDotNET
 subdirectories, which contain a Visual Studio 6 workspace and a Visual Studio
 .NET solution, respectively. These expect the OpenAL SDK (header and import
-library) at C:\OpenALSDK. If this is not the case for your setup, you can change
-this either directly with a text editor in the project files (the only way for
-*real* men ;-) or via the project settings within Visual Studio. When everything
-is OK, just build e.g. the hello_world project and you should get the ALUT
-library itself and a demo with Steve Baker saying an immortal phrase.
+library) at the standard path "C:\Program Files\OpenAL 1.1 with EFX SDK". If
+this is not the case for your setup, you can change this either directly with a
+text editor in the project files (the only way for *real* men ;-) or via the
+project settings within Visual Studio. When everything is OK, just build
+e.g. the hello_world project and you should get the ALUT library itself and a
+demo with Steve Baker saying an immortal phrase.
 
 
 Building with CMake
