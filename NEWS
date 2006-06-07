@@ -1,4 +1,4 @@
-Release 1.1.0 (2006-05-22, tag "freealut_1_1_0")
+Release 1.1.0 (2006-06-07, tag "freealut_1_1_0")
 ------------------------------------------------
 
    * Improved build under Visual Studio (warnings and paths to OpenAL SDK).
