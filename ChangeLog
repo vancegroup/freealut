@@ -1,5 +1,7 @@
 2006-06-07  Sven Panne  <sven.panne@aedion.de>
 
+	* admin/RPM/freealut.spec.in: Small spec updates for SuSE 10.1.
+
 	* Released Version 1.1.0, subversion tag is "freealut_1_1_0".
 
 2006-05-22  Sven Panne  <sven.panne@aedion.de>
