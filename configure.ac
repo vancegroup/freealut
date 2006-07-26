@@ -132,9 +132,9 @@ AC_SUBST([LIBM])
 
 AC_ARG_ENABLE([warnings],
 [AS_HELP_STRING([--enable-warnings],
-                [enable pedantic compiler warnings @<:@default=yes@:>@])])
+                [enable pedantic compiler warnings @<:@default=no@:>@])])
 
-if test "x$enable_warnings" != xno; then
+if test "x$enable_warnings" = xyes; then
   # Doing it in two steps gives a nicer message...
   AX_CFLAGS_WARN_ALL_ANSI([flags])
   AM_CFLAGS="$AM_CFLAGS $flags"
