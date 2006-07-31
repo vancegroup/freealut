@@ -13,7 +13,7 @@
 
 #if HAVE_STDINT_H
 #include <stdint.h>
-#elif defined(_MSC_VER)
+#elif HAVE___INT8
 typedef __int8 int8_t;
 typedef unsigned __int8 uint8_t;
 typedef __int16 int16_t;
