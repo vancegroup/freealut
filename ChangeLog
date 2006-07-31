@@ -1,3 +1,11 @@
+2006-07-31  Prakash Punnoor <prakash@punnoor.de>
+
+	* CMakeLists.txt: disable warnings by default, add -W flags only
+	for GCC compatible compilers
+	
+	* admin/CMakeModules/FindSleepFunction.cmake: sync to OpenAL SI
+	version
+
 2006-07-26  Pannes  <sven.panne@aedion.de>
 
 	* configure.ac: Due to some troubles with -ansi on MinGW and Cygwin,
