@@ -5,7 +5,7 @@
 2006-07-31  Prakash Punnoor <prakash@punnoor.de>
 
 	* CMakeLists.txt: disable warnings by default, add -W flags only for GCC
-	compatible compilers
+	compatible compilers, don't check twice for unistd.h
 	
 	* admin/CMakeModules/FindSleepFunction.cmake: sync to OpenAL SI version
 
