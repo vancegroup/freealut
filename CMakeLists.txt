@@ -43,7 +43,7 @@ SET(ADD_CFLAGS "")
 SET(ADD_LDFLAGS "")
 SET(ADD_LIBS "")
 
-OPTION(BUILD_STATIC    "build static library too"   ON)
+OPTION(BUILD_STATIC    "build static library too"   OFF)
 OPTION(PROFILE         "enable profile"             OFF)
 OPTION(OPTIMIZATION    "enable optimization"        ON)
 OPTION(WARNINGS        "enable warnings"            OFF)

@@ -6,7 +6,7 @@
 
 	* CMakeLists.txt: disable warnings by default, add -W flags only for GCC
 	compatible compilers, don't check twice for unistd.h, add checks for
-	__int8
+	__int8, don't build static lib
 	
 	* admin/CMakeModules/FindSleepFunction.cmake: sync to OpenAL SI version
 
