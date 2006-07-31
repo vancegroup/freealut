@@ -98,6 +98,21 @@ CHECK_INCLUDE_FILE_DEFINE(stdint.h HAVE_STDINT_H)
 
 IF(WIN32)
   CHECK_INCLUDE_FILE_DEFINE(basetsd.h HAVE_BASETSD_H)
+
+    # check for __int8 type
+  SET(SOURCE
+"int main(){__int8 foo;return 0;}
+")
+  FILE(WRITE "${CMAKE_BINARY_DIR}/CMakeTmp/src.c" "${SOURCE}")
+
+  TRY_COMPILE(HAVE___INT8
+          ${CMAKE_BINARY_DIR}
+          ${CMAKE_BINARY_DIR}/CMakeTmp/src.c
+          CMAKE_FLAGS
+          OUTPUT_VARIABLE OUTPUT)
+  IF(HAVE___INT8)
+    ADD_DEFINE("HAVE___INT8 1")
+  ENDIF(HAVE___INT8)
 ENDIF(WIN32)
 
 IF(HAVE_UNISTD_H)
