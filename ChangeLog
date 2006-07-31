@@ -1,10 +1,13 @@
+2006-07-31  Sven Panne  <sven.panne@aedion.de>
+
+	* src/al_siteconfig.h: Cleaned up #ifdefs for sized integer types.
+
 2006-07-31  Prakash Punnoor <prakash@punnoor.de>
 
-	* CMakeLists.txt: disable warnings by default, add -W flags only
-	for GCC compatible compilers
+	* CMakeLists.txt: disable warnings by default, add -W flags only for GCC
+	compatible compilers
 	
-	* admin/CMakeModules/FindSleepFunction.cmake: sync to OpenAL SI
-	version
+	* admin/CMakeModules/FindSleepFunction.cmake: sync to OpenAL SI version
 
 2006-07-26  Pannes  <sven.panne@aedion.de>
 
