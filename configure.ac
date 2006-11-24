@@ -102,7 +102,7 @@ AC_DEFINE([_POSIX_C_SOURCE], [199309], [Define to the POSIX version that should 
 AC_DEFINE([__NO_CTYPE], [1], [Define to 1 if tolower and friends should not be macros.])
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS([AL/alc.h AL/al.h basetsd.h ctype.h math.h stdio.h time.h windows.h])
+AC_CHECK_HEADERS([AL/alc.h AL/al.h ctype.h math.h stdio.h time.h windows.h])
 
 # Checks for library functions.
 ALUT_CHECK_FUNC([[@%:@include <time.h>]],

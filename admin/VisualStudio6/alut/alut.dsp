@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "ALUT_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I "..\..\..\include" /I "C:\Program Files\OpenAL 1.1 with EFX SDK\include" /D "NDEBUG" /D "_WINDOWS" /D "_USRDLL" /D "ALUT_EXPORTS" /D "WIN32" /D "_MBCS" /D "ALUT_BUILD_LIBRARY" /D "HAVE__STAT" /D "HAVE_BASETSD_H" /D "HAVE_SLEEP" /D "HAVE_WINDOWS_H" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "..\..\..\include" /I "C:\Program Files\OpenAL 1.1 with EFX SDK\include" /D "NDEBUG" /D "_WINDOWS" /D "_USRDLL" /D "ALUT_EXPORTS" /D "WIN32" /D "_MBCS" /D "ALUT_BUILD_LIBRARY" /D "HAVE__STAT" /D "HAVE___INT8" /D "HAVE_SLEEP" /D "HAVE_WINDOWS_H" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x407 /d "NDEBUG"
@@ -68,7 +68,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "ALUT_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\..\..\include" /I "C:\Program Files\OpenAL 1.1 with EFX SDK\include" /D "_DEBUG" /D "_WINDOWS" /D "_USRDLL" /D "ALUT_EXPORTS" /D "WIN32" /D "_MBCS" /D "ALUT_BUILD_LIBRARY" /D "HAVE__STAT" /D "HAVE_BASETSD_H" /D "HAVE_SLEEP" /D "HAVE_WINDOWS_H" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\..\..\include" /I "C:\Program Files\OpenAL 1.1 with EFX SDK\include" /D "_DEBUG" /D "_WINDOWS" /D "_USRDLL" /D "ALUT_EXPORTS" /D "WIN32" /D "_MBCS" /D "ALUT_BUILD_LIBRARY" /D "HAVE__STAT" /D "HAVE___INT8" /D "HAVE_SLEEP" /D "HAVE_WINDOWS_H" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x407 /d "_DEBUG"

@@ -1,3 +1,12 @@
+2006-11-24  Sven Panne  <sven.panne@aedion.de>
+
+	* CMakeLists.txt, admin/VisualStudio6/alut/alut.dsp,
+	admin/VisualStudio6/hello_world/hello_world.dsp,
+	admin/VisualStudio6/playfile/playfile.dsp,
+	admin/VisualStudioDotNET/alut/alut.vcproj, configure.ac: Fixed Visual
+	Studio files, so VS finds the correct sized types. Removed the last
+	remnants of basetsd.h.
+
 2006-07-31  Sven Panne  <sven.panne@aedion.de>
 
 	* src/al_siteconfig.h: Cleaned up #ifdefs for sized integer types.

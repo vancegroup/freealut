@@ -65,7 +65,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\..\..\include" /I "C:\Program Files\OpenAL 1.1 with EFX SDK\include" /D "_CONSOLE" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "ALUT_BUILD_LIBRARY" /D "HAVE__STAT" /D "HAVE_BASETSD_H" /D "HAVE_SLEEP" /D "HAVE_WINDOWS_H" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\..\..\include" /I "C:\Program Files\OpenAL 1.1 with EFX SDK\include" /D "_CONSOLE" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "ALUT_BUILD_LIBRARY" /D "HAVE__STAT" /D "HAVE___INT8" /D "HAVE_SLEEP" /D "HAVE_WINDOWS_H" /YX /FD /GZ /c
 # ADD BASE RSC /l 0x407 /d "_DEBUG"
 # ADD RSC /l 0x407 /d "_DEBUG"
 BSC32=bscmake.exe

@@ -97,8 +97,6 @@ FIND_PACKAGE(SleepFunction)
 CHECK_INCLUDE_FILE_DEFINE(stdint.h HAVE_STDINT_H)
 
 IF(WIN32)
-  CHECK_INCLUDE_FILE_DEFINE(basetsd.h HAVE_BASETSD_H)
-
     # check for __int8 type
   SET(SOURCE
 "int main(){__int8 foo;return 0;}
