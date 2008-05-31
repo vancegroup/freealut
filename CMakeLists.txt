@@ -59,10 +59,10 @@ OPTION(BUILD_TESTS "build the test-suite" OFF)
 ADD_DEFINE(ALUT_BUILD_LIBRARY)
 # We could possibly need struct timespec and random(), which are not ANSI.
 # Define to 500 if Single Unix conformance is wanted, 600 for sixth revision.
-ADD_DEFINE("_XOPEN_SOURCE 500")
+ADD_DEFINE("_XOPEN_SOURCE 600")
 # We might need nanosleep, which is a POSIX IEEE Std 1003.1b-1993 feature.
 # Define to the POSIX version that should be used.
-ADD_DEFINE("_POSIX_C_SOURCE 199309")
+ADD_DEFINE("_POSIX_C_SOURCE 200112L")
 # Without __NO_CTYPE tolower and friends are macros which introduce a GLIBC 2.3
 # dependency. By defining this identifier we are currently backwards compatible
 # to GLIBC 2.1.3, which is a good thing. In addition, the macros lead to code
