@@ -149,7 +149,6 @@ streamRead (InputStream *stream, void *ptr, size_t numBytesToRead)
                          ALUT_ERROR_CORRUPT_OR_TRUNCATED_DATA);
           return AL_FALSE;
         }
-      return AL_TRUE;
     }
   else
     {
@@ -160,8 +159,9 @@ streamRead (InputStream *stream, void *ptr, size_t numBytesToRead)
         }
       memcpy (ptr, stream->u.data, numBytesToRead);
       stream->u.data = ((const char *) (stream->u.data) + numBytesToRead);
-      return AL_TRUE;
     }
+  stream->remainingLength -= numBytesToRead;
+  return AL_TRUE;
 }
 
 /****************************************************************************
