@@ -11,8 +11,8 @@
 #error No way to sleep on this platform
 #endif
 
-ALboolean
-alutSleep (ALfloat duration)
+ALUT_API ALboolean
+ALUT_APIENTRY alutSleep (ALfloat duration)
 {
   if (duration < 0)
     {

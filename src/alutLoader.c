@@ -323,8 +323,8 @@ _alutCreateBufferFromInputStream (InputStream *stream)
   return buffer;
 }
 
-ALuint
-alutCreateBufferFromFile (const char *fileName)
+ALUT_API ALuint
+ALUT_APIENTRY alutCreateBufferFromFile (const char *fileName)
 {
   InputStream *stream;
   if (!_alutSanityCheck ())
@@ -335,8 +335,9 @@ alutCreateBufferFromFile (const char *fileName)
   return _alutCreateBufferFromInputStream (stream);
 }
 
-ALuint
-alutCreateBufferFromFileImage (const ALvoid *data, ALsizei length)
+ALUT_API ALuint
+ALUT_APIENTRY alutCreateBufferFromFileImage (const ALvoid *data,
+                                             ALsizei length)
 {
   InputStream *stream;
   if (!_alutSanityCheck ())
@@ -395,9 +396,9 @@ _alutLoadMemoryFromInputStream (InputStream *stream, ALenum *format,
   return data;
 }
 
-ALvoid *
-alutLoadMemoryFromFile (const char *fileName, ALenum *format,
-                        ALsizei *size, ALfloat *frequency)
+ALUT_API ALvoid *
+ALUT_APIENTRY alutLoadMemoryFromFile (const char *fileName, ALenum *format,
+                                      ALsizei *size, ALfloat *frequency)
 {
   InputStream *stream;
   if (!_alutSanityCheck ())
@@ -408,10 +409,10 @@ alutLoadMemoryFromFile (const char *fileName, ALenum *format,
   return _alutLoadMemoryFromInputStream (stream, format, size, frequency);
 }
 
-ALvoid *
-alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
-                             ALenum *format, ALsizei *size,
-                             ALfloat *frequency)
+ALUT_API ALvoid *
+ALUT_APIENTRY alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
+                                           ALenum *format, ALsizei *size,
+                                           ALfloat *frequency)
 {
   InputStream *stream;
   if (!_alutSanityCheck ())
@@ -426,11 +427,11 @@ alutLoadMemoryFromFileImage (const ALvoid *data, ALsizei length,
   Yukky backwards compatibility crap.
 */
 
-void
-alutLoadWAVFile (ALbyte *fileName, ALenum *format, void **data, ALsizei *size,
-                 ALsizei *frequency
+ALUT_API void
+ALUT_APIENTRY alutLoadWAVFile (ALbyte *fileName, ALenum *format, void **data,
+                               ALsizei *size, ALsizei *frequency
 #if !defined(__APPLE__)
-                 , ALboolean *loop
+                               , ALboolean *loop
 #endif
   )
 {
@@ -459,11 +460,11 @@ alutLoadWAVFile (ALbyte *fileName, ALenum *format, void **data, ALsizei *size,
 #endif
 }
 
-void
-alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size,
-                   ALsizei *frequency
+ALUT_API void
+ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data,
+                                 ALsizei *size, ALsizei *frequency
 #if !defined(__APPLE__)
-                   , ALboolean *loop
+                                 , ALboolean *loop
 #endif
   )
 {
@@ -493,17 +494,17 @@ alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data, ALsizei *size,
 #endif
 }
 
-void
-alutUnloadWAV (ALenum UNUSED (format), ALvoid *data, ALsizei UNUSED (size),
-               ALsizei UNUSED (frequency))
+ALUT_API void
+ALUT_APIENTRY alutUnloadWAV (ALenum UNUSED (format), ALvoid *data,
+                             ALsizei UNUSED (size), ALsizei UNUSED (frequency))
 {
   /* Don't do an _alutSanityCheck () because it's not required in ALUT 0.x.x */
 
   free (data);
 }
 
-const char *
-alutGetMIMETypes (ALenum loader)
+ALUT_API const char *
+ALUT_APIENTRY alutGetMIMETypes (ALenum loader)
 {
   if (!_alutSanityCheck ())
     {

@@ -141,10 +141,11 @@ generateWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
   return stream;
 }
 
-ALvoid *
-alutLoadMemoryWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
-                        ALfloat duration, ALenum *format, ALsizei *size,
-                        ALfloat *freq)
+ALUT_API ALvoid *
+ALUT_APIENTRY alutLoadMemoryWaveform (ALenum waveshape, ALfloat frequency,
+                                      ALfloat phase, ALfloat duration,
+                                      ALenum *format, ALsizei *size,
+                                      ALfloat *freq)
 {
   OutputStream *outputStream;
   InputStream *inputStream;
@@ -179,9 +180,9 @@ alutLoadMemoryWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
   return data;
 }
 
-ALuint
-alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency, ALfloat phase,
-                          ALfloat duration)
+ALUT_API ALuint
+ALUT_APIENTRY alutCreateBufferWaveform (ALenum waveshape, ALfloat frequency,
+                                        ALfloat phase, ALfloat duration)
 {
   OutputStream *outputStream;
   InputStream *inputStream;
@@ -916,8 +917,9 @@ generateHelloWorld (void)
                                               sizeof (helloWorldSample));
 }
 
-ALvoid *
-alutLoadMemoryHelloWorld (ALenum *format, ALsizei *size, ALfloat *frequency)
+ALUT_API ALvoid *
+ALUT_APIENTRY alutLoadMemoryHelloWorld (ALenum *format, ALsizei *size,
+                                        ALfloat *frequency)
 {
   if (!_alutSanityCheck ())
     {
@@ -927,8 +929,8 @@ alutLoadMemoryHelloWorld (ALenum *format, ALsizei *size, ALfloat *frequency)
                                          frequency);
 }
 
-ALuint
-alutCreateBufferHelloWorld (void)
+ALUT_API ALuint
+ALUT_APIENTRY alutCreateBufferHelloWorld (void)
 {
   if (!_alutSanityCheck ())
     {

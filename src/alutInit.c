@@ -46,8 +46,8 @@ _alutSanityCheck (void)
   return AL_TRUE;
 }
 
-ALboolean
-alutInit (int *argcp, char **argv)
+ALUT_API ALboolean
+ALUT_APIENTRY alutInit (int *argcp, char **argv)
 {
   ALCdevice *device;
   ALCcontext *context;
@@ -92,8 +92,8 @@ alutInit (int *argcp, char **argv)
   return AL_TRUE;
 }
 
-ALboolean
-alutInitWithoutContext (int *argcp, char **argv)
+ALUT_API ALboolean
+ALUT_APIENTRY alutInitWithoutContext (int *argcp, char **argv)
 {
   if (initialisationState != Unintialized)
     {
@@ -111,8 +111,8 @@ alutInitWithoutContext (int *argcp, char **argv)
   return AL_TRUE;
 }
 
-ALboolean
-alutExit (void)
+ALUT_API ALboolean
+ALUT_APIENTRY alutExit (void)
 {
   ALCdevice *device;
 

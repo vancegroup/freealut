@@ -18,16 +18,16 @@ _alutSetError (ALenum err)
     }
 }
 
-ALenum
-alutGetError (void)
+ALUT_API ALenum
+ALUT_APIENTRY alutGetError (void)
 {
   ALint ret = lastError;
   lastError = ALUT_ERROR_NO_ERROR;
   return ret;
 }
 
-const char *
-alutGetErrorString (ALenum error)
+ALUT_API const char *
+ALUT_APIENTRY alutGetErrorString (ALenum error)
 {
   switch (error)
     {
