@@ -136,9 +136,17 @@ loadWavFile (InputStream *stream)
                        || endianess () ==
                        LittleEndian) ? _alutCodecLinear : _alutCodecPCM16;
               break;
+            case 6:            /* aLaw */
+              bitsPerSample *= 2;
+              codec = _alutCodecALaw;
+              break; 
             case 7:            /* uLaw */
-              bitsPerSample *= 2;       /* ToDo: ??? */
+              bitsPerSample *= 2;
               codec = _alutCodecULaw;
+              break;
+            case 17:		/* ima4 adpcm */
+              bitsPerSample *= 4;
+              codec = _alutCodecIMA4;
               break;
             default:
               _alutSetError (ALUT_ERROR_UNSUPPORTED_FILE_SUBTYPE);
@@ -160,7 +168,7 @@ loadWavFile (InputStream *stream)
               return NULL;
             }
           return codec (data, chunkLength, numChannels, bitsPerSample,
-                        (ALfloat) sampleFrequency);
+                        (ALfloat) sampleFrequency, blockAlign);
         }
       else
         {
@@ -247,7 +255,7 @@ loadAUFile (InputStream *stream)
       return NULL;
     }
   return codec (data, length, numChannels, bitsPerSample,
-                (ALfloat) sampleFrequency);
+                (ALfloat) sampleFrequency, 1);
 }
 
 static BufferData *
@@ -260,7 +268,7 @@ loadRawFile (InputStream *stream)
       return NULL;
     }
   /* Guesses */
-  return _alutCodecLinear (data, length, 1, 8, 8000);
+  return _alutCodecLinear (data, length, 1, 8, 8000, 1);
 }
 
 static BufferData *
@@ -475,7 +483,7 @@ ALUT_APIENTRY alutLoadWAVMemory (ALbyte *buffer, ALenum *format, void **data,
 
   /* ToDo: Can we do something less insane than passing 0x7FFFFFFF? */
   stream = _alutInputStreamConstructFromMemory (buffer, 0x7FFFFFFF);
-  _alutLoadMemoryFromInputStream (stream, format, size, &freq);
+  *data = _alutLoadMemoryFromInputStream (stream, format, size, &freq);
   if (*data == NULL)
     {
       return;

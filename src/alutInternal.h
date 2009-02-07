@@ -54,12 +54,14 @@ enum AUEncoding
 
 /* in alutCodec.c */
 typedef ALvoid *Codec (ALvoid *data, size_t length, ALint numChannels,
-                       ALint bitsPerSample, ALfloat sampleFrequency);
+                       ALint bitsPerSample, ALfloat sampleFrequency,
+                       ALint blockAlign);
 extern Codec _alutCodecLinear;
 extern Codec _alutCodecPCM8s;
 extern Codec _alutCodecPCM16;
 extern Codec _alutCodecULaw;
 extern Codec _alutCodecALaw;
+extern Codec _alutCodecIMA4;
 
 /* in alutError.c */
 extern void _alutSetError (ALenum err);
