@@ -20,10 +20,6 @@ set(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
 set(PACKAGE_BUGREPORT "openal-devel@opensource.creative.com")
 set(OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
 
-include(${CMAKE_ROOT}/Modules/CheckIncludeFile.cmake)
-include(${CMAKE_ROOT}/Modules/CheckIncludeFiles.cmake)
-include(${CMAKE_ROOT}/Modules/CheckCSourceCompiles.cmake)
-
 find_package(ConfigHelper)
 
 set(ALUT_SOURCES
@@ -82,42 +78,71 @@ if(UNIX)
 	set(ADD_LIBS ${ADD_LIBS} m)
 endif()
 
-
+###
+# Checking for types
+###
 if(WIN32)
 	include(CheckTypeSize)
 	check_type_size(__int8 HAVE___INT8)
 endif()
 
+###
+# Checking for Includes
+###
 include(CheckIncludeFile)
 check_include_file(stdint.h HAVE_STDINT_H)
 check_include_file(unistd.h HAVE_UNISTD_H)
 check_include_file(time.h HAVE_TIME_H)
 check_include_file(windows.h HAVE_WINDOWS_H)
 
+###
+# Checking for functions
+###
 include(CheckSymbolExists)
-if(HAVE_UNISTD_H)
-	check_symbol_exists(stat "sys/types.h;sys/stat.h;unistd.h" HAVE_STAT)
-endif()
 
 check_symbol_exists(_stat "sys/types.h;sys/stat.h" HAVE__STAT)
-
 if(HAVE_TIME_H)
 	check_symbol_exists(nanosleep "time.h" HAVE_NANOSLEEP)
 endif()
 if(HAVE_UNISTD_H)
 	check_symbol_exists(usleep "unistd.h" HAVE_USLEEP)
+	check_symbol_exists(stat "sys/types.h;sys/stat.h;unistd.h" HAVE_STAT)
 endif()
 if(HAVE_WINDOWS_H)
 	check_symbol_exists(Sleep "windows.h" HAVE_SLEEP)
 endif()
 
-# compiler specific settings
-find_package(CompilerAttribute)
-find_package(CompilerVisibility)
-find_package(CompilerFlagsSet)
+###
+# Checking for __attribute__
+###
+include(CheckCSourceCompiles)
+check_c_source_compiles("void  foo (int bar __attribute__((unused)) ) { }
+	static void baz (void) __attribute__((unused));
+	static void baz (void) { }
+	int main(){}
+	"
+	HAVE___ATTRIBUTE__)
 
-#generate_config_h()
+###
+# Checking for __attribute__((visibility("default"))) and -fvisibility=hidden
+###
+set(CMAKE_REQUIRED_FLAGS "-fvisibility=hidden")
+check_c_source_compiles("void __attribute__((visibility(\"default\"))) test() {}
+	#ifdef __INTEL_COMPILER
+	#error ICC breaks with binutils and visibility
+	#endif
+	int main(){}
+	" HAVE_GCC_VISIBILITY)
+set(CMAKE_REQUIRED_FLAGS)
 
+if(HAVE_GCC_VISIBILITY)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
+	add_definitions(-DHAVE_GCC_VISIBILITY)
+endif()
+
+###
+# Generate the config header
+###
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake_in" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
