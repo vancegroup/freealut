@@ -23,14 +23,7 @@ set(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
 set(PACKAGE_BUGREPORT "openal-devel@opensource.creative.com")
 set(OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
 
-
-
 include_directories(${Alut_SOURCE_DIR}/include)
-
-set(ADD_WFLAGS "")
-set(ADD_CFLAGS "")
-set(ADD_LDFLAGS "")
-set(ADD_LIBS "")
 
 option(BUILD_EXAMPLES "build example applications" OFF)
 option(BUILD_STATIC "build static library too" OFF)
@@ -52,11 +45,6 @@ option(BUILD_TESTS "build the test-suite" OFF)
 
 find_package(OpenAL REQUIRED)
 include_directories(${OPENAL_INCLUDE_DIR})
-
-
-if(UNIX)
-	set(ADD_LIBS ${ADD_LIBS} m)
-endif()
 
 ###
 # Checking for types
@@ -177,6 +165,9 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 ###
 add_subdirectory(src)
 
+###
+# Make the pkg-config and config files
+###
 # needed for openal.pc.in and openal-config.in
 set(prefix ${CMAKE_INSTALL_PREFIX})
 set(exec_prefix "\${prefix}")
@@ -198,10 +189,14 @@ install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut-config
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut.pc
 	DESTINATION lib/pkgconfig)
 
+###
 # Examples
+###
 add_subdirectory(examples)
 
+###
 # test-suite
+###
 if(BUILD_TESTS)
 
 	set(TESTS errorstuff fileloader memoryloader version waveforms)
@@ -215,15 +210,15 @@ if(BUILD_TESTS)
 				"-Wno-deprecated-declarations")
 		endif()
 		add_executable(test_${TEST} ${TEST_SRC})
-		target_link_libraries(test_${TEST} ${OPENAL_LIB} ${ADD_LIBS} alut)
+		target_link_libraries(test_${TEST} alut)
 	endforeach()
 
 	#copy over testdata, so test-suite can be used in binary dir
 	set(TESTDATA file1.wav file2.au file3.raw)
 
 	foreach(TESTDATUM ${TESTDATA})
-		configure_file(${CMAKE_SOURCE_DIR}/test_suite/${TESTDATUM}
-			${CMAKE_BINARY_DIR}/${TESTDATUM}
+		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/test_suite/${TESTDATUM}
+			${CMAKE_CURRENT_BINARY_DIR}/${TESTDATUM}
 			COPYONLY)
 	endforeach()
 endif()
