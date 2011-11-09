@@ -30,9 +30,11 @@ set(ALUT_SOURCES
 	alutUtil.c
 	alutVersion.c
 	alutWaveform.c)
+
 set(ALUT_INTERNAL_HEADERS
 	alutInternal.h)
 source_group(InternalHeader FILES ${ALUT_INTERNAL_HEADERS})
+
 set(ALUT_HEADERS
 	../include/AL/alut.h)
 source_group(APIHeader FILES ${ALUT_HEADERS})
@@ -65,6 +67,11 @@ endif()
 
 
 add_library(alut SHARED ${ALUT_SOURCES} ${ALUT_INTERNAL_HEADERS} ${ALUT_HEADERS})
+set_property(TARGET
+	alut
+	PROPERTY
+	PUBLIC_HEADER
+	${ALUT_HEADERS})
 set_target_properties(alut
 	PROPERTIES
 	VERSION
@@ -76,4 +83,8 @@ if(UNIX)
 	target_link_libraries(alut m)
 endif()	
 
-install_targets(/lib alut)
+install(TARGETS alut
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+	RUNTIME DESTINATION bin
+	PUBLIC_HEADER DESTINATION include/AL)

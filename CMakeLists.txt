@@ -177,8 +177,6 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 ###
 add_subdirectory(src)
 
-install_files(/include/AL FILES include/AL/alut.h)
-
 # needed for openal.pc.in and openal-config.in
 set(prefix ${CMAKE_INSTALL_PREFIX})
 set(exec_prefix "\${prefix}")
@@ -189,14 +187,16 @@ set(requirements "")
 # static linking dependecies are broken, so pthread isn't needed currently
 set(PTHREAD_LIBS ${CMAKE_THREAD_LIBS_INIT})
 
-configure_file(${CMAKE_SOURCE_DIR}/admin/pkgconfig/freealut.pc.in
-	${CMAKE_BINARY_DIR}/admin/pkgconfig/freealut.pc
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut.pc.in
+	${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut.pc
 	@ONLY)
-configure_file(${CMAKE_SOURCE_DIR}/admin/pkgconfig/freealut-config.in
-	${CMAKE_BINARY_DIR}/admin/pkgconfig/freealut-config
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut-config.in
+	${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut-config
 	@ONLY)
-install_programs(/bin FILES admin/pkgconfig/freealut-config)
-install_files(/lib/pkgconfig FILES admin/pkgconfig/freealut.pc)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut-config
+	DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut.pc
+	DESTINATION lib/pkgconfig)
 
 # Examples
 add_subdirectory(examples)
