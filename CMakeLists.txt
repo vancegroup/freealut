@@ -83,49 +83,32 @@ if(UNIX)
 endif()
 
 
-endif()
-
-# checks for unistd.h and time.h, as well
-find_package(SleepFunction)
-
-check_include_file_define(stdint.h HAVE_STDINT_H)
-
 if(WIN32)
-	# check for __int8 type
-	set(SOURCE "int main(){__int8 foo;return 0;}
-")
-	file(WRITE "${CMAKE_BINARY_DIR}/CMakeTmp/src.c" "${SOURCE}")
-
-	try_compile(HAVE___INT8
-		${CMAKE_BINARY_DIR}
-		${CMAKE_BINARY_DIR}/CMakeTmp/src.c
-		CMAKE_FLAGS
-		OUTPUT_VARIABLE
-		OUTPUT)
-	if(HAVE___INT8)
-		add_define("HAVE___INT8 1")
-	endif()
+	include(CheckTypeSize)
+	check_type_size(__int8 HAVE___INT8)
 endif()
 
+include(CheckIncludeFile)
+check_include_file(stdint.h HAVE_STDINT_H)
+check_include_file(unistd.h HAVE_UNISTD_H)
+check_include_file(time.h HAVE_TIME_H)
+check_include_file(windows.h HAVE_WINDOWS_H)
+
+include(CheckSymbolExists)
 if(HAVE_UNISTD_H)
-	check_function_define("
-  #include <sys/types.h>
-  #include <sys/stat.h>
-  #include <unistd.h>
-  "
-		stat
-		"(\"\", (struct stat*)0)"
-		HAVE_STAT)
+	check_symbol_exists(stat "sys/types.h;sys/stat.h;unistd.h" HAVE_STAT)
 endif()
 
-if(NOT HAVE_STAT)
-	check_function_define("
-  #include <sys/types.h>
-  #include <sys/stat.h>
-  "
-		_stat
-		"(\"\", (struct _stat*)0)"
-		HAVE__STAT)
+check_symbol_exists(_stat "sys/types.h;sys/stat.h" HAVE__STAT)
+
+if(HAVE_TIME_H)
+	check_symbol_exists(nanosleep "time.h" HAVE_NANOSLEEP)
+endif()
+if(HAVE_UNISTD_H)
+	check_symbol_exists(usleep "unistd.h" HAVE_USLEEP)
+endif()
+if(HAVE_WINDOWS_H)
+	check_symbol_exists(Sleep "windows.h" HAVE_SLEEP)
 endif()
 
 # compiler specific settings
@@ -133,7 +116,10 @@ find_package(CompilerAttribute)
 find_package(CompilerVisibility)
 find_package(CompilerFlagsSet)
 
-generate_config_h()
+#generate_config_h()
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake_in" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 set(CMAKE_C_FLAGS "${ADD_WFLAGS} ${ADD_CFLAGS} ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${ADD_CFLAGS} ${CMAKE_CXX_FLAGS}")
