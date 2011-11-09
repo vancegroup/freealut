@@ -1,219 +1,233 @@
 # cmake project file by Prakash Punnoor
-CMAKE_MINIMUM_REQUIRED(VERSION 2.0)
+# improved by Ryan Pavlik
+cmake_minimum_required(VERSION 2.6)
 
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/admin/CMakeModules")
-PROJECT(Alut C)
-SET(PACKAGE "freealut")
-SET(PACKAGE_TARNAME "freealut")
-SET(PACKAGE_NAME "freealut library")
-SET(PACKAGE_MAJOR_VERSION "1")
-SET(PACKAGE_MINOR_VERSION "0")
-SET(PACKAGE_BUILD_VERSION "1")
-SET(PACKAGE_VERSION "${PACKAGE_MAJOR_VERSION}.${PACKAGE_MINOR_VERSION}.${PACKAGE_BUILD_VERSION}")
-SET(MAJOR_VERSION "0")
-SET(MINOR_VERSION "0")
-SET(BUILD_VERSION "0")
-SET(VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${BUILD_VERSION}")
-SET(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
-SET(PACKAGE_BUGREPORT "openal-devel@opensource.creative.com")
-SET(OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
+project(Alut C)
 
-INCLUDE(${CMAKE_ROOT}/Modules/CheckIncludeFile.cmake)
-INCLUDE(${CMAKE_ROOT}/Modules/CheckIncludeFiles.cmake)
-INCLUDE(${CMAKE_ROOT}/Modules/CheckCSourceCompiles.cmake)
+set(PACKAGE "freealut")
+set(PACKAGE_TARNAME "freealut")
+set(PACKAGE_NAME "freealut library")
+set(PACKAGE_MAJOR_VERSION "1")
+set(PACKAGE_MINOR_VERSION "1")
+set(PACKAGE_BUILD_VERSION "0")
+set(PACKAGE_VERSION
+	"${PACKAGE_MAJOR_VERSION}.${PACKAGE_MINOR_VERSION}.${PACKAGE_BUILD_VERSION}")
 
-FIND_PACKAGE(ConfigHelper)
+# For SONAME
+set(MAJOR_VERSION "0")
+set(MINOR_VERSION "1")
+set(BUILD_VERSION "0")
 
-SET(ALUT_SOURCES src/alutBufferData.c
-                 src/alutCodec.c
-                 src/alutError.c
-                 src/alutInit.c
-                 src/alutInputStream.c
-                 src/alutInternal.h
-                 src/alutLoader.c
-                 src/alutOutputStream.c
-                 src/alutUtil.c
-                 src/alutVersion.c
-                 src/alutWaveform.c)
+set(VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${BUILD_VERSION}")
+set(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
+set(PACKAGE_BUGREPORT "openal-devel@opensource.creative.com")
+set(OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
 
-INCLUDE_DIRECTORIES(${Alut_SOURCE_DIR}/include)
+include_directories(${Alut_SOURCE_DIR}/include)
 
-SET(ADD_WFLAGS "")
-SET(ADD_CFLAGS "")
-SET(ADD_LDFLAGS "")
-SET(ADD_LIBS "")
+# What to build?
+option(BUILD_EXAMPLES "build example applications" ON)
+option(BUILD_STATIC "build static library too" OFF)
+option(BUILD_TESTS "build the test-suite" ON)
 
-OPTION(BUILD_STATIC    "build static library too"   OFF)
-OPTION(PROFILE         "enable profile"             OFF)
-OPTION(OPTIMIZATION    "enable optimization"        ON)
-OPTION(WARNINGS        "enable warnings"            OFF)
-IF(WARNINGS)
-  OPTION(MORE_WARNINGS "enable more warnings"       OFF)
-  OPTION(USE_WERROR    "enable fail on all warning" OFF)
-ENDIF(WARNINGS)
+# How to build it?
+option(BUILD_PROFILE "enable profile" OFF)
+option(BUILD_OPTIMIZATION "enable optimization" ON)
+option(BUILD_WARNINGS "enable warnings" OFF)
+option(BUILD_MORE_WARNINGS "enable more warnings" OFF)
+option(BUILD_USE_WERROR "enable fail on all warning" OFF)
 
-#want test-suit?
-OPTION(BUILD_TESTS "build the test-suite" OFF)
+###
+# Dependencies
+###
+find_package(OpenAL REQUIRED)
+include_directories(${OPENAL_INCLUDE_DIR})
 
+###
+# Checking for types
+###
+if(WIN32)
+	include(CheckTypeSize)
+	check_type_size(__int8 HAVE___INT8)
+endif()
 
-ADD_DEFINE(ALUT_BUILD_LIBRARY)
-# We could possibly need struct timespec and random(), which are not ANSI.
-# Define to 500 if Single Unix conformance is wanted, 600 for sixth revision.
-ADD_DEFINE("_XOPEN_SOURCE 600")
-# We might need nanosleep, which is a POSIX IEEE Std 1003.1b-1993 feature.
-# Define to the POSIX version that should be used.
-ADD_DEFINE("_POSIX_C_SOURCE 200112L")
-# Without __NO_CTYPE tolower and friends are macros which introduce a GLIBC 2.3
-# dependency. By defining this identifier we are currently backwards compatible
-# to GLIBC 2.1.3, which is a good thing. In addition, the macros lead to code
-# which triggers warnings with -Wunreachable-code.
-ADD_DEFINE("__NO_CTYPE 1")
+###
+# Checking for Includes
+###
+include(CheckIncludeFile)
+check_include_file(stdint.h HAVE_STDINT_H)
+check_include_file(unistd.h HAVE_UNISTD_H)
+check_include_file(time.h HAVE_TIME_H)
+check_include_file(windows.h HAVE_WINDOWS_H)
+check_include_file(features.h HAVE_FEATURES_H)
 
-ADD_DEFINITIONS(-DHAVE_CONFIG_H)
-ADD_DEFINITIONS(-DNDEBUG)
+###
+# Checking for functions
+###
+include(CheckSymbolExists)
 
-FIND_LIBRARY(OPENAL_LIB NAMES openal openal32 PATHS /usr/lib /usr/local/lib ${OPENAL_LIB_DIR})
-IF(OPENAL_LIB MATCHES "NOTFOUND")
-  MESSAGE(FATAL_ERROR "OpenAL not installed, cannot build alut - aborting.")
-ENDIF(OPENAL_LIB MATCHES "NOTFOUND")
+check_symbol_exists(_stat "sys/types.h;sys/stat.h" HAVE__STAT)
+if(HAVE_TIME_H)
+	check_symbol_exists(nanosleep "time.h" HAVE_NANOSLEEP)
+endif()
+if(HAVE_UNISTD_H)
+	check_symbol_exists(usleep "unistd.h" HAVE_USLEEP)
+	check_symbol_exists(stat "sys/types.h;sys/stat.h;unistd.h" HAVE_STAT)
+endif()
+if(HAVE_WINDOWS_H)
+	check_symbol_exists(Sleep "windows.h" HAVE_SLEEP)
+endif()
 
-IF(UNIX)
- SET(ADD_LIBS ${ADD_LIBS} m)
-ENDIF(UNIX)
+###
+# Checking for GLIBC
+###
+if(HAVE_FEATURES_H)
+	check_symbol_exists(__GLIBC__ "features.h" HAVE_GLIBC)
+endif()
 
-SET(CMAKE_REQUIRED_INCLUDES ${OPENAL_INCLUDE_DIR})
-CHECK_INCLUDE_FILES("AL/alc.h;AL/al.h" AL_HEADERS)
-IF(NOT AL_HEADERS)
-  MESSAGE(FATAL_ERROR "OpenAL header files not found - aborting.")
-ENDIF(NOT AL_HEADERS)
+###
+# Checking for __attribute__
+###
+include(CheckCSourceCompiles)
+check_c_source_compiles("void  foo (int bar __attribute__((unused)) ) { }
+	static void baz (void) __attribute__((unused));
+	static void baz (void) { }
+	int main(){}
+	"
+	HAVE___ATTRIBUTE__)
 
-IF(DEFINED OPENAL_INCLUDE_DIR)
-  INCLUDE_DIRECTORIES(${OPENAL_INCLUDE_DIR})
-ENDIF(DEFINED OPENAL_INCLUDE_DIR)
-
-# checks for unistd.h and time.h, as well
-FIND_PACKAGE(SleepFunction)
-
-CHECK_INCLUDE_FILE_DEFINE(stdint.h HAVE_STDINT_H)
-
-IF(WIN32)
-    # check for __int8 type
-  SET(SOURCE
-"int main(){__int8 foo;return 0;}
-")
-  FILE(WRITE "${CMAKE_BINARY_DIR}/CMakeTmp/src.c" "${SOURCE}")
-
-  TRY_COMPILE(HAVE___INT8
-          ${CMAKE_BINARY_DIR}
-          ${CMAKE_BINARY_DIR}/CMakeTmp/src.c
-          CMAKE_FLAGS
-          OUTPUT_VARIABLE OUTPUT)
-  IF(HAVE___INT8)
-    ADD_DEFINE("HAVE___INT8 1")
-  ENDIF(HAVE___INT8)
-ENDIF(WIN32)
-
-IF(HAVE_UNISTD_H)
-  CHECK_FUNCTION_DEFINE("
-  #include <sys/types.h>
-  #include <sys/stat.h>
-  #include <unistd.h>
-  " stat "(\"\", (struct stat*)0)" HAVE_STAT)
-ENDIF(HAVE_UNISTD_H)
-
-IF(NOT HAVE_STAT)
-  CHECK_FUNCTION_DEFINE("
-  #include <sys/types.h>
-  #include <sys/stat.h>
-  " _stat "(\"\", (struct _stat*)0)" HAVE__STAT)
-ENDIF(NOT HAVE_STAT)
-
-# compiler specific settings
-FIND_PACKAGE(CompilerAttribute)
-FIND_PACKAGE(CompilerVisibility)
-FIND_PACKAGE(CompilerFlagsSet)
-
-GENERATE_CONFIG_H()
-
-SET(CMAKE_C_FLAGS "${ADD_WFLAGS} ${ADD_CFLAGS} ${CMAKE_C_FLAGS}")
-SET(CMAKE_CXX_FLAGS "${ADD_CFLAGS} ${CMAKE_CXX_FLAGS}")
-SET(CMAKE_SHARED_LINKER_FLAGS "${ADD_LDFLAGS} ${CMAKE_SHARED_LINKER_FLAGS}")
-SET(CMAKE_MODULE_LINKER_FLAGS "${ADD_LDFLAGS} ${CMAKE_MODULE_LINKER_FLAGS}")
-
-IF(BUILD_STATIC)
-  # we can't create a static library with the same name
-  # as the shared one, so we copy it over after creation
-  ADD_LIBRARY(alut_static STATIC ${ALUT_SOURCES})
-  TARGET_LINK_LIBRARIES(alut_static ${OPENAL_LIB} ${ADD_LIBS})
-  IF(NOT WIN32)
-    ADD_CUSTOM_COMMAND(
-      TARGET alut_static
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND}
-      ARGS -E copy
-        ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}alut_static${CMAKE_STATIC_LIBRARY_SUFFIX}
-        ${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}alut${CMAKE_STATIC_LIBRARY_SUFFIX})
-    INSTALL_FILES(/lib FILES ${CMAKE_STATIC_LIBRARY_PREFIX}alut${CMAKE_STATIC_LIBRARY_SUFFIX})
-  ENDIF(NOT WIN32)
-ENDIF(BUILD_STATIC)
+###
+# Checking for __attribute__((visibility("default"))) and -fvisibility=hidden
+###
+set(CMAKE_REQUIRED_FLAGS "-fvisibility=hidden")
+check_c_source_compiles("void __attribute__((visibility(\"default\"))) test() {}
+	#ifdef __INTEL_COMPILER
+	#error ICC breaks with binutils and visibility
+	#endif
+	int main(){}
+	" HAVE_GCC_VISIBILITY)
+set(CMAKE_REQUIRED_FLAGS)
 
 
-ADD_LIBRARY(alut SHARED ${ALUT_SOURCES})
-SET_TARGET_PROPERTIES(alut PROPERTIES VERSION ${VERSION} SOVERSION ${MAJOR_VERSION})
-TARGET_LINK_LIBRARIES(alut ${OPENAL_LIB} ${ADD_LIBS})
+###
+# Checking compiler flags
+###
+include(CheckCCompilerFlag)
+set(NEW_FLAGS)
+set(POTENTIAL_FLAGS)
+if(NOT MSVC)
+	if(BUILD_OPTIMIZATION)
+		list(APPEND POTENTIAL_FLAGS -finline-functions -ffast-math)
+	endif()
 
-INSTALL_TARGETS(/lib alut)
-INSTALL_FILES(/include/AL FILES include/AL/alut.h)
+	if(BUILD_PROFILE)
+		list(APPEND POTENTIAL_FLAGS -pg)
+	elseif(BUILD_OPTIMIZATION)
+		# -pg and -fomit-frame-pointer are incompatible
+		list(APPEND POTENTIAL_FLAGS -fomit-frame-pointer)
+	endif()
 
+	if(BUILD_WARNINGS)
+		list(APPEND POTENTIAL_FLAGS -Wall -ansi -pedantic -W)
+
+		if(BUILD_MORE_WARNINGS)
+			list(APPEND POTENTIAL_FLAGS -Waggregate-return -Wbad-function-cast -Wcast-align -Wcast-qual -Wdisabled-optimization -Wendif-labels -Winline -Wlong-long -Wmissing-declarations -Wmissing-noreturn -Wmissing-prototypes -Wnested-externs -Wpacked -Wpointer-arith -Wredundant-decls -Wshadow -Wsign-compare -Wstrict-prototypes -Wwrite-strings)
+		endif()
+
+		if(BUILD_USE_WERROR)
+			list(APPEND POTENTIAL_FLAGS -Werror)
+		endif()
+	else()
+
+		if(BUILD_MORE_WARNINGS)
+			message(STATUS "NOTE: BUILD_MORE_WARNINGS ignored because BUILD_WARNINGS not set!")
+		endif()
+
+		if(BUILD_USE_WERROR)
+			message(STATUS "NOTE: BUILD_USE_WERROR ignored because BUILD_WARNINGS not set!")
+		endif()
+	endif()
+endif()
+
+if(POTENTIAL_FLAGS)
+	foreach(FLAG ${POTENTIAL_FLAGS})
+		string(REGEX REPLACE "^-" "COMPILER_SUPPORTS_" VAR "${FLAG}")
+		check_c_compiler_flag("${FLAG}" ${VAR})
+		if(${${VAR}})
+			list(APPEND NEW_FLAGS ${FLAG})
+		endif()
+	endforeach()
+
+	if(NEW_FLAGS)
+		string(REPLACE ";" " " NEW_FLAGS "${NEW_FLAGS}")
+		message(STATUS "Building with additional flags: ${NEW_FLAGS}")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${NEW_FLAGS}")
+	endif()
+endif()
+
+###
+# Generate the config header
+###
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake_in" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}")
+
+###
+# Build the library
+###
+add_subdirectory(src)
+
+###
+# Make the pkg-config and config files
+###
 # needed for openal.pc.in and openal-config.in
-SET(prefix ${CMAKE_INSTALL_PREFIX})
-SET(exec_prefix "\${prefix}")
-SET(libdir "\${exec_prefix}/lib")
-SET(bindir "\${exec_prefix}/bin")
-SET(includedir "\${prefix}/include")
-SET(requirements "")
-# static linking dependecies are broken, so pthread isn't needed currently
-SET(PTHREAD_LIBS ${CMAKE_THREAD_LIBS_INIT})
+set(prefix ${CMAKE_INSTALL_PREFIX})
+set(exec_prefix "\${prefix}")
+set(libdir "\${exec_prefix}/lib")
+set(bindir "\${exec_prefix}/bin")
+set(includedir "\${prefix}/include")
+set(requirements "")
 
-CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/admin/pkgconfig/freealut.pc.in
-               ${CMAKE_BINARY_DIR}/admin/pkgconfig/freealut.pc @ONLY)
-CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/admin/pkgconfig/freealut-config.in
-               ${CMAKE_BINARY_DIR}/admin/pkgconfig/freealut-config @ONLY)
-INSTALL_PROGRAMS(/bin FILES admin/pkgconfig/freealut-config)
-INSTALL_FILES(/lib/pkgconfig FILES admin/pkgconfig/freealut.pc)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut.pc.in
+	${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut.pc
+	@ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut-config.in
+	${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut-config
+	@ONLY)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut-config
+	DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut.pc
+	DESTINATION lib/pkgconfig)
 
+###
+# Examples
+###
+add_subdirectory(examples)
 
+###
 # test-suite
-IF(BUILD_TESTS)
-    # examples
-    ADD_EXECUTABLE(hello_world examples/hello_world.c)
-    TARGET_LINK_LIBRARIES(hello_world ${OPENAL_LIB} ${ADD_LIBS} alut)
+###
+if(BUILD_TESTS)
 
-    ADD_EXECUTABLE(playfile examples/playfile.c)
-    TARGET_LINK_LIBRARIES(playfile ${OPENAL_LIB} ${ADD_LIBS} alut)
+	set(TESTS errorstuff fileloader memoryloader version waveforms)
 
+	foreach(TEST ${TESTS})
+		set(TEST_SRC test_suite/test_${TEST}.c)
+		if(CMAKE_COMPILER_IS_GNUCC)
+			set_source_files_properties(${TEST_SRC}
+				PROPERTIES
+				COMPILE_FLAGS
+				"-Wno-deprecated-declarations")
+		endif()
+		add_executable(test_${TEST} ${TEST_SRC})
+		target_link_libraries(test_${TEST} alut)
+	endforeach()
 
-    SET(TESTS errorstuff
-              fileloader
-              memoryloader
-              version
-              waveforms)
+	#copy over testdata, so test-suite can be used in binary dir
+	set(TESTDATA file1.wav file2.au file3.raw)
 
-    FOREACH(TEST ${TESTS})
-      SET(TEST_SRC test_suite/test_${TEST}.c)
-      IF(CMAKE_COMPILER_IS_GNUCC)
-        SET_SOURCE_FILES_PROPERTIES(${TEST_SRC} PROPERTIES COMPILE_FLAGS "-Wno-deprecated-declarations")
-      ENDIF(CMAKE_COMPILER_IS_GNUCC)
-      ADD_EXECUTABLE(test_${TEST} ${TEST_SRC})
-      TARGET_LINK_LIBRARIES(test_${TEST} ${OPENAL_LIB} ${ADD_LIBS} alut)
-    ENDFOREACH(TEST)
-
-    #copy over testdata, so test-suite can be used in binary dir
-    SET(TESTDATA file1.wav
-                 file2.au
-                 file3.raw)
-
-    FOREACH(TESTDATUM ${TESTDATA})
-      CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/test_suite/${TESTDATUM} ${CMAKE_BINARY_DIR}/${TESTDATUM} COPYONLY)
-    ENDFOREACH(TESTDATUM)
-ENDIF(BUILD_TESTS)
+	foreach(TESTDATUM ${TESTDATA})
+		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/test_suite/${TESTDATUM}
+			${CMAKE_CURRENT_BINARY_DIR}/${TESTDATUM}
+			COPYONLY)
+	endforeach()
+endif()
