@@ -23,18 +23,7 @@ set(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
 set(PACKAGE_BUGREPORT "openal-devel@opensource.creative.com")
 set(OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
 
-set(ALUT_SOURCES
-	src/alutBufferData.c
-	src/alutCodec.c
-	src/alutError.c
-	src/alutInit.c
-	src/alutInputStream.c
-	src/alutInternal.h
-	src/alutLoader.c
-	src/alutOutputStream.c
-	src/alutUtil.c
-	src/alutVersion.c
-	src/alutWaveform.c)
+
 
 include_directories(${Alut_SOURCE_DIR}/include)
 
@@ -60,8 +49,6 @@ option(BUILD_TESTS "build the test-suite" OFF)
 # Define to the POSIX version that should be used.
 #add_definitions(-D_POSIX_C_SOURCE=200112L)
 
-
-add_definitions(-DHAVE_CONFIG_H)
 
 find_package(OpenAL REQUIRED)
 include_directories(${OPENAL_INCLUDE_DIR})
@@ -111,13 +98,6 @@ endif()
 ###
 if(HAVE_FEATURES_H)
 	check_symbol_exists(__GLIBC__ "features.h" HAVE_GLIBC)
-	# Without __NO_CTYPE tolower and friends are macros which introduce a GLIBC 2.3
-	# dependency. By defining this identifier we are currently backwards compatible
-	# to GLIBC 2.1.3, which is a good thing. In addition, the macros lead to code
-	# which triggers warnings with -Wunreachable-code.
-	if(HAVE_GLIBC)
-		add_definitions(-D__NO_CTYPE=1)
-	endif()
 endif()
 
 ###
@@ -143,10 +123,6 @@ check_c_source_compiles("void __attribute__((visibility(\"default\"))) test() {}
 	" HAVE_GCC_VISIBILITY)
 set(CMAKE_REQUIRED_FLAGS)
 
-if(HAVE_GCC_VISIBILITY)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
-	add_definitions(-DHAVE_GCC_VISIBILITY)
-endif()
 
 ###
 # Checking compiler flags
@@ -196,39 +172,11 @@ endif()
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake_in" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
-if(BUILD_STATIC)
-	# we can't create a static library with the same name
-	# as the shared one, so we copy it over after creation
-	add_library(alut_static STATIC ${ALUT_SOURCES})
-	target_link_libraries(alut_static ${OPENAL_LIB} ${ADD_LIBS})
-	if(NOT WIN32)
-		add_custom_command(TARGET
-			alut_static
-			POST_BUILD
-			COMMAND
-			${CMAKE_COMMAND}
-			ARGS
-			-E
-			copy
-			${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}alut_static${CMAKE_STATIC_LIBRARY_SUFFIX}
-			${CMAKE_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}alut${CMAKE_STATIC_LIBRARY_SUFFIX})
-		install_files(/lib
-			FILES
-			${CMAKE_STATIC_LIBRARY_PREFIX}alut${CMAKE_STATIC_LIBRARY_SUFFIX})
-	endif()
-endif()
+###
+# Build the library
+###
+add_subdirectory(src)
 
-
-add_library(alut SHARED ${ALUT_SOURCES})
-set_target_properties(alut
-	PROPERTIES
-	VERSION
-	${MAJOR_VERSION}
-	SOVERSION
-	${MAJOR_VERSION}.${MINOR_VERSION}.${BUILD_VERSION})
-target_link_libraries(alut ${OPENAL_LIB} ${ADD_LIBS})
-
-install_targets(/lib alut)
 install_files(/include/AL FILES include/AL/alut.h)
 
 # needed for openal.pc.in and openal-config.in
