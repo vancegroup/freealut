@@ -138,6 +138,44 @@ if(HAVE_GCC_VISIBILITY)
 endif()
 
 ###
+# Checking compiler flags
+###
+include(CheckCCompilerFlag)
+set(NEW_FLAGS)
+set(POTENTIAL_FLAGS)
+if(NOT MSVC)
+	if(OPTIMIZATION)
+		list(APPEND POTENTIAL_FLAGS -finline-functions -ffast-math)
+	endif()
+	if(PROFILE)
+		list(APPEND POTENTIAL_FLAGS -pg)
+	elseif(OPTIMIZATION)
+		# -pg and -fomit-frame-pointer are incompatible
+		list(APPEND POTENTIAL_FLAGS -fomit-frame-pointer)
+	endif()
+	if(WARNINGS)
+		list(APPEND POTENTIAL_FLAGS -Wall -ansi -pedantic -W)
+		if(MORE_WARNINGS)
+			list(APPEND POTENTIAL_FLAGS -Waggregate-return -Wbad-function-cast -Wcast-align -Wcast-qual -Wdisabled-optimization -Wendif-labels -Winline -Wlong-long -Wmissing-declarations -Wmissing-noreturn -Wmissing-prototypes -Wnested-externs -Wpacked -Wpointer-arith -Wredundant-decls -Wshadow -Wsign-compare -Wstrict-prototypes -Wwrite-strings)
+		endif()
+	endif()
+endif()
+if(POTENTIAL_FLAGS)
+	foreach(FLAG ${POTENTIAL_FLAGS})
+		string(REGEX REPLACE "^-" "COMPILER_SUPPORTS_" VAR "${FLAG}")
+		check_c_compiler_flag("${FLAG}" ${VAR})
+		if(${${VAR}})
+			list(APPEND NEW_FLAGS ${FLAG})
+		endif()
+	endforeach()
+	if(NEW_FLAGS)
+		string(REPLACE ";" " " NEW_FLAGS "${NEW_FLAGS}")
+		message(STATUS "Building with additional flags: ${NEW_FLAGS}")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${NEW_FLAGS}")
+	endif()
+endif()
+
+###
 # Generate the config header
 ###
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake_in" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
