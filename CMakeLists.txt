@@ -25,17 +25,21 @@ set(OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
 
 include_directories(${Alut_SOURCE_DIR}/include)
 
-option(BUILD_EXAMPLES "build example applications" OFF)
+# What to build?
+option(BUILD_EXAMPLES "build example applications" ON)
 option(BUILD_STATIC "build static library too" OFF)
+option(BUILD_TESTS "build the test-suite" ON)
+
+# How to build it?
 option(BUILD_PROFILE "enable profile" OFF)
 option(BUILD_OPTIMIZATION "enable optimization" ON)
 option(BUILD_WARNINGS "enable warnings" OFF)
 option(BUILD_MORE_WARNINGS "enable more warnings" OFF)
 option(BUILD_USE_WERROR "enable fail on all warning" OFF)
 
-#want test-suit?
-option(BUILD_TESTS "build the test-suite" OFF)
-
+###
+# Dependencies
+###
 find_package(OpenAL REQUIRED)
 include_directories(${OPENAL_INCLUDE_DIR})
 
