@@ -15,6 +15,10 @@ if(HAVE_GCC_VISIBILITY)
 	add_definitions(-DHAVE_GCC_VISIBILITY)
 endif()
 
+# So our static library can be linked into shared libraries (for instance,
+# gcc on amd64 needs -fPIC)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_SHARED_LIBRARY_C_FLAGS}")
+
 set(ALUT_SOURCES
 	alutBufferData.c
 	alutCodec.c
