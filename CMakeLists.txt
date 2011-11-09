@@ -43,6 +43,7 @@ set(ADD_CFLAGS "")
 set(ADD_LDFLAGS "")
 set(ADD_LIBS "")
 
+option(BUILD_EXAMPLES "build example applications" OFF)
 option(BUILD_STATIC "build static library too" OFF)
 option(PROFILE "enable profile" OFF)
 option(OPTIMIZATION "enable optimization" ON)
@@ -157,12 +158,14 @@ if(NOT MSVC)
 	if(OPTIMIZATION)
 		list(APPEND POTENTIAL_FLAGS -finline-functions -ffast-math)
 	endif()
+
 	if(PROFILE)
 		list(APPEND POTENTIAL_FLAGS -pg)
 	elseif(OPTIMIZATION)
 		# -pg and -fomit-frame-pointer are incompatible
 		list(APPEND POTENTIAL_FLAGS -fomit-frame-pointer)
 	endif()
+
 	if(WARNINGS)
 		list(APPEND POTENTIAL_FLAGS -Wall -ansi -pedantic -W)
 		if(MORE_WARNINGS)
@@ -179,6 +182,7 @@ if(POTENTIAL_FLAGS)
 			list(APPEND NEW_FLAGS ${FLAG})
 		endif()
 	endforeach()
+
 	if(NEW_FLAGS)
 		string(REPLACE ";" " " NEW_FLAGS "${NEW_FLAGS}")
 		message(STATUS "Building with additional flags: ${NEW_FLAGS}")
@@ -246,16 +250,11 @@ configure_file(${CMAKE_SOURCE_DIR}/admin/pkgconfig/freealut-config.in
 install_programs(/bin FILES admin/pkgconfig/freealut-config)
 install_files(/lib/pkgconfig FILES admin/pkgconfig/freealut.pc)
 
+# Examples
+add_subdirectory(examples)
 
 # test-suite
 if(BUILD_TESTS)
-	# examples
-	add_executable(hello_world examples/hello_world.c)
-	target_link_libraries(hello_world ${OPENAL_LIB} ${ADD_LIBS} alut)
-
-	add_executable(playfile examples/playfile.c)
-	target_link_libraries(playfile ${OPENAL_LIB} ${ADD_LIBS} alut)
-
 
 	set(TESTS errorstuff fileloader memoryloader version waveforms)
 
