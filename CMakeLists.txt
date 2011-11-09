@@ -2,8 +2,8 @@
 # improved by Ryan Pavlik
 cmake_minimum_required(VERSION 2.6)
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/admin/CMakeModules")
 project(Alut C)
+
 set(PACKAGE "freealut")
 set(PACKAGE_TARNAME "freealut")
 set(PACKAGE_NAME "freealut library")
@@ -19,8 +19,6 @@ set(VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${BUILD_VERSION}")
 set(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
 set(PACKAGE_BUGREPORT "openal-devel@opensource.creative.com")
 set(OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
-
-find_package(ConfigHelper)
 
 set(ALUT_SOURCES
 	src/alutBufferData.c
@@ -55,18 +53,17 @@ endif()
 option(BUILD_TESTS "build the test-suite" OFF)
 
 
-add_define(ALUT_BUILD_LIBRARY)
 # We could possibly need struct timespec and random(), which are not ANSI.
 # Define to 500 if Single Unix conformance is wanted, 600 for sixth revision.
-add_define("_XOPEN_SOURCE 600")
+#add_definitions(-D_XOPEN_SOURCE=600)
 # We might need nanosleep, which is a POSIX IEEE Std 1003.1b-1993 feature.
 # Define to the POSIX version that should be used.
-add_define("_POSIX_C_SOURCE 200112L")
+#add_definitions(-D_POSIX_C_SOURCE=200112L)
 # Without __NO_CTYPE tolower and friends are macros which introduce a GLIBC 2.3
 # dependency. By defining this identifier we are currently backwards compatible
 # to GLIBC 2.1.3, which is a good thing. In addition, the macros lead to code
 # which triggers warnings with -Wunreachable-code.
-add_define("__NO_CTYPE 1")
+#add_definitions(-D__NO_CTYPE=1)
 
 add_definitions(-DHAVE_CONFIG_H)
 
