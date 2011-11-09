@@ -49,6 +49,7 @@ if(BUILD_STATIC)
 		target_link_libraries(alut_static m)
 	endif()	
 	if(NOT WIN32)
+		# TODO this is an inelegant hack...
 		add_custom_command(TARGET
 			alut_static
 			POST_BUILD

@@ -170,8 +170,6 @@ set(libdir "\${exec_prefix}/lib")
 set(bindir "\${exec_prefix}/bin")
 set(includedir "\${prefix}/include")
 set(requirements "")
-# static linking dependecies are broken, so pthread isn't needed currently
-set(PTHREAD_LIBS ${CMAKE_THREAD_LIBS_INIT})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut.pc.in
 	${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut.pc
