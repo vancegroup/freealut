@@ -75,31 +75,15 @@ add_define("__NO_CTYPE 1")
 add_definitions(-DHAVE_CONFIG_H)
 add_definitions(-DNDEBUG)
 
-find_library(OPENAL_LIB
-	NAMES
-	openal
-	openal32
-	PATHS
-	/usr/lib
-	/usr/local/lib
-	${OPENAL_LIB_DIR})
-if(OPENAL_LIB MATCHES "NOTFOUND")
-	message(FATAL_ERROR
-		"OpenAL not installed, cannot build alut - aborting.")
-endif()
+find_package(OpenAL REQUIRED)
+include_directories(${OPENAL_INCLUDE_DIR})
+
 
 if(UNIX)
 	set(ADD_LIBS ${ADD_LIBS} m)
 endif()
 
-set(CMAKE_REQUIRED_INCLUDES ${OPENAL_INCLUDE_DIR})
-check_include_files("AL/alc.h;AL/al.h" AL_HEADERS)
-if(NOT AL_HEADERS)
-	message(FATAL_ERROR "OpenAL header files not found - aborting.")
-endif()
 
-if(DEFINED OPENAL_INCLUDE_DIR)
-	include_directories(${OPENAL_INCLUDE_DIR})
 endif()
 
 # checks for unistd.h and time.h, as well
