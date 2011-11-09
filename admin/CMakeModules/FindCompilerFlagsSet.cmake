@@ -1,34 +1,35 @@
-IF(CMAKE_COMPILER_IS_GNUCC)
-  #ADD_DEFINITIONS(-std=c99)
+if(CMAKE_COMPILER_IS_GNUCC)
+	#ADD_DEFINITIONS(-std=c99)
 
-  IF(WARNINGS)
-    SET(ADD_WFLAGS "${ADD_WFLAGS} -Wall -ansi -pedantic -W")
+	if(WARNINGS)
+		set(ADD_WFLAGS "${ADD_WFLAGS} -Wall -ansi -pedantic -W")
 
-    IF(MORE_WARNINGS)
-      SET(ADD_WFLAGS "${ADD_WFLAGS} -Waggregate-return -Wbad-function-cast -Wcast-align -Wcast-qual -Wdisabled-optimization -Wendif-labels -Winline -Wlong-long -Wmissing-declarations -Wmissing-noreturn -Wmissing-prototypes -Wnested-externs -Wpacked -Wpointer-arith -Wredundant-decls -Wshadow -Wsign-compare -Wstrict-prototypes -Wwrite-strings")
-    ENDIF(MORE_WARNINGS)
+		if(MORE_WARNINGS)
+			set(ADD_WFLAGS
+				"${ADD_WFLAGS} -Waggregate-return -Wbad-function-cast -Wcast-align -Wcast-qual -Wdisabled-optimization -Wendif-labels -Winline -Wlong-long -Wmissing-declarations -Wmissing-noreturn -Wmissing-prototypes -Wnested-externs -Wpacked -Wpointer-arith -Wredundant-decls -Wshadow -Wsign-compare -Wstrict-prototypes -Wwrite-strings")
+		endif()
 
-    # Should we use turn warnings into errors?
-    IF(USE_WERROR)
-      SET(ADD_WFLAGS "${ADD_WFLAGS} -Werror -pedantic-errors")
-    ENDIF(USE_WERROR)
-  ENDIF(WARNINGS)
+		# Should we use turn warnings into errors?
+		if(USE_WERROR)
+			set(ADD_WFLAGS "${ADD_WFLAGS} -Werror -pedantic-errors")
+		endif()
+	endif()
 
-  IF(OPTIMIZATION)
-    SET(ADD_CFLAGS "${ADD_CFLAGS} -O2 -finline-functions -ffast-math")
-  ENDIF(OPTIMIZATION)
+	if(OPTIMIZATION)
+		set(ADD_CFLAGS "${ADD_CFLAGS} -O2 -finline-functions -ffast-math")
+	endif()
 
-  IF(PROFILE)
-    SET(ADD_CFLAGS "${ADD_CFLAGS} -pg")
-    SET(ADD_LDFLAGS "-pg")
-  ELSE(PROFILE)
+	if(PROFILE)
+		set(ADD_CFLAGS "${ADD_CFLAGS} -pg")
+		set(ADD_LDFLAGS "-pg")
+	else()
 
-    IF(OPTIMIZATION)
-      # -pg and -fomit-frame-pointer are incompatible
-      SET(ADD_CFLAGS "${ADD_CFLAGS} -fomit-frame-pointer")
-    ENDIF(OPTIMIZATION)
-  ENDIF(PROFILE)
-ELSE(CMAKE_COMPILER_IS_GNUCC)
+		if(OPTIMIZATION)
+			# -pg and -fomit-frame-pointer are incompatible
+			set(ADD_CFLAGS "${ADD_CFLAGS} -fomit-frame-pointer")
+		endif()
+	endif()
+else()
 
-  MESSAGE("Your compiler isn't fully supported yet - no flags set.")
-ENDIF(CMAKE_COMPILER_IS_GNUCC)
+	message("Your compiler isn't fully supported yet - no flags set.")
+endif()

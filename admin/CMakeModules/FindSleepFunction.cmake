@@ -1,39 +1,42 @@
-MACRO(CHECK_INCLUDE_FILE_DEFINE HEADER VAR)
-CHECK_INCLUDE_FILE(${HEADER} ${VAR})
-IF(${VAR})
-  ADD_DEFINE("${VAR} 1")
-ENDIF(${VAR})
-ENDMACRO(CHECK_INCLUDE_FILE_DEFINE)
+macro(CHECK_INCLUDE_FILE_DEFINE HEADER VAR)
+	check_include_file(${HEADER} ${VAR})
+	if(${VAR})
+		add_define("${VAR} 1")
+	endif()
+endmacro()
 
-MACRO(CHECK_FUNCTION_DEFINE HEADERS FUNC PARAM VAR)
-CHECK_C_SOURCE_COMPILES(
-"
+macro(CHECK_FUNCTION_DEFINE HEADERS FUNC PARAM VAR)
+	check_c_source_compiles("
 ${HEADERS}
 int main(){
 ${FUNC} ${PARAM};
 }
-" ${VAR})
-IF(${VAR})
-  ADD_DEFINE("${VAR} 1")
-ENDIF(${VAR})
-ENDMACRO(CHECK_FUNCTION_DEFINE HEADERS)
+"
+		${VAR})
+	if(${VAR})
+		add_define("${VAR} 1")
+	endif()
+endmacro()
 
 
-IF(WIN32)
-  CHECK_INCLUDE_FILE_DEFINE(windows.h HAVE_WINDOWS_H)
-  IF(HAVE_WINDOWS_H)
-    CHECK_FUNCTION_DEFINE("#include <windows.h>" Sleep "(0)" HAVE_SLEEP)
-  ENDIF(HAVE_WINDOWS_H)
-ELSE(WIN32)
+if(WIN32)
+	check_include_file_define(windows.h HAVE_WINDOWS_H)
+	if(HAVE_WINDOWS_H)
+		check_function_define("#include <windows.h>" Sleep "(0)" HAVE_SLEEP)
+	endif()
+else()
 
-  CHECK_INCLUDE_FILE_DEFINE(time.h HAVE_TIME_H)
-  CHECK_INCLUDE_FILE_DEFINE(unistd.h HAVE_UNISTD_H)
-  IF(HAVE_TIME_H)
-    CHECK_FUNCTION_DEFINE("#include <time.h>" nanosleep "((struct timespec*)0, (struct timespec*)0)" HAVE_NANOSLEEP)
-  ELSE(HAVE_TIME_H)
+	check_include_file_define(time.h HAVE_TIME_H)
+	check_include_file_define(unistd.h HAVE_UNISTD_H)
+	if(HAVE_TIME_H)
+		check_function_define("#include <time.h>"
+			nanosleep
+			"((struct timespec*)0, (struct timespec*)0)"
+			HAVE_NANOSLEEP)
+	else()
 
-    IF(HAVE_UNISTD_H)
-      CHECK_FUNCTION_DEFINE("#include <unistd.h>" usleep "(0)" HAVE_USLEEP)
-    ENDIF(HAVE_UNISTD_H)
-  ENDIF(HAVE_TIME_H)
-ENDIF(WIN32)
+		if(HAVE_UNISTD_H)
+			check_function_define("#include <unistd.h>" usleep "(0)" HAVE_USLEEP)
+		endif()
+	endif()
+endif()
