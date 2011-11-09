@@ -160,6 +160,7 @@ if(NOT MSVC)
 		endif()
 	endif()
 endif()
+
 if(POTENTIAL_FLAGS)
 	foreach(FLAG ${POTENTIAL_FLAGS})
 		string(REGEX REPLACE "^-" "COMPILER_SUPPORTS_" VAR "${FLAG}")
@@ -180,13 +181,6 @@ endif()
 ###
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake_in" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
-
-set(CMAKE_C_FLAGS "${ADD_WFLAGS} ${ADD_CFLAGS} ${CMAKE_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "${ADD_CFLAGS} ${CMAKE_CXX_FLAGS}")
-set(CMAKE_SHARED_LINKER_FLAGS
-	"${ADD_LDFLAGS} ${CMAKE_SHARED_LINKER_FLAGS}")
-set(CMAKE_MODULE_LINKER_FLAGS
-	"${ADD_LDFLAGS} ${CMAKE_MODULE_LINKER_FLAGS}")
 
 if(BUILD_STATIC)
 	# we can't create a static library with the same name
