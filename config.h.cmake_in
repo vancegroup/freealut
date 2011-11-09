@@ -34,3 +34,9 @@
 
 /* Define to 1 if you have the <windows.h> header file. */
 #cmakedefine HAVE_WINDOWS_H 1
+
+/* We could possibly need struct timespec and random(), which are not ANSI.
+   Define to 500 if Single Unix conformance is wanted, 600 for sixth revision. */
+#if HAVE_NANOSLEEP && HAVE_TIME_H
+#define _XOPEN_SOURCE 600
+#endif

@@ -52,10 +52,6 @@ endif()
 #want test-suit?
 option(BUILD_TESTS "build the test-suite" OFF)
 
-
-# We could possibly need struct timespec and random(), which are not ANSI.
-# Define to 500 if Single Unix conformance is wanted, 600 for sixth revision.
-#add_definitions(-D_XOPEN_SOURCE=600)
 # We might need nanosleep, which is a POSIX IEEE Std 1003.1b-1993 feature.
 # Define to the POSIX version that should be used.
 #add_definitions(-D_POSIX_C_SOURCE=200112L)
