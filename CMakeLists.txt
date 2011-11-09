@@ -73,7 +73,6 @@ add_define("_POSIX_C_SOURCE 200112L")
 add_define("__NO_CTYPE 1")
 
 add_definitions(-DHAVE_CONFIG_H)
-add_definitions(-DNDEBUG)
 
 find_package(OpenAL REQUIRED)
 include_directories(${OPENAL_INCLUDE_DIR})
