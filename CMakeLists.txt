@@ -38,11 +38,6 @@ endif()
 #want test-suit?
 option(BUILD_TESTS "build the test-suite" OFF)
 
-# We might need nanosleep, which is a POSIX IEEE Std 1003.1b-1993 feature.
-# Define to the POSIX version that should be used.
-#add_definitions(-D_POSIX_C_SOURCE=200112L)
-
-
 find_package(OpenAL REQUIRED)
 include_directories(${OPENAL_INCLUDE_DIR})
 
