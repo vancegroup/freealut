@@ -58,11 +58,7 @@ option(BUILD_TESTS "build the test-suite" OFF)
 # We might need nanosleep, which is a POSIX IEEE Std 1003.1b-1993 feature.
 # Define to the POSIX version that should be used.
 #add_definitions(-D_POSIX_C_SOURCE=200112L)
-# Without __NO_CTYPE tolower and friends are macros which introduce a GLIBC 2.3
-# dependency. By defining this identifier we are currently backwards compatible
-# to GLIBC 2.1.3, which is a good thing. In addition, the macros lead to code
-# which triggers warnings with -Wunreachable-code.
-#add_definitions(-D__NO_CTYPE=1)
+
 
 add_definitions(-DHAVE_CONFIG_H)
 
@@ -90,6 +86,7 @@ check_include_file(stdint.h HAVE_STDINT_H)
 check_include_file(unistd.h HAVE_UNISTD_H)
 check_include_file(time.h HAVE_TIME_H)
 check_include_file(windows.h HAVE_WINDOWS_H)
+check_include_file(features.h HAVE_FEATURES_H)
 
 ###
 # Checking for functions
@@ -106,6 +103,20 @@ if(HAVE_UNISTD_H)
 endif()
 if(HAVE_WINDOWS_H)
 	check_symbol_exists(Sleep "windows.h" HAVE_SLEEP)
+endif()
+
+###
+# Checking for GLIBC
+###
+if(HAVE_FEATURES_H)
+	check_symbol_exists(__GLIBC__ "features.h" HAVE_GLIBC)
+	# Without __NO_CTYPE tolower and friends are macros which introduce a GLIBC 2.3
+	# dependency. By defining this identifier we are currently backwards compatible
+	# to GLIBC 2.1.3, which is a good thing. In addition, the macros lead to code
+	# which triggers warnings with -Wunreachable-code.
+	if(HAVE_GLIBC)
+		add_definitions(-D__NO_CTYPE=1)
+	endif()
 endif()
 
 ###
