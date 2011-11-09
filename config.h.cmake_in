@@ -40,3 +40,5 @@
 #if HAVE_NANOSLEEP && HAVE_TIME_H
 #define _XOPEN_SOURCE 600
 #endif
+
+#define ALUT_BUILD_LIBRARY
