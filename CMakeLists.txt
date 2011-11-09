@@ -1,5 +1,6 @@
 # cmake project file by Prakash Punnoor
-cmake_minimum_required(VERSION 2.0)
+# improved by Ryan Pavlik
+cmake_minimum_required(VERSION 2.6)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/admin/CMakeModules")
 project(Alut C)
