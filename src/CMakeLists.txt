@@ -93,6 +93,6 @@ install(TARGETS alut
 # Fix ID of dynamic library on Mac OS X
 if(APPLE)
     install(CODE "execute_process(
-        COMMAND install_name_tool -id ${CMAKE_INSTALL_PREFIX}/lib/libalut.0.dylib ${CMAKE_INSTALL_PREFIX}/lib/libalut.0.dylib
+        COMMAND install_name_tool -id \${CMAKE_INSTALL_PREFIX}/lib/libalut.0.dylib \${CMAKE_INSTALL_PREFIX}/lib/libalut.0.dylib
     )")
 endif()
