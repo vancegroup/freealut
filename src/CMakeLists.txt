@@ -78,7 +78,7 @@ set_target_properties(alut
 	VERSION
 	${MAJOR_VERSION}
 	SOVERSION
-	${MAJOR_VERSION}.${MINOR_VERSION}.${BUILD_VERSION})
+	${MAJOR_VERSION})
 target_link_libraries(alut ${OPENAL_LIBRARY})
 if(UNIX)
 	target_link_libraries(alut m)
