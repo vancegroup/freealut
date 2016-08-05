@@ -27,8 +27,8 @@ include_directories(${Alut_SOURCE_DIR}/include)
 
 # What to build?
 option(BUILD_EXAMPLES "build example applications" ON)
-option(BUILD_STATIC "build static library too" OFF)
-option(BUILD_TESTS "build the test-suite" ON)
+option(BUILD_STATIC "build static library too" ON)
+option(BUILD_TESTS "build the test-suite" OFF)
 
 # How to build it?
 option(BUILD_PROFILE "enable profile" OFF)
@@ -213,6 +213,7 @@ if(BUILD_TESTS)
 	foreach(TEST ${TESTS})
 		set(TEST_SRC test_suite/test_${TEST}.c)
 		if(CMAKE_COMPILER_IS_GNUCC)
+			SET(EXTRA_LIBS OpenSLES ${EXTRA_LIBS})
 			set_source_files_properties(${TEST_SRC}
 				PROPERTIES
 				COMPILE_FLAGS
