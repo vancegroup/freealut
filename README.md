@@ -1,6 +1,4 @@
-#openal-soft
-
-OpenAL Soft official fork(keep sync with https://github.com/kcat/openal-soft.git).
+#freealut
 
 ## Standalone Toolchain
 
@@ -12,7 +10,7 @@ $export PATH=$PATH:/home/Administrator/toolchains/arm-linux-androideabi-r9d-14/b
 ## Build
 Ensure you have installed cmake(2.6 or higher), and make standalone android ndk toolchain($NDK/docs/STANDALONE-TOOLCHAIN.html), build steps:
 - $cd build
-- $  527  cmake -D CMAKE_TOOLCHAIN_FILE=../XCompile-android.cmake -D"OPENAL_INCLUDE_DIR=../../openal-soft/include" -D"OPENAL_LIBRARY=../../openal-soft/build/libopenal.a" -G "Unix Makefiles" ..
+- $cmake -D CMAKE_TOOLCHAIN_FILE=../XCompile-android.cmake -D"OPENAL_INCLUDE_DIR=../../openal-soft/include" -D"OPENAL_LIBRARY=../../openal-soft/build/libopenal.a" -G "Unix Makefiles" ..
 - $make -j4
 
 Enjoy it!!!
