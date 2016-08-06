@@ -3,9 +3,9 @@
 ## Standalone Toolchain
 
 Make standalone android ndk toolchain($NDK/docs/STANDALONE-TOOLCHAIN.html):
-$cd $NDK_ROOT
-$./build/tools/make-standalone-toolchain.sh --platform=android-14 --install-dir=/home/Administrator/toolchains/arm-linux-androideabi-r9d-14
-$export PATH=$PATH:/home/Administrator/toolchains/arm-linux-androideabi-r9d-14/bin
+- $cd $NDK_ROOT
+- $./build/tools/make-standalone-toolchain.sh --platform=android-14 --install-dir=/home/Administrator/toolchains/arm-linux-androideabi-r9d-14
+- $export PATH=$PATH:/home/Administrator/toolchains/arm-linux-androideabi-r9d-14/bin
 
 ## Build
 Ensure you have installed cmake(2.6 or higher), and make standalone android ndk toolchain($NDK/docs/STANDALONE-TOOLCHAIN.html), build steps:
