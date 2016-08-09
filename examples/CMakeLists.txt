@@ -1,8 +1,16 @@
 if(BUILD_EXAMPLES)
 	# examples
 	add_executable(hello_world hello_world.c)
-	target_link_libraries(hello_world alut_static OpenSLES)
+	IF(NOT ANDROID)
+		target_link_libraries(hello_world alut)
+	ELSE()
+		target_link_libraries(hello_world alut_static OpenSLES)
+	ENDIF()
 
 	add_executable(playfile playfile.c)
-	target_link_libraries(playfile alut_static OpenSLES)
+	IF(NOT ANDROID)
+		target_link_libraries(playfile alut)
+	ELSE()
+		target_link_libraries(playfile alut_static OpenSLES)
+	ENDIF()
 endif()

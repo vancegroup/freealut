@@ -28,7 +28,7 @@ include_directories(${Alut_SOURCE_DIR}/include)
 # What to build?
 option(BUILD_EXAMPLES "build example applications" ON)
 option(BUILD_STATIC "build static library too" ON)
-option(BUILD_TESTS "build the test-suite" OFF)
+option(BUILD_TESTS "build the test-suite" ON)
 
 # How to build it?
 option(BUILD_PROFILE "enable profile" OFF)
@@ -220,7 +220,11 @@ if(BUILD_TESTS)
 				"-Wno-deprecated-declarations")
 		endif()
 		add_executable(test_${TEST} ${TEST_SRC})
-		target_link_libraries(test_${TEST} alut)
+		IF(NOT ANDROID)
+			target_link_libraries(test_${TEST} alut)
+		ELSE()
+			target_link_libraries(test_${TEST} alut_static OpenSLES)
+		ENDIF()		
 	endforeach()
 
 	#copy over testdata, so test-suite can be used in binary dir
