@@ -213,18 +213,22 @@ if(BUILD_TESTS)
 	foreach(TEST ${TESTS})
 		set(TEST_SRC test_suite/test_${TEST}.c)
 		if(CMAKE_COMPILER_IS_GNUCC)
-			SET(EXTRA_LIBS OpenSLES ${EXTRA_LIBS})
+			# only android platform add OpenSLES lib
+			if(ANDROID)
+				set(EXTRA_LIBS OpenSLES ${EXTRA_LIBS})
+			endif()
+			
 			set_source_files_properties(${TEST_SRC}
 				PROPERTIES
 				COMPILE_FLAGS
 				"-Wno-deprecated-declarations")
 		endif()
 		add_executable(test_${TEST} ${TEST_SRC})
-		IF(NOT ANDROID)
+		if(NOT ANDROID)
 			target_link_libraries(test_${TEST} alut)
-		ELSE()
+		else()
 			target_link_libraries(test_${TEST} alut_static OpenSLES)
-		ENDIF()		
+		endif()		
 	endforeach()
 
 	#copy over testdata, so test-suite can be used in binary dir
