@@ -44,6 +44,7 @@ if(BUILD_STATIC)
 	# we can't create a static library with the same name
 	# as the shared one, so we copy it over after creation
 	add_library(alut_static STATIC ${ALUT_SOURCES} ${ALUT_INTERNAL_HEADERS} ${ALUT_HEADERS})
+	target_compile_definitions(alut_static PUBLIC ALUT_BUILD_STATIC)
 	target_link_libraries(alut_static ${OPENAL_LIBRARY} ${ADD_LIBS})
 	if(UNIX)
 		target_link_libraries(alut_static m)
