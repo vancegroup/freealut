@@ -27,6 +27,7 @@ include_directories(${Alut_SOURCE_DIR}/include)
 
 # What to build?
 option(BUILD_EXAMPLES "build example applications" ON)
+option(BUILD_DYNAMIC "build dynamic library" ON)
 option(BUILD_STATIC "build static library too" OFF)
 option(BUILD_TESTS "build the test-suite" ON)
 
