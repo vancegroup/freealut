@@ -39,35 +39,7 @@ set(ALUT_HEADERS
 	../include/AL/alut.h)
 source_group(APIHeader FILES ${ALUT_HEADERS})
 
-
-if(BUILD_STATIC)
-	# we can't create a static library with the same name
-	# as the shared one, so we copy it over after creation
-	add_library(alut_static STATIC ${ALUT_SOURCES} ${ALUT_INTERNAL_HEADERS} ${ALUT_HEADERS})
-	target_link_libraries(alut_static ${OPENAL_LIBRARY} ${ADD_LIBS})
-	if(UNIX)
-		target_link_libraries(alut_static m)
-	endif()	
-	if(NOT WIN32)
-		# TODO this is an inelegant hack...
-		add_custom_command(TARGET
-			alut_static
-			POST_BUILD
-			COMMAND
-			${CMAKE_COMMAND}
-			ARGS
-			-E
-			copy
-			${CMAKE_BINARY_DIR}/src/${CMAKE_STATIC_LIBRARY_PREFIX}alut_static${CMAKE_STATIC_LIBRARY_SUFFIX}
-			${CMAKE_BINARY_DIR}/src/${CMAKE_STATIC_LIBRARY_PREFIX}alut${CMAKE_STATIC_LIBRARY_SUFFIX})
-		install_files(/lib${LIB_SUFFIX}
-			FILES
-			${CMAKE_STATIC_LIBRARY_PREFIX}alut${CMAKE_STATIC_LIBRARY_SUFFIX})
-	endif()
-endif()
-
-
-add_library(alut SHARED ${ALUT_SOURCES} ${ALUT_INTERNAL_HEADERS} ${ALUT_HEADERS})
+add_library(alut ${ALUT_SOURCES} ${ALUT_INTERNAL_HEADERS} ${ALUT_HEADERS})
 set_property(TARGET
 	alut
 	PROPERTY
