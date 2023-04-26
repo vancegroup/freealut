@@ -55,3 +55,9 @@ indent:
 
 # Targets which are no files
 .PHONY: permissions indent
+
+# Mostly to appease automake but some may find this useful.
+README: README.md
+	pandoc -f markdown -t plain --wrap=none $< -o $@
+
+CLEANFILES = README
