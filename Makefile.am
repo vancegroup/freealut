@@ -33,12 +33,12 @@ libtool: $(LIBTOOL_DEPS)
 
 # The Creative repository has some broken permissions, let's fix this.
 permissions:
-	find . -type f \! -perm +222 \! -name "*.sh" -exec chmod +w {} \;
+	find . -type f \! -perm /222 \! -name "*.sh" -exec chmod +w {} \;
 
 # Automatically reformat all C headers and sources with indent according to
 # admin/autotools/.indent.pro, but be make-friendly and take some precautions to
 # leave those files untouched which wouldn't change. Do not reformat the public
-# ALUT header, it won't look the way we want it due to the 'extern "C" { ... }' 
+# ALUT header, it won't look the way we want it due to the 'extern "C" { ... }'
 # wrapper in it.
 indent:
 	@for i in `find . \( -name "*.c" -o -name "*.h" \) \! -name alut.h -print` ; do \
