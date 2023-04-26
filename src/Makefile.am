@@ -1,6 +1,6 @@
 # The following files should be in our source distribution in addition to the
 # standard ones included by automake itself:
-EXTRA_DIST = helloworld.wav README
+EXTRA_DIST = helloworld.wav README.md
 
 # We want to build a libalut library with libtool.
 lib_LTLIBRARIES = libalut.la

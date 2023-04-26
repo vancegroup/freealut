@@ -71,7 +71,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 # documentation
 install -m 755 -d $RPM_BUILD_ROOT%{_defaultdocdir}/%{name}
-install -m 644 AUTHORS COPYING ChangeLog NEWS README doc/alut.css doc/alut.html \
+install -m 644 AUTHORS COPYING ChangeLog NEWS README.md doc/alut.css doc/alut.html \
 	       $RPM_BUILD_ROOT%{_defaultdocdir}/%{name}
 
 %clean
@@ -83,7 +83,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_defaultdocdir}/%{name}/COPYING
 %doc %{_defaultdocdir}/%{name}/ChangeLog
 %doc %{_defaultdocdir}/%{name}/NEWS
-%doc %{_defaultdocdir}/%{name}/README
+%doc %{_defaultdocdir}/%{name}/README.md
 %{_libdir}/libalut.so.*
 
 %files devel
