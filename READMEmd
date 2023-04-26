@@ -1,5 +1,4 @@
-The freealut library
-=====================
+# The freealut library
 
 freealut is a free implementation of OpenAL's ALUT standard. See the file
 AUTHORS for the people involved.
@@ -8,11 +7,9 @@ This is a slightly-updated version maintained at
 https://github.com/vance-group/freealut that contains an updated
 CMake build system, and potentially other fixes over time.
 
+## Building freealut
 
-Building freealut
-=================
-
-While the "official" build system of upstream may be autotools,
+While the "official" build system of the now-missing upstream may be autotools,
 that build is sufficiently outdated to require patching on modern
 Linux operating systems. The CMake build system has been updated
 to work smoothly on all platforms (tested on Linux and Windows,
@@ -20,17 +17,20 @@ including cross-building), so I'd recommend using it.
 
 (Instructions for older build systems are still included for completeness.)
 
+This builds just like any other standard CMake build system: see
+<https://cmake.org/cmake/help/latest/guide/user-interaction/index.html> for generic instructions.
 
-This document explains briefly how to build with CMake via out-
-of-tree build:
+Briefly, here's how to build with CMake via out-of-tree build:
 
 - Change to the alut dir.
 - Create a dir, eg "build", and change into it.
 - Now (eg.) run:
 
+```sh
 cmake .. -DCMAKE_INSTALL_PREFIX:STRING="/usr" -DCMAKE_C_FLAGS:STRING="-march=athlon-xp -O2"
 make
 make install
+```
 
   If you exported your CFLAGS, there is no need to specify them
   explicitly, as CMake will pick them up.
@@ -44,14 +44,10 @@ like.
 
 Some Tips:
 
-- If you want more output at compile time, use
-
-make VERBOSE=1
+- If you want more output at compile time, use `make VERBOSE=1`
 
 - If you want to install to a different directory (using same prefix),
-  use
-
-make install DESTDIR=/foo/bar
+  use `make install DESTDIR=/foo/bar`
 
 - CMake doesn't has a distclean target by default, so you better
   really do an out-of-tree build, then you can simply delete its
@@ -59,29 +55,33 @@ make install DESTDIR=/foo/bar
   have different builds using different parameters via out-of-tree
   builds.
 
-
-Building and installing on *nix-alikes using autotools
-======================================================
+## Building and installing on *nix-alikes using autotools (deprecated)
 
 To build and run ALUT, you need an OpenAL somewhere (and a sound card, of course
 :-). If OpenAL is not installed in a standard place (let's say ${OPENAL_PREFIX})
 you'll have to tell the build system about it:
 
-   CPPFLAGS="-I${OPENAL_PREFIX}/include"
-   LDFLAGS="-L${OPENAL_PREFIX}/lib"
-   export CPPFLAGS LDFLAGS
+```sh
+CPPFLAGS="-I${OPENAL_PREFIX}/include"
+LDFLAGS="-L${OPENAL_PREFIX}/lib"
+export CPPFLAGS LDFLAGS
+```
 
 If you install ALUT from the CVS repository, you'll have to call
 
-   ./autogen.sh
+```sh
+./autogen.sh
+```
 
 first, this will generate some necessary files for building ALUT.
 
 If these initial preparations are done, you can simply run:
 
-   ./configure
-   make
-   make install
+```sh
+./configure
+make
+make install
+```
 
 The last step is optional and must be done as 'root', you can build and use the
 test programs in 'test_suite' and the example programs in 'examples' without
@@ -91,9 +91,7 @@ run 'make'.
 Alternatively, there is a spec file in the admin/RPM subdirectory, which can be
 used to build an RPM.
 
-
-Building with VisualStudio
-==========================
+## Building with Visual Studio (deprecated)
 
 The admin subdirectory contains VisualStudio6 and VisualStudioDotNET
 subdirectories, which contain a Visual Studio 6 workspace and a Visual Studio
@@ -105,41 +103,36 @@ project settings within Visual Studio. When everything is OK, just build
 e.g. the hello_world project and you should get the ALUT library itself and a
 demo with Steve Baker saying an immortal phrase.
 
-Support
-=======
+## Support
 
 Please don't email me the authors directly, sign up to the OpenAL user's mailing
-list. Instructions can be found here:
+list. Instructions can be found here: <http://www.openal.org/>
 
-   http://www.openal.org/
-
-
-Licensing
-=========
+## Licensing
 
 These libraries are offered as OpenSource freeware under the provisions of the
 GNU Library Public License (LGPL). Those terms and conditions are detailed in
 the file 'COPYING' in this directory.
 
-
-Portability and Dependencies
-============================
+## Portability and Dependencies
 
 This library is designed to be easily portable (and more importantly so that
 programs using it can be UTTERLY portable).
 
-
-Compiling/Linking with ALUT
-===========================
+## Compiling/Linking with ALUT
 
 In your source code, simply add:
 
-   #include <AL/alut.h>
+```c
+#include <AL/alut.h>
+```
 
 On *nix-alikes, use
 
-   openal-config --cflags
-   openal-config --libs
+```sh
+openal-config --cflags
+openal-config --libs
+```
 
 to find out the compiler and linker flags needed for OpenAL, the flags needed
 for ALUT itself depend on the --prefix option given to configure.
@@ -147,12 +140,11 @@ for ALUT itself depend on the --prefix option given to configure.
 In a VisualStudio project, add the path to the ALUT header, import library and
 DLL to your project settings as usual.
 
-
-Directories
-===========
+## Directories
 
 Within this distribution, you will find the following directories:
 
+```none
 admin      -- Administrative files needed for building ALUT
 doc        -- The ALUT documentation
 examples   -- For application authors, here is a small collection of example
@@ -161,3 +153,4 @@ include    -- The ALUT header
 src        -- The source code for the ALUT library itself
 test_suite -- A small suite of test programs to check that ALUT is installed and
               working correctly
+```
