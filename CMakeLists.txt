@@ -1,6 +1,8 @@
 # cmake project file by Prakash Punnoor
 # improved by Rylie Pavlik
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.0)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 project(Alut C)
 
@@ -25,8 +27,6 @@ set(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
 set(PACKAGE_BUGREPORT "openal-devel@opensource.creative.com")
 set(OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
 
-include_directories(${Alut_SOURCE_DIR}/include)
-
 # What to build?
 option(BUILD_EXAMPLES "build example applications" ON)
 option(BUILD_SHARED_LIBS "build freealut as a shared library rather than a static library" ON)
@@ -43,7 +43,6 @@ option(BUILD_USE_WERROR "enable fail on all warning" OFF)
 # Dependencies
 ###
 find_package(OpenAL REQUIRED)
-include_directories(${OPENAL_INCLUDE_DIR})
 
 ###
 # Checking for types
@@ -171,7 +170,6 @@ endif()
 # Generate the config header
 ###
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake_in" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
-include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 ###
 # Build the library
@@ -224,7 +222,7 @@ if(BUILD_TESTS)
 		target_link_libraries(test_${TEST} alut)
 	endforeach()
 
-	#copy over testdata, so test-suite can be used in binary dir
+	# copy over testdata, so test-suite can be used in binary dir
 	set(TESTDATA file1.wav file2.au file3.raw)
 
 	foreach(TESTDATUM ${TESTDATA})
