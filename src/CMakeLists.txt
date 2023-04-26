@@ -30,6 +30,7 @@ target_include_directories(
 	alut
 	PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>"
 		   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>"
+		   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 		   "${OPENAL_INCLUDE_DIR}")
 target_link_libraries(alut PUBLIC ${OPENAL_LIBRARY})
 if(UNIX)

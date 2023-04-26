@@ -193,9 +193,9 @@ add_subdirectory(src)
 # needed for openal.pc.in and openal-config.in
 set(prefix ${CMAKE_INSTALL_PREFIX})
 set(exec_prefix "\${prefix}")
-set(libdir ${CMAKE_INSTALL_FULL_LIBDIR})
-set(bindir ${CMAKE_INSTALL_FULL_BINDIR})
-set(includedir ${CMAKE_INSTALL_FULL_INCLUDEDIR})
+set(libdir "${CMAKE_INSTALL_FULL_LIBDIR}")
+set(bindir "${CMAKE_INSTALL_FULL_BINDIR}")
+set(includedir "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
 set(requirements "")
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut.pc.in"
