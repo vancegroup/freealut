@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 2.6)
 
 project(Alut C)
 
+include(GNUInstallDirs)
+
 set(PACKAGE "freealut")
 set(PACKAGE_TARNAME "freealut")
 set(PACKAGE_NAME "freealut library")
@@ -182,9 +184,9 @@ add_subdirectory(src)
 # needed for openal.pc.in and openal-config.in
 set(prefix ${CMAKE_INSTALL_PREFIX})
 set(exec_prefix "\${prefix}")
-set(libdir "\${exec_prefix}/lib${LIB_SUFFIX}")
-set(bindir "\${exec_prefix}/bin")
-set(includedir "\${prefix}/include")
+set(libdir ${CMAKE_INSTALL_FULL_LIBDIR})
+set(bindir ${CMAKE_INSTALL_FULL_BINDIR})
+set(includedir ${CMAKE_INSTALL_FULL_INCLUDEDIR})
 set(requirements "")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut.pc.in
@@ -196,7 +198,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut-config.in
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut-config
 	DESTINATION bin)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut.pc
-	DESTINATION lib${LIB_SUFFIX}/pkgconfig)
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 ###
 # Examples
