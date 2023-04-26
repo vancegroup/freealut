@@ -27,7 +27,7 @@ include_directories(${Alut_SOURCE_DIR}/include)
 
 # What to build?
 option(BUILD_EXAMPLES "build example applications" ON)
-option(BUILD_STATIC "build static library too" OFF)
+option(BUILD_SHARED_LIBS "build freealut as a shared library rather than a static library" ON)
 option(BUILD_TESTS "build the test-suite" ON)
 
 # How to build it?
