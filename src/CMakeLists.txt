@@ -23,7 +23,7 @@ add_library(
 set_target_properties(
 	alut
 	PROPERTIES PUBLIC_HEADER "${ALUT_HEADERS}"
-			   VERSION ${MAJOR_VERSION}
+			   VERSION ${MAJOR_VERSION}.${MINOR_VERSION}.${BUILD_VERSION}
 			   SOVERSION ${MAJOR_VERSION})
 target_compile_definitions(alut PRIVATE HAVE_CONFIG_H=1)
 target_include_directories(
