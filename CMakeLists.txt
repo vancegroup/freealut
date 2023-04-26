@@ -15,7 +15,8 @@ set(PACKAGE_MAJOR_VERSION "1")
 set(PACKAGE_MINOR_VERSION "1")
 set(PACKAGE_BUILD_VERSION "0")
 set(PACKAGE_VERSION
-	"${PACKAGE_MAJOR_VERSION}.${PACKAGE_MINOR_VERSION}.${PACKAGE_BUILD_VERSION}")
+	"${PACKAGE_MAJOR_VERSION}.${PACKAGE_MINOR_VERSION}.${PACKAGE_BUILD_VERSION}"
+)
 
 # For SONAME
 set(MAJOR_VERSION "0")
@@ -29,7 +30,8 @@ set(OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
 
 # What to build?
 option(BUILD_EXAMPLES "build example applications" ON)
-option(BUILD_SHARED_LIBS "build freealut as a shared library rather than a static library" ON)
+option(BUILD_SHARED_LIBS
+	   "build freealut as a shared library rather than a static library" ON)
 option(BUILD_TESTS "build the test-suite" ON)
 
 # How to build it?
@@ -39,22 +41,16 @@ option(BUILD_WARNINGS "enable warnings" OFF)
 option(BUILD_MORE_WARNINGS "enable more warnings" OFF)
 option(BUILD_USE_WERROR "enable fail on all warning" OFF)
 
-###
 # Dependencies
-###
 find_package(OpenAL REQUIRED)
 
-###
 # Checking for types
-###
 if(WIN32)
 	include(CheckTypeSize)
 	check_type_size(__int8 HAVE___INT8)
 endif()
 
-###
 # Checking for Includes
-###
 include(CheckIncludeFile)
 check_include_file(stdint.h HAVE_STDINT_H)
 check_include_file(unistd.h HAVE_UNISTD_H)
@@ -62,9 +58,7 @@ check_include_file(time.h HAVE_TIME_H)
 check_include_file(windows.h HAVE_WINDOWS_H)
 check_include_file(features.h HAVE_FEATURES_H)
 
-###
 # Checking for functions
-###
 include(CheckSymbolExists)
 
 check_symbol_exists(_stat "sys/types.h;sys/stat.h" HAVE__STAT)
@@ -79,40 +73,34 @@ if(HAVE_WINDOWS_H)
 	check_symbol_exists(Sleep "windows.h" HAVE_SLEEP)
 endif()
 
-###
 # Checking for GLIBC
-###
 if(HAVE_FEATURES_H)
 	check_symbol_exists(__GLIBC__ "features.h" HAVE_GLIBC)
 endif()
 
-###
 # Checking for __attribute__
-###
 include(CheckCSourceCompiles)
-check_c_source_compiles("void  foo (int bar __attribute__((unused)) ) { }
+check_c_source_compiles(
+	"void  foo (int bar __attribute__((unused)) ) { }
 	static void baz (void) __attribute__((unused));
 	static void baz (void) { }
 	int main(){}
 	"
 	HAVE___ATTRIBUTE__)
 
-###
 # Checking for __attribute__((visibility("default"))) and -fvisibility=hidden
-###
 set(CMAKE_REQUIRED_FLAGS "-fvisibility=hidden")
-check_c_source_compiles("void __attribute__((visibility(\"default\"))) test() {}
+check_c_source_compiles(
+	"void __attribute__((visibility(\"default\"))) test() {}
 	#ifdef __INTEL_COMPILER
 	#error ICC breaks with binutils and visibility
 	#endif
 	int main(){}
-	" HAVE_GCC_VISIBILITY)
+	"
+	HAVE_GCC_VISIBILITY)
 set(CMAKE_REQUIRED_FLAGS)
 
-
-###
 # Checking compiler flags
-###
 include(CheckCCompilerFlag)
 set(NEW_FLAGS)
 set(POTENTIAL_FLAGS)
@@ -132,7 +120,28 @@ if(NOT MSVC)
 		list(APPEND POTENTIAL_FLAGS -Wall -ansi -pedantic -W)
 
 		if(BUILD_MORE_WARNINGS)
-			list(APPEND POTENTIAL_FLAGS -Waggregate-return -Wbad-function-cast -Wcast-align -Wcast-qual -Wdisabled-optimization -Wendif-labels -Winline -Wlong-long -Wmissing-declarations -Wmissing-noreturn -Wmissing-prototypes -Wnested-externs -Wpacked -Wpointer-arith -Wredundant-decls -Wshadow -Wsign-compare -Wstrict-prototypes -Wwrite-strings)
+			list(
+				APPEND
+				POTENTIAL_FLAGS
+				-Waggregate-return
+				-Wbad-function-cast
+				-Wcast-align
+				-Wcast-qual
+				-Wdisabled-optimization
+				-Wendif-labels
+				-Winline
+				-Wlong-long
+				-Wmissing-declarations
+				-Wmissing-noreturn
+				-Wmissing-prototypes
+				-Wnested-externs
+				-Wpacked
+				-Wpointer-arith
+				-Wredundant-decls
+				-Wshadow
+				-Wsign-compare
+				-Wstrict-prototypes
+				-Wwrite-strings)
 		endif()
 
 		if(BUILD_USE_WERROR)
@@ -141,11 +150,17 @@ if(NOT MSVC)
 	else()
 
 		if(BUILD_MORE_WARNINGS)
-			message(STATUS "NOTE: BUILD_MORE_WARNINGS ignored because BUILD_WARNINGS not set!")
+			message(
+				STATUS
+					"NOTE: BUILD_MORE_WARNINGS ignored because BUILD_WARNINGS not set!"
+			)
 		endif()
 
 		if(BUILD_USE_WERROR)
-			message(STATUS "NOTE: BUILD_USE_WERROR ignored because BUILD_WARNINGS not set!")
+			message(
+				STATUS
+					"NOTE: BUILD_USE_WERROR ignored because BUILD_WARNINGS not set!"
+			)
 		endif()
 	endif()
 endif()
@@ -166,19 +181,15 @@ if(POTENTIAL_FLAGS)
 	endif()
 endif()
 
-###
 # Generate the config header
-###
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake_in" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake_in"
+			   "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
-###
 # Build the library
-###
 add_subdirectory(src)
 
-###
 # Make the pkg-config and config files
-###
+#
 # needed for openal.pc.in and openal-config.in
 set(prefix ${CMAKE_INSTALL_PREFIX})
 set(exec_prefix "\${prefix}")
@@ -187,25 +198,20 @@ set(bindir ${CMAKE_INSTALL_FULL_BINDIR})
 set(includedir ${CMAKE_INSTALL_FULL_INCLUDEDIR})
 set(requirements "")
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut.pc.in
-	${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut.pc
-	@ONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut-config.in
-	${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut-config
-	@ONLY)
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut-config
-	DESTINATION bin)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut.pc
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut.pc.in"
+			   "${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut.pc" @ONLY)
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut-config.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut-config" @ONLY)
+install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut-config"
+		DESTINATION bin)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/admin/pkgconfig/freealut.pc"
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
-###
 # Examples
-###
 add_subdirectory(examples)
 
-###
 # test-suite
-###
 if(BUILD_TESTS)
 
 	set(TESTS errorstuff fileloader memoryloader version waveforms)
@@ -213,10 +219,9 @@ if(BUILD_TESTS)
 	foreach(TEST ${TESTS})
 		set(TEST_SRC test_suite/test_${TEST}.c)
 		if(CMAKE_COMPILER_IS_GNUCC)
-			set_source_files_properties(${TEST_SRC}
-				PROPERTIES
-				COMPILE_FLAGS
-				"-Wno-deprecated-declarations")
+			set_source_files_properties(
+				${TEST_SRC} PROPERTIES COMPILE_FLAGS
+									   "-Wno-deprecated-declarations")
 		endif()
 		add_executable(test_${TEST} ${TEST_SRC})
 		target_link_libraries(test_${TEST} alut)
@@ -226,8 +231,7 @@ if(BUILD_TESTS)
 	set(TESTDATA file1.wav file2.au file3.raw)
 
 	foreach(TESTDATUM ${TESTDATA})
-		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/test_suite/${TESTDATUM}
-			${CMAKE_CURRENT_BINARY_DIR}/${TESTDATUM}
-			COPYONLY)
+		configure_file("${CMAKE_CURRENT_SOURCE_DIR}/test_suite/${TESTDATUM}"
+					   "${CMAKE_CURRENT_BINARY_DIR}/${TESTDATUM}" COPYONLY)
 	endforeach()
 endif()
