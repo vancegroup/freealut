@@ -213,6 +213,7 @@ add_subdirectory(examples)
 
 # test-suite
 if(BUILD_TESTS)
+	include(CTest)
 
 	set(TESTS errorstuff fileloader memoryloader version waveforms)
 
@@ -234,4 +235,25 @@ if(BUILD_TESTS)
 		configure_file("${CMAKE_CURRENT_SOURCE_DIR}/test_suite/${TESTDATUM}"
 					   "${CMAKE_CURRENT_BINARY_DIR}/${TESTDATUM}" COPYONLY)
 	endforeach()
+
+	add_test(
+		NAME errorstuff
+		COMMAND test_errorstuff
+		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+	add_test(
+		NAME fileloader
+		COMMAND test_fileloader
+		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+	add_test(
+		NAME memoryloader
+		COMMAND test_memoryloader
+		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+	add_test(
+		NAME version
+		COMMAND test_version
+		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+	add_test(
+		NAME waveforms
+		COMMAND test_waveforms
+		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 endif()
