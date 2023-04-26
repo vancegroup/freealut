@@ -4,8 +4,9 @@
 
 AC_INIT([freealut library],[1.1.0],[openal-devel@opensource.creative.com],[freealut])
 AC_CONFIG_AUX_DIR([admin/autotools])
+AC_CONFIG_MACRO_DIRS([admin/autotools/m4])
 AM_INIT_AUTOMAKE
-AC_PREREQ(2.61)
+AC_PREREQ([2.69])
 AC_CONFIG_SRCDIR([AUTHORS])
 AC_CONFIG_HEADERS([config.h])
 
@@ -59,7 +60,7 @@ AC_PROG_CC
 AC_C_CONST
 ALUT_C__ATTRIBUTE__
 
-# Note that -fvisibility=... support implies __attribute__((visibility(...))) 
+# Note that -fvisibility=... support implies __attribute__((visibility(...)))
 # support.
 ALUT_CHECK_FLAG([-fvisibility=hidden],
                 [AM_CFLAGS="$AM_CFLAGS -fvisibility=hidden"
@@ -75,8 +76,7 @@ AM_CONDITIONAL([WNO_DEPRECATED_DECLARATIONS],
                [test x"$alut_wno_deprecated_declarations" = xyes])
 
 AC_EXEEXT
-AC_LIBTOOL_WIN32_DLL
-AC_PROG_LIBTOOL
+LT_INIT([win32-dll])
 AC_SUBST([LIBTOOL_DEPS])
 
 AC_DEFINE([ALUT_BUILD_LIBRARY], [1], [Define to 1 if you want to build the ALUT DLL.])
@@ -123,7 +123,7 @@ ALUT_CHECK_FUNC([[@%:@include <sys/types.h>
                   @%:@include <sys/stat.h>]],
                 [_stat], [[("", (struct _stat*)0)]])
 
-AC_CHECK_LIBM
+LT_LIB_M
 AC_SUBST([LIBM])
 
 AC_CHECK_TYPES([__int8])
