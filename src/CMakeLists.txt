@@ -37,7 +37,7 @@ if(UNIX)
 	target_link_libraries(alut PRIVATE m)
 endif()
 if(NOT BUILD_SHARED_LIBS)
-	target_compile_definitions(alut PRIVATE ALUT_BUILD_STATIC)
+	target_compile_definitions(alut PRIVATE ALUT_BUILD_STATIC INTERFACE ALUT_STATIC)
 endif()
 
 if(HAVE_GCC_VISIBILITY)

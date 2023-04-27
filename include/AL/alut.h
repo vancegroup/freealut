@@ -21,6 +21,8 @@ extern "C" {
   #define ALUT_API __declspec(dllexport)
  #elif defined(ALUT_BUILD_STATIC)
   #define ALUT_API extern
+ #elif defined(ALUT_STATIC)
+  #define ALUT_API extern
  #else
   #define ALUT_API __declspec(dllimport)
  #endif
