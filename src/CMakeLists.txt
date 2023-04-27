@@ -53,6 +53,19 @@ if(HAVE_GLIBC)
 	target_compile_definitions(alut PRIVATE __NO_CTYPE=1)
 endif()
 
+if(WIN32 AND BUILD_SHARED_LIBS AND BUILD_TESTS)
+	# Copy DLL so tests can run
+	add_custom_command(TARGET alut POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:alut> $<TARGET_PROPERTY:test_version,BINARY_DIR>
+	)
+endif()
+if(WIN32 AND BUILD_SHARED_LIBS AND BUILD_EXAMPLES)
+	# Copy DLL so examples can run
+	add_custom_command(TARGET alut POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:alut> $<TARGET_PROPERTY:hello_world,BINARY_DIR>
+	)
+endif()
+
 install(
 	TARGETS alut
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
