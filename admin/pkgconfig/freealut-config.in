@@ -5,6 +5,7 @@ exec_prefix="@exec_prefix@"
 bindir="@bindir@"
 includedir="@includedir@"
 libdir="@libdir@"
+extra_cflags="@extra_cflags@"
 PACKAGE_VERSION="@PACKAGE_VERSION@"
 
 freealut_dynamic_ldflags="-lalut"
@@ -156,7 +157,7 @@ if test "$echo_cflags" = "yes"; then
   else
     incpath="-I${includedir}"
   fi
-  echo "${incpath}"
+  echo "${incpath} ${extra_cflags}"
 fi
 
 if test "$echo_libs" = "yes"; then

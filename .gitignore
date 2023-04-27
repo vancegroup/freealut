@@ -6,6 +6,8 @@
 *.lo
 *.o
 *~
+.*
+!.gitignore
 INSTALL
 aclocal.m4
 admin/RPM/freealut.spec

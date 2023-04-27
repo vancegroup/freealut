@@ -4,7 +4,7 @@ freealut is a free implementation of OpenAL's ALUT standard. See the file
 AUTHORS for the people involved.
 
 This is a slightly-updated version maintained at
-https://github.com/vance-group/freealut that contains an updated
+<https://github.com/vancegroup/freealut> that contains an updated
 CMake build system, and potentially other fixes over time.
 
 ## Building freealut
