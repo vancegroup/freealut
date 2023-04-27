@@ -196,6 +196,10 @@ set(exec_prefix "\${prefix}")
 set(libdir "${CMAKE_INSTALL_FULL_LIBDIR}")
 set(bindir "${CMAKE_INSTALL_FULL_BINDIR}")
 set(includedir "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+set(extra_cflags "")
+if(BUILD_SHARED_LIBS)
+	set(extra_cflags "-DALUT_STATIC")
+endif()
 set(requirements "")
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/admin/pkgconfig/freealut.pc.in"
