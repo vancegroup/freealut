@@ -3,9 +3,27 @@
 freealut is a free implementation of OpenAL's ALUT standard. See the file
 AUTHORS for the people involved.
 
-This is a slightly-updated version maintained at
-https://github.com/vance-group/freealut that contains an updated
-CMake build system, and potentially other fixes over time.
+## Project status - 2024
+
+This is a slightly-updated version that started from git-svn,
+hosted at <https://github.com/vancegroup/freealut>, that contains an
+updated CMake build system, and a few other minor (build-related) fixes.
+
+I (Rylie) initially created this repository as a user of the library, seeking to
+more easily browse commit history and to clean up the build system. This
+repository eventually became the de-facto upstream once the original was taken
+down.
+
+This project does not see much traffic in terms of pull requests and is
+essentially "complete" and working as well as it ever did. However, it is also
+mostly **unmaintained**: I (Rylie) have moved on, no longer use this, and
+regretfully have no capacity to meaningfully maintain it going forward.
+
+If you need this project and need changes to it, please
+**consider adopting it**.
+
+The remainder of the README follows: first a brief newer section on the CMake
+build, then the original, fairly obsolete sections, minimally updated.
 
 ## Building freealut
 
@@ -18,7 +36,7 @@ including cross-building), so I'd recommend using it.
 (Instructions for older build systems are still included for completeness.)
 
 This builds just like any other standard CMake build system: see
-<https://cmake.org/cmake/help/latest/guide/user-interaction/index.html> for generic instructions.
+<https://cmake.org/cmake/help/latest/guide/user-interaction/> for generic instructions.
 
 Briefly, here's how to build with CMake via out-of-tree build:
 
@@ -91,7 +109,9 @@ run 'make'.
 Alternatively, there is a spec file in the admin/RPM subdirectory, which can be
 used to build an RPM.
 
-## Building with Visual Studio (deprecated)
+## Building with Visual Studio projects (deprecated)
+
+(For modern use of Visual Studio, see the CMake instructions)
 
 The admin subdirectory contains VisualStudio6 and VisualStudioDotNET
 subdirectories, which contain a Visual Studio 6 workspace and a Visual Studio

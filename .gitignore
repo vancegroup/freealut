@@ -6,6 +6,10 @@
 *.lo
 *.o
 *~
+.*
+!.gitignore
+!.mailmap
+!.cmake-format.yaml
 INSTALL
 aclocal.m4
 admin/RPM/freealut.spec

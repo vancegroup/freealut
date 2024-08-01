@@ -8,4 +8,4 @@ Description: freealut is a free implementation of the OpenAL utility toolkit.
 Requires: openal
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lalut
-Cflags: -I${includedir}
+Cflags: -I${includedir} @extra_cflags@

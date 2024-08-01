@@ -44,4 +44,6 @@
 #define _POSIX_C_SOURCE 200112L
 #endif
 
+#ifndef ALUT_BUILD_STATIC
 #define ALUT_BUILD_LIBRARY
+#endif

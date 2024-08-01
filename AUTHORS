@@ -12,3 +12,8 @@ Erik Hofman <erik@ehofman.com>
 
 Prakash Punnoor <prakash@punnoor.de>
   CMake build system
+
+Rylie Pavlik <rylie@ryliepavlik.com>
+  CMake changes
+  Mirrored to git
+  Performed some minimal maintenance once upstream became inactive/disappeared
