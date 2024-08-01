@@ -1,5 +1,5 @@
 # cmake project file by Prakash Punnoor
-# improved by Ryan Pavlik
+# improved by Rylie Pavlik
 cmake_minimum_required(VERSION 2.6)
 
 project(Alut C)
